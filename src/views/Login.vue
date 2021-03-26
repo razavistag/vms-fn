@@ -52,6 +52,7 @@
                       <v-text-field
                         outlined
                         dense
+                        type="password"
                         v-model="password"
                         :error-messages="errors"
                         :label="errors[0] ? errors[0] : 'Password'"
@@ -69,9 +70,13 @@
                     cols="12"
                     class="pa-0  ma-0  mt-3 pl-12 d-flex flex-row "
                   >
-                    <b-form-checkbox class="d-flex justify-center align-center">
+                    <b-form-checkbox
+                      class="d-flex justify-center align-center"
+                      v-model="rememberMe"
+                    >
                       Remember Me
                     </b-form-checkbox>
+
                     <v-btn color="blue" text tile class=" ml-6"
                       >Forget Password</v-btn
                     >
@@ -88,17 +93,17 @@
 
                 <v-row class="pl-8 pt-3" justify="center">
                   <v-col md="2" sm="2" cols="3" class=" ">
-                    <v-btn icon la>
+                    <v-btn icon>
                       <v-icon>fab fa-google-plus-g</v-icon>
                     </v-btn>
                   </v-col>
                   <v-col md="2" sm="2" cols="3" class=" ">
-                    <v-btn icon la>
+                    <v-btn icon @click="FacbookApi">
                       <v-icon>fab fa-facebook</v-icon>
                     </v-btn>
                   </v-col>
                   <v-col md="2" sm="2" cols="3" class=" ">
-                    <v-btn icon la>
+                    <v-btn icon>
                       <v-icon>fab fa-twitter-square</v-icon>
                     </v-btn>
                   </v-col>
@@ -309,8 +314,9 @@ export default {
     return {
       tab_login: false,
       tab_register: false,
-      email: "",
-      password: "",
+      email: "admin@gmail.com",
+      password: "Password123",
+      rememberMe: false,
       Activate_Signin: true,
       Activate_Register: true,
       RegisterForm: {
@@ -319,7 +325,7 @@ export default {
         email: "",
         phone: "",
         address: "",
-        role: "",
+        password: "",
       },
       RoleAccess: ["Manager", "Supervisor", "Employee"],
     };
@@ -335,14 +341,33 @@ export default {
           return;
         }
 
-        console.log("sucess");
-
-        localStorage.setItem("Key", "access_token");
-
-        // this.$router.push({ path: "dashboard" });
-
-        this.email = "";
-        this.password = "";
+        let uri = "/usr_login";
+        const login = {
+          email: this.email,
+          password: this.password,
+        };
+        this.$http
+          .post(uri, login)
+          .then((response) => {
+            console.log(response.data);
+            this.$nextTick(() => {
+              this.$refs.form.reset();
+              console.log("cleared");
+            });
+            this.email = "";
+            this.password = "";
+            if (this.rememberMe == true) {
+              console.log("remember true");
+              localStorage.setItem("Remember", true);
+            }
+            localStorage.setItem("token", response.data.access_token);
+            this.$router.push({
+              name: "AdminDashboard",
+            });
+          })
+          .catch((response) => {
+            console.log("access denied");
+          });
 
         this.$nextTick(() => {
           this.$refs.form.reset();
@@ -383,6 +408,20 @@ export default {
 
         this.$router.push({ path: "dashboard" });
       });
+    },
+
+    FacbookApi() {
+      
+      let url = "auth/facebook";
+      this.$http
+        .get(url )
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((response) => {
+          console.log("response");
+          console.log("response");
+        });
     },
   },
 };

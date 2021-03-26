@@ -6,6 +6,7 @@ import store from "./store";
 import vuetify from "./plugins/vuetify";
 import VueAgile from "vue-agile";
 import VeeValidate from "vee-validate";
+import axios from "axios";
 
 import { BootstrapVue, IconsPlugin } from "bootstrap-vue";
 
@@ -19,6 +20,12 @@ Vue.use(BootstrapVue);
 Vue.use(IconsPlugin);
 Vue.use(VueAgile);
 Vue.use(VeeValidate);
+
+const base = axios.create({
+  baseURL: "http://localhost:8000/",
+  headers: { Authorization: "Bearer " + localStorage.getItem("token") },
+});
+Vue.prototype.$http = base;
 
 Vue.config.productionTip = false;
 
