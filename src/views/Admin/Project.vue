@@ -116,50 +116,165 @@
 
               <v-card-text>
                 <v-container>
-                  <v-row>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field
-                        v-model="editedItem.title"
-                        label="name"
-                        hide-details=""
-                      ></v-text-field>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field
-                        v-model="editedItem.duration"
-                        label="duration"
-                        hide-details=""
-                      ></v-text-field>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field
-                        v-model="editedItem.collaborators"
-                        label="collaborators"
-                        hide-details=""
-                      ></v-text-field>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field
-                        v-model="editedItem.status"
-                        label="status"
-                        hide-details=""
-                      ></v-text-field>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field
-                        v-model="editedItem.deadline"
-                        label="deadline"
-                        hide-details=""
-                      ></v-text-field>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field
-                        v-model="editedItem.startingdate"
-                        label="startedDate"
-                        hide-details=""
-                      ></v-text-field>
-                    </v-col>
-                  </v-row>
+                  <ValidationObserver ref="form">
+                    <v-row>
+                      <v-col cols="12" sm="6" md="4">
+                        <ValidationProvider
+                          rules="required|min:5"
+                          name="Project Name"
+                          v-slot="{ errors }"
+                        >
+                          <v-text-field
+                            v-model="editedItem.title"
+                            :label="errors[0] ? errors[0] : 'Project Name'"
+                            :error-messages="errors"
+                            hide-details=""
+                            clearable
+                            dense
+                          ></v-text-field>
+                        </ValidationProvider>
+                      </v-col>
+                      <v-col cols="12" sm="6" md="4">
+                        <ValidationProvider
+                          rules="required"
+                          name="Project Duration"
+                          v-slot="{ errors }"
+                        >
+                          <v-text-field
+                            v-model="editedItem.duration"
+                            :label="errors[0] ? errors[0] : 'Duration'"
+                            :error-messages="errors"
+                            hide-details=""
+                            clearable
+                            dense
+                          ></v-text-field>
+                        </ValidationProvider>
+                      </v-col>
+                      <v-col cols="12" sm="6" md="4">
+                        <ValidationProvider
+                          rules="required"
+                          name="Collaborators Count"
+                          v-slot="{ errors }"
+                        >
+                          <v-text-field
+                            v-model="editedItem.collaborators"
+                            :label="
+                              errors[0] ? errors[0] : 'Collaborators Count'
+                            "
+                            :error-messages="errors"
+                            hide-details=""
+                            clearable
+                            dense
+                          ></v-text-field>
+                        </ValidationProvider>
+                      </v-col>
+                      <v-col cols="12" sm="6" md="4">
+                        <ValidationProvider
+                          rules="required"
+                          name="Collaborators Count"
+                          v-slot="{ errors }"
+                        >
+                          <v-select
+                            :items="statusItems"
+                            v-model="editedItem.status"
+                            :label="errors[0] ? errors[0] : 'Project Status'"
+                            :error-messages="errors"
+                            hide-details=""
+                            clearable
+                            dense
+                          ></v-select>
+                        </ValidationProvider>
+                      </v-col>
+
+                      <v-col cols="12" sm="6" md="4">
+                        <v-menu
+                          v-model="picker2"
+                          :close-on-content-click="false"
+                          :nudge-right="40"
+                          transition="scale-transition"
+                          offset-y
+                          min-width="auto"
+                        >
+                          <template v-slot:activator="{ on, attrs }">
+                            <ValidationProvider
+                              rules="required"
+                              name="started date"
+                              v-slot="{ errors }"
+                            >
+                              <v-text-field
+                                v-model="editedItem.startingdate"
+                                :label="errors[0] ? errors[0] : 'started date'"
+                                :error-messages="errors"
+                                hide-details=""
+                                clearable
+                                dense
+                                readonly
+                                v-bind="attrs"
+                                v-on="on"
+                              ></v-text-field>
+                            </ValidationProvider>
+                          </template>
+                          <v-date-picker
+                            v-model="editedItem.startingdate"
+                            @input="picker2 = false"
+                          ></v-date-picker>
+                        </v-menu>
+                        <!-- ------------------- -->
+                        <!-- <v-text-field
+                          v-model="editedItem.startingdate"
+                          label="started date"
+                          hide-details=""
+                          clearable
+                          dense
+                        ></v-text-field> -->
+                        <!-- ------------------------ -->
+                      </v-col>
+
+                      <v-col cols="12" sm="6" md="4">
+                        <v-menu
+                          v-model="picker1"
+                          :close-on-content-click="false"
+                          :nudge-right="40"
+                          transition="scale-transition"
+                          offset-y
+                          min-width="auto"
+                        >
+                          <template v-slot:activator="{ on, attrs }">
+                            <ValidationProvider
+                              rules="required"
+                              name="dead line"
+                              v-slot="{ errors }"
+                            >
+                              <v-text-field
+                                v-model="editedItem.deadline"
+                                :label="errors[0] ? errors[0] : 'dead line'"
+                                :error-messages="errors"
+                                hide-details=""
+                                clearable
+                                dense
+                                readonly
+                                v-bind="attrs"
+                                v-on="on"
+                              ></v-text-field>
+                            </ValidationProvider>
+                          </template>
+                          <v-date-picker
+                            v-model="editedItem.deadline"
+                            @input="picker1 = false"
+                          ></v-date-picker>
+                        </v-menu>
+                        <!-- ----------------------------------- -->
+                        <!-- <v-text-field
+                          v-model="editedItem.deadline"
+                          label="dead line"
+                          hide-details=""
+                          clearable
+                          dense
+                        ></v-text-field> -->
+                        <!-- ----------------------------------- -->
+                      </v-col>
+                    </v-row>
+                  </ValidationObserver>
                 </v-container>
               </v-card-text>
 
@@ -227,6 +342,7 @@
       <!-- no data -->
       <template v-slot:no-data>
         <v-progress-linear
+          v-if="existData == -1"
           active
           indeterminate
           absolute
@@ -235,6 +351,10 @@
           class="p-1"
           color="blue darken-4"
         ></v-progress-linear>
+
+        <div v-if="existData == 1">
+          <p class="pa-2">RECODES NOT FOUND</p>
+        </div>
       </template>
     </v-data-table>
   </div>
@@ -242,11 +362,14 @@
 
 <script>
 import DashboardLayout from "../../components/DashboardLayout";
+import { ValidationObserver, ValidationProvider } from "vee-validate";
 
 export default {
   name: "Projects",
   components: {
     DashboardLayout,
+    ValidationObserver,
+    ValidationProvider,
   },
   data: () => ({
     dialog: false,
@@ -312,6 +435,10 @@ export default {
     },
     selectedHeaders: [],
     search: "",
+    existData: -1,
+    statusItems: ["on progress", "on testing stage", "completed"],
+    picker1: false,
+    picker2: false,
   }),
 
   computed: {
@@ -340,27 +467,6 @@ export default {
 
   methods: {
     initialize() {
-      //   this.projects = [
-      //     {
-      //       id: 1,
-      //       name: "Rent System",
-      //       duration: "4 months",
-      //       collaborators: 3,
-      //       status: "completed",
-      //       deadline: "March 26, 8:37 pm",
-      //       startedDate: "March 26, 8:37 pm",
-      //     },
-      //     {
-      //       id: 2,
-      //       name: "Inventory Managment System",
-      //       duration: "6 months",
-      //       collaborators: 5,
-      //       status: "on progress",
-      //       deadline: "March 26, 8:37 pm",
-      //       startedDate: "March 26, 8:37 pm",
-      //     },
-      //   ];
-
       this.projects.splice(0);
       let url = "url_projects";
       this.$http
@@ -368,12 +474,21 @@ export default {
         .then((response) => {
           console.log(response);
           response.data.projects.forEach((element) => {
-            console.log(element);
+            // console.log(element);
             this.projects.push(element);
           });
+          console.log("data count", this.projects.length);
+          if (this.projects.length <= 0) {
+            console.log(0);
+            console.log("no data");
+            this.existData = 1;
+          } else {
+            console.log("have data");
+            this.existData = -1;
+            console.log(1);
+          }
         })
         .catch((response) => {
-          console.log("response");
           console.log("response");
         });
     },
@@ -392,6 +507,16 @@ export default {
 
     deleteItemConfirm() {
       this.projects.splice(this.editedIndex, 1);
+      let url = "url_projects/" + this.editedItem.id;
+      this.$http
+        .delete(url)
+        .then((response) => {
+          console.log(response.data);
+          this.initialize();
+        })
+        .catch((response) => {
+          console.log("Error Fround. Project Not Saved");
+        });
       this.closeDelete();
     },
 
@@ -413,11 +538,73 @@ export default {
 
     save() {
       if (this.editedIndex > -1) {
-        Object.assign(this.projects[this.editedIndex], this.editedItem);
+        this.$refs.form.validate().then((success) => {
+          if (!success) {
+            return;
+          }
+
+          Object.assign(this.projects[this.editedIndex], this.editedItem);
+          const update = {
+            title: this.editedItem.title,
+            duration: this.editedItem.duration,
+            startingdate: this.editedItem.startingdate,
+            deadline: this.editedItem.deadline,
+            status: this.editedItem.status,
+            collaborators: this.editedItem.collaborators,
+          };
+          let url = "url_projects/" + this.editedItem.id;
+          this.$http
+            .put(url, update)
+            .then((response) => {
+              console.log(response.data);
+              this.initialize();
+            })
+            .catch((response) => {
+              console.log("Error Fround. Project Not Saved");
+            });
+          this.close();
+
+          this.$nextTick(() => {
+            this.$refs.form.reset();
+            console.log("cleared");
+          });
+        });
       } else {
-        this.projects.push(this.editedItem);
+        this.$refs.form.validate().then((success) => {
+          if (!success) {
+            return;
+          }
+
+          this.projects.push(this.editedItem);
+
+          const save = {
+            title: this.editedItem.title,
+            duration: this.editedItem.duration,
+            startingdate: this.editedItem.startingdate,
+            deadline: this.editedItem.deadline,
+            status: this.editedItem.status,
+            collaborators: this.editedItem.collaborators,
+          };
+
+          let url = "url_projects";
+          this.$http
+            .post(url, save)
+            .then((response) => {
+              console.log(response.data);
+              this.initialize();
+            })
+            .catch((response) => {
+              console.log("Error Fround. Project Not Saved");
+            });
+
+          this.close();
+
+          this.$nextTick(() => {
+            this.$refs.form.reset();
+            console.log("cleared");
+          });
+        });
       }
-      this.close();
     },
   },
 };
