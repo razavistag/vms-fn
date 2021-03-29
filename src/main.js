@@ -9,6 +9,8 @@ import VeeValidate from "vee-validate";
 import axios from "axios";
 
 import { BootstrapVue, IconsPlugin } from "bootstrap-vue";
+// import { VueEditor } from "vue2-editor";
+// import { VueEditor, Quill } from "vue2-editor";
 
 // Import  CSS
 import "./styles/main.css";

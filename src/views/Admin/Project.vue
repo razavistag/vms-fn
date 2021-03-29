@@ -103,7 +103,7 @@
           <!-- form dialog -->
           <v-dialog
             v-model="dialog"
-            max-width="1100px"
+            max-width="1200px"
             persistent
             content-class="form-dialog"
           >
@@ -320,7 +320,6 @@
                       </v-col>
 
                       <!-- cost -->
-
                       <v-col cols="12" sm="6" md="4">
                         <ValidationProvider
                           rules="required|numeric"
@@ -336,6 +335,41 @@
                             dense
                           ></v-text-field>
                         </ValidationProvider>
+                      </v-col>
+
+                      <v-col cols="12" sm="6" md="6">
+                       upload image
+                      </v-col>
+
+                      <v-col cols="12" sm="6" md="6">
+                        <vue-editor
+                          title="Enter Description"
+                          v-model="editedItem.description"
+                          :editorToolbar="editorToolBar"
+                        ></vue-editor>
+                      </v-col>
+                      <v-col cols="12" sm="6" md="4">
+                        <vue-editor
+                          title="Enter Features"
+                          v-model="editedItem.features"
+                          :editorToolbar="editorToolBar"
+                        ></vue-editor>
+                      </v-col>
+
+                      <v-col cols="12" sm="6" md="4">
+                        <vue-editor
+                          title="Enter Notes"
+                          v-model="editedItem.notes"
+                          :editorToolbar="editorToolBar"
+                        ></vue-editor>
+                      </v-col>
+
+                      <v-col cols="12" sm="6" md="4">
+                        <vue-editor
+                          title="Enter Notes"
+                          v-model="editedItem.remark"
+                          :editorToolbar="editorToolBar"
+                        ></vue-editor>
                       </v-col>
 
                       <!-- ---------------------------------------------------- -->
@@ -466,15 +500,30 @@
 <script>
 import DashboardLayout from "../../components/DashboardLayout";
 import { ValidationObserver, ValidationProvider } from "vee-validate";
-
+import { VueEditor } from "vue2-editor";
 export default {
   name: "Projects",
   components: {
     DashboardLayout,
     ValidationObserver,
     ValidationProvider,
+    VueEditor,
   },
   data: () => ({
+    editorToolBar: [
+      ["bold", "italic", "underline"],
+      [{ list: "ordered" }, { list: "bullet" }],
+      [
+        { align: "" },
+        { align: "center" },
+        { align: "right" },
+        { align: "justify" },
+      ],
+      [{ color: [] }],
+      [{ indent: "-1" }, { indent: "+1" }],
+      [{ header: [false, 1, 2, 3, 4, 5, 6] }],
+      ["clean"],
+    ],
     dialog: true,
     dialogDelete: false,
     headers: [],
@@ -532,6 +581,10 @@ export default {
       projectIncharge: "",
       documentationLink: "",
       cost: "",
+      description: "",
+      features: "",
+      notes: "",
+      remark: "",
     },
     defaultItem: {
       id: "",
@@ -547,6 +600,10 @@ export default {
       projectIncharge: "",
       documentationLink: "",
       cost: "",
+      description: "",
+      features: "",
+      notes: "",
+      remark: "",
     },
     selectedHeaders: [],
     search: "",
