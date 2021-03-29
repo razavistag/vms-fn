@@ -95,7 +95,7 @@
             text
             tile
             small
-            @click="dialog = true"
+            @click="newDialog"
           >
             <v-icon small dark left> mdi-plus </v-icon> ADD PROJECTS
           </v-btn>
@@ -230,7 +230,7 @@
                       <v-col cols="12" sm="6" md="4">
                         <ValidationProvider
                           rules="required"
-                          name="Collaborators Count"
+                          name="Project Status"
                           v-slot="{ errors }"
                         >
                           <v-select
@@ -245,10 +245,10 @@
                         </ValidationProvider>
                       </v-col>
 
-                      <!-- title -->
+                      <!-- Project Version -->
                       <v-col cols="12" sm="6" md="4">
                         <ValidationProvider
-                          rules="required|min:5"
+                          rules="required|decimal:4"
                           name="Project Version"
                           v-slot="{ errors }"
                         >
@@ -337,39 +337,94 @@
                         </ValidationProvider>
                       </v-col>
 
-                      <v-col cols="12" sm="6" md="6">
-                       upload image
+                      <v-col
+                        cols="12"
+                        sm="3"
+                        md="4"
+                        class="pa-0 pl-5 pt-4 text-center"
+                      >
+                        <!-- upload image -->
+
+                        <image-cropper
+                          v-model="avatar"
+                          :width="285"
+                          :height="250"
+                          placeholder="Choose company logo"
+                          :show-remove-button="true"
+                          @file-choose="FileUpload($event)"
+                          @image-remove="removeImage"
+                          class="pa-0 ma-0"
+                        />
                       </v-col>
 
-                      <v-col cols="12" sm="6" md="6">
-                        <vue-editor
-                          title="Enter Description"
-                          v-model="editedItem.description"
-                          :editorToolbar="editorToolBar"
-                        ></vue-editor>
+                      <v-col cols="12" sm="6" md="4" class="">
+                        <v-tooltip top>
+                          <template v-slot:activator="{ on, attrs }">
+                            <div v-bind="attrs" v-on="on">
+                              <vue-editor
+                                v-model="editedItem.description"
+                                :editorToolbar="editorToolBar"
+                              ></vue-editor>
+                            </div>
+                          </template>
+                          <span>Project Description</span>
+                        </v-tooltip>
                       </v-col>
                       <v-col cols="12" sm="6" md="4">
-                        <vue-editor
-                          title="Enter Features"
-                          v-model="editedItem.features"
-                          :editorToolbar="editorToolBar"
-                        ></vue-editor>
+                        <v-tooltip top>
+                          <template v-slot:activator="{ on, attrs }">
+                            <div v-bind="attrs" v-on="on">
+                              <vue-editor
+                                v-model="editedItem.features"
+                                :editorToolbar="editorToolBar"
+                              ></vue-editor>
+                            </div>
+                          </template>
+                          <span>Project Features</span>
+                        </v-tooltip>
                       </v-col>
 
                       <v-col cols="12" sm="6" md="4">
-                        <vue-editor
-                          title="Enter Notes"
-                          v-model="editedItem.notes"
-                          :editorToolbar="editorToolBar"
-                        ></vue-editor>
+                        <v-tooltip top>
+                          <template v-slot:activator="{ on, attrs }">
+                            <div v-bind="attrs" v-on="on">
+                              <vue-editor
+                                v-model="editedItem.notes"
+                                :editorToolbar="editorToolBar"
+                              ></vue-editor>
+                            </div>
+                          </template>
+                          <span>Project Notes</span>
+                        </v-tooltip>
                       </v-col>
 
                       <v-col cols="12" sm="6" md="4">
-                        <vue-editor
-                          title="Enter Notes"
-                          v-model="editedItem.remark"
-                          :editorToolbar="editorToolBar"
-                        ></vue-editor>
+                        <v-tooltip top>
+                          <template v-slot:activator="{ on, attrs }">
+                            <div v-bind="attrs" v-on="on">
+                              <vue-editor
+                                v-model="editedItem.remark"
+                                :editorToolbar="editorToolBar"
+                              ></vue-editor>
+                            </div>
+                          </template>
+                          <span>Project Remark</span>
+                        </v-tooltip>
+                      </v-col>
+
+                      <v-col cols="12" sm="6" md="4">
+                        <v-tooltip top>
+                          <template v-slot:activator="{ on, attrs }">
+                            <div v-bind="attrs" v-on="on">
+                              <vue-editor
+                                title="Enter special note"
+                                v-model="editedItem.specialNote"
+                                :editorToolbar="editorToolBar"
+                              ></vue-editor>
+                            </div>
+                          </template>
+                          <span>Project Special Note</span>
+                        </v-tooltip>
                       </v-col>
 
                       <!-- ---------------------------------------------------- -->
@@ -452,6 +507,10 @@
       <template v-slot:[`item.id`]="{ item, index }">
         <p class="m-1">{{ index + 1 }}</p>
       </template>
+      <template v-slot:[`item.duration`]="{ item }">
+        <p class="m-1">{{ item.duration + " Days" }}</p>
+      </template>
+
       <!-- Table Action -->
       <template v-slot:[`item.actions`]="{ item }">
         <v-icon
@@ -501,6 +560,7 @@
 import DashboardLayout from "../../components/DashboardLayout";
 import { ValidationObserver, ValidationProvider } from "vee-validate";
 import { VueEditor } from "vue2-editor";
+// import Croppa from "vue-croppa";
 export default {
   name: "Projects",
   components: {
@@ -508,8 +568,10 @@ export default {
     ValidationObserver,
     ValidationProvider,
     VueEditor,
+    // 'croppa':Croppa,
   },
   data: () => ({
+    avatar: {},
     editorToolBar: [
       ["bold", "italic", "underline"],
       [{ list: "ordered" }, { list: "bullet" }],
@@ -524,7 +586,7 @@ export default {
       [{ header: [false, 1, 2, 3, 4, 5, 6] }],
       ["clean"],
     ],
-    dialog: true,
+    dialog: false,
     dialogDelete: false,
     headers: [],
     headersMap: [
@@ -541,21 +603,38 @@ export default {
         sortable: true,
         value: "title",
       },
-      { text: "Duration", value: "duration", width: "10%", align: "center" },
       {
-        text: "Collaborators",
-        value: "collaborators",
-        width: "8%",
-        align: "center",
-      },
-      {
-        text: "Started Date",
+        text: "starting date",
         value: "startingdate",
         width: "10%",
         align: "center",
       },
-      { text: "Deadline", value: "deadline", width: "10%", align: "center" },
-      { text: "Status", value: "status", width: "10%", align: "center" },
+      {
+        text: "deadline",
+        value: "deadline",
+        width: "10%",
+        align: "center",
+      },
+      {
+        text: "duration",
+        value: "duration",
+        width: "6%",
+        align: "center",
+      },
+      { text: "status", value: "status", width: "10%", align: "center" },
+      {
+        text: "version",
+        value: "projectVersion",
+        width: "6%",
+        align: "center",
+      },
+      {
+        text: "incharge",
+        value: "projectIncharge",
+        width: "10%",
+        align: "center",
+      },
+      { text: "cost", value: "cost", width: "10%", align: "center" },
 
       {
         text: "Actions",
@@ -585,6 +664,9 @@ export default {
       features: "",
       notes: "",
       remark: "",
+      duration: 0,
+      logo: "",
+      specialNote: "",
     },
     defaultItem: {
       id: "",
@@ -604,6 +686,8 @@ export default {
       features: "",
       notes: "",
       remark: "",
+      logo: "",
+      specialNote: "",
     },
     selectedHeaders: [],
     search: "",
@@ -611,6 +695,7 @@ export default {
     statusItems: ["on progress", "on testing stage", "completed"],
     picker1: false,
     picker2: false,
+    profileLogo: [],
   }),
 
   computed: {
@@ -636,33 +721,80 @@ export default {
     this.headers = Object.values(this.headersMap);
     this.selectedHeaders = this.headers;
   },
+  mounted() {},
 
   methods: {
+    dateDiffInDays(date1, date2) {
+      return Math.round((date2 - date1) / (1000 * 60 * 60 * 24));
+    },
     initialize() {
       this.projects.splice(0);
       let url = "url_projects";
       this.$http
         .get(url)
         .then((response) => {
-          console.log(response);
+          // console.log(response);
           response.data.projects.forEach((element) => {
             // console.log(element);
-            this.projects.push(element);
+            // this.projects.push(element);
+            this.projects.push({
+              id: element.id,
+              title: element.title,
+              status: element.status,
+              deadline: element.deadline,
+              startingdate: element.startingdate,
+              projectVersion: element.projectVersion,
+              teamMembers_id: element.teamMembers_id,
+              projectIncharge: element.projectIncharge,
+              documentationLink: element.documentationLink,
+              cost: element.cost,
+              description: element.description,
+              features: element.features,
+              notes: element.notes,
+              remark: element.remark,
+              logo: element.logo,
+              duration: this.dateDiffInDays(
+                new Date(Date()),
+                new Date(element.deadline)
+              ),
+            });
+
+            // : "",
+            // : [],
+            // : "",
+            // : "",
+            // : "",
+            // : "",
+            // : "",
+            // : "",
+            // : "",
+
+            var daysDuration = this.dateDiffInDays(
+              new Date(Date()),
+              new Date(element.deadline)
+            );
+            console.log("days", daysDuration);
           });
           console.log("data count", this.projects.length);
           if (this.projects.length <= 0) {
-            console.log(0);
-            console.log("no data");
+            // console.log(0);
+            // console.log("no data");
             this.existData = 1;
           } else {
-            console.log("have data");
+            // console.log("have data");
             this.existData = -1;
-            console.log(1);
+            // console.log(1);
           }
         })
         .catch((response) => {
-          console.log("response");
+          // console.log("response");
         });
+    },
+
+    newDialog() {
+      this.dialog = true;
+      this.profileLogo.splice(0);
+      this.avatar = {};
     },
 
     editItem(item) {
@@ -694,10 +826,14 @@ export default {
 
     close() {
       this.dialog = false;
+      this.removeImage();
       this.$nextTick(() => {
         this.editedItem = Object.assign({}, this.defaultItem);
         this.editedIndex = -1;
       });
+    },
+    removeImage() {
+      console.log(101010101);
     },
 
     closeDelete() {
@@ -717,12 +853,27 @@ export default {
 
           Object.assign(this.projects[this.editedIndex], this.editedItem);
           const update = {
+            // title: this.editedItem.title,
+            // duration: this.editedItem.duration,
+            // startingdate: this.editedItem.startingdate,
+            // deadline: this.editedItem.deadline,
+            // status: this.editedItem.status,
+            // collaborators: this.editedItem.collaborators,
+
             title: this.editedItem.title,
-            duration: this.editedItem.duration,
-            startingdate: this.editedItem.startingdate,
-            deadline: this.editedItem.deadline,
             status: this.editedItem.status,
-            collaborators: this.editedItem.collaborators,
+            deadline: this.editedItem.deadline,
+            startingdate: this.editedItem.startingdate,
+            projectVersion: this.editedItem.projectVersion,
+            teamMembers_id: this.editedItem.teamMembers_id,
+            projectIncharge: this.editedItem.projectIncharge,
+            documentationLink: this.editedItem.documentationLink,
+            cost: this.editedItem.cost,
+            description: this.editedItem.description,
+            features: this.editedItem.features,
+            notes: this.editedItem.notes,
+            remark: this.editedItem.remark,
+            logo: this.editedItem.logo,
           };
           let url = "url_projects/" + this.editedItem.id;
           this.$http
@@ -750,12 +901,27 @@ export default {
           this.projects.push(this.editedItem);
 
           const save = {
+            // title: this.editedItem.title,
+            // duration: this.editedItem.duration,
+            // startingdate: this.editedItem.startingdate,
+            // deadline: this.editedItem.deadline,
+            // status: this.editedItem.status,
+            // collaborators: this.editedItem.collaborators,
             title: this.editedItem.title,
-            duration: this.editedItem.duration,
-            startingdate: this.editedItem.startingdate,
-            deadline: this.editedItem.deadline,
             status: this.editedItem.status,
-            collaborators: this.editedItem.collaborators,
+            deadline: this.editedItem.deadline,
+            startingdate: this.editedItem.startingdate,
+            projectVersion: this.editedItem.projectVersion,
+            teamMembers_id: this.editedItem.teamMembers_id,
+            projectIncharge: this.editedItem.projectIncharge,
+            documentationLink: this.editedItem.documentationLink,
+            cost: this.editedItem.cost,
+            description: this.editedItem.description,
+            features: this.editedItem.features,
+            notes: this.editedItem.notes,
+            remark: this.editedItem.remark,
+            logo: this.profileLogo[0],
+            specialNote: this.editedItem.specialNote,
           };
 
           let url = "url_projects";
@@ -777,6 +943,18 @@ export default {
           });
         });
       }
+    },
+    FileUpload(e) {
+      console.log("triggered");
+      console.log(e);
+      let reader = new FileReader();
+      reader.onload = (fileArray) => {
+        // console.log(reader.result);
+        this.profileLogo.push(reader.result);
+      };
+      reader.readAsDataURL(e);
+
+      console.log(this.profileLogo);
     },
   },
 };
