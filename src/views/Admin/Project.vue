@@ -751,7 +751,9 @@ export default {
               description: element.description,
               features: element.features,
               notes: element.notes,
+              specialNote: element.specialNote,
               remark: element.remark,
+              notes: element.notes,
               logo: element.logo,
               duration: this.dateDiffInDays(
                 new Date(Date()),
