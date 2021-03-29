@@ -1,6 +1,6 @@
 <template>
   <div id="DashboardLayout">
-    <v-app-bar color="indigo lighten-4" app height="37" dense flat>
+    <v-app-bar :color="headerColor" dark app height="37" dense flat>
       <!-- <v-btn small icon>
         <v-icon small>mdi-menu</v-icon>
       </v-btn> -->
@@ -17,7 +17,7 @@
     <v-navigation-drawer
     elevation
       app
-      color="indigo lighten-4"
+      :color="sideBar"
       :expand-on-hover="true"
       permanent
       mini-variant-width="40"
@@ -50,11 +50,13 @@ export default {
   name: "DashboardLayout",
   data() {
     return {
+      headerColor:'primary',
+      sideBar:'indigo lighten-4',
       items: [
         {
           title: "DASHBOARD",
           icon: "mdi-home",
-          to: "",
+          to: "/usr_dashboard",
         },
         {
           title: "PROJECTS",
@@ -64,7 +66,7 @@ export default {
         {
           title: "SYSTEMS",
           icon: "mdi-server",
-          to: "",
+          to: "usr_systems",
         },
         {
           title: "TASKS",

@@ -34,7 +34,7 @@
           >
           </v-text-field>
 
-          <!-- ADD BUTTONS -->
+          <!-- REFRESH BUTTONS -->
           <v-btn
             color="white"
             class="indigo lighten-1 ma-1"
@@ -118,6 +118,7 @@
                 <v-container>
                   <ValidationObserver ref="form">
                     <v-row>
+                      <!-- title -->
                       <v-col cols="12" sm="6" md="4">
                         <ValidationProvider
                           rules="required|min:5"
@@ -134,58 +135,8 @@
                           ></v-text-field>
                         </ValidationProvider>
                       </v-col>
-                      <v-col cols="12" sm="6" md="4">
-                        <ValidationProvider
-                          rules="required"
-                          name="Project Duration"
-                          v-slot="{ errors }"
-                        >
-                          <v-text-field
-                            v-model="editedItem.duration"
-                            :label="errors[0] ? errors[0] : 'Duration'"
-                            :error-messages="errors"
-                            hide-details=""
-                            clearable
-                            dense
-                          ></v-text-field>
-                        </ValidationProvider>
-                      </v-col>
-                      <v-col cols="12" sm="6" md="4">
-                        <ValidationProvider
-                          rules="required"
-                          name="Collaborators Count"
-                          v-slot="{ errors }"
-                        >
-                          <v-text-field
-                            v-model="editedItem.collaborators"
-                            :label="
-                              errors[0] ? errors[0] : 'Collaborators Count'
-                            "
-                            :error-messages="errors"
-                            hide-details=""
-                            clearable
-                            dense
-                          ></v-text-field>
-                        </ValidationProvider>
-                      </v-col>
-                      <v-col cols="12" sm="6" md="4">
-                        <ValidationProvider
-                          rules="required"
-                          name="Collaborators Count"
-                          v-slot="{ errors }"
-                        >
-                          <v-select
-                            :items="statusItems"
-                            v-model="editedItem.status"
-                            :label="errors[0] ? errors[0] : 'Project Status'"
-                            :error-messages="errors"
-                            hide-details=""
-                            clearable
-                            dense
-                          ></v-select>
-                        </ValidationProvider>
-                      </v-col>
 
+                      <!-- started picker 1 -->
                       <v-col cols="12" sm="6" md="4">
                         <v-menu
                           v-model="picker2"
@@ -230,6 +181,7 @@
                         <!-- ------------------------ -->
                       </v-col>
 
+                      <!-- dead line picker 1 -->
                       <v-col cols="12" sm="6" md="4">
                         <v-menu
                           v-model="picker1"
@@ -273,6 +225,158 @@
                         ></v-text-field> -->
                         <!-- ----------------------------------- -->
                       </v-col>
+
+                      <!-- status -->
+                      <v-col cols="12" sm="6" md="4">
+                        <ValidationProvider
+                          rules="required"
+                          name="Collaborators Count"
+                          v-slot="{ errors }"
+                        >
+                          <v-select
+                            :items="statusItems"
+                            v-model="editedItem.status"
+                            :label="errors[0] ? errors[0] : 'Project Status'"
+                            :error-messages="errors"
+                            hide-details=""
+                            clearable
+                            dense
+                          ></v-select>
+                        </ValidationProvider>
+                      </v-col>
+
+                      <!-- title -->
+                      <v-col cols="12" sm="6" md="4">
+                        <ValidationProvider
+                          rules="required|min:5"
+                          name="Project Version"
+                          v-slot="{ errors }"
+                        >
+                          <v-text-field
+                            v-model="editedItem.projectVersion"
+                            :label="errors[0] ? errors[0] : 'Project Version'"
+                            :error-messages="errors"
+                            hide-details=""
+                            clearable
+                            dense
+                          ></v-text-field>
+                        </ValidationProvider>
+                      </v-col>
+
+                      <!-- team member ids -->
+                      <v-col cols="12" sm="6" md="4">
+                        <ValidationProvider
+                          rules="required"
+                          name="Team Members"
+                          v-slot="{ errors }"
+                        >
+                          <v-text-field
+                            v-model="editedItem.teamMembers_id"
+                            :label="errors[0] ? errors[0] : 'Team Members'"
+                            :error-messages="errors"
+                            hide-details=""
+                            clearable
+                            dense
+                          ></v-text-field>
+                        </ValidationProvider>
+                      </v-col>
+
+                      <!-- project incharage -->
+                      <v-col cols="12" sm="6" md="4">
+                        <ValidationProvider
+                          rules="required"
+                          name="Project Incharge"
+                          v-slot="{ errors }"
+                        >
+                          <v-text-field
+                            v-model="editedItem.projectIncharge"
+                            :label="errors[0] ? errors[0] : 'Project Incharge'"
+                            :error-messages="errors"
+                            hide-details=""
+                            clearable
+                            dense
+                          ></v-text-field>
+                        </ValidationProvider>
+                      </v-col>
+
+                      <!-- documentation link -->
+                      <v-col cols="12" sm="6" md="4">
+                        <ValidationProvider
+                          rules="required"
+                          name="documentation link"
+                          v-slot="{ errors }"
+                        >
+                          <v-text-field
+                            v-model="editedItem.documentationLink"
+                            :label="
+                              errors[0] ? errors[0] : 'documentation link'
+                            "
+                            :error-messages="errors"
+                            hide-details=""
+                            clearable
+                            dense
+                          ></v-text-field>
+                        </ValidationProvider>
+                      </v-col>
+
+                      <!-- cost -->
+
+                      <v-col cols="12" sm="6" md="4">
+                        <ValidationProvider
+                          rules="required|numeric"
+                          name="Cost"
+                          v-slot="{ errors }"
+                        >
+                          <v-text-field
+                            v-model="editedItem.cost"
+                            :label="errors[0] ? errors[0] : 'Cost'"
+                            :error-messages="errors"
+                            hide-details=""
+                            clearable
+                            dense
+                          ></v-text-field>
+                        </ValidationProvider>
+                      </v-col>
+
+                      <!-- ---------------------------------------------------- -->
+
+                      <!-- duration -->
+                      <!-- <v-col cols="12" sm="6" md="4">
+                        <ValidationProvider
+                          rules="required"
+                          name="Project Duration"
+                          v-slot="{ errors }"
+                        >
+                          <v-text-field
+                            v-model="editedItem.duration"
+                            :label="errors[0] ? errors[0] : 'Duration'"
+                            :error-messages="errors"
+                            hide-details=""
+                            clearable
+                            dense
+                          ></v-text-field>
+                        </ValidationProvider>
+                      </v-col> -->
+
+                      <!-- collanorators count -->
+                      <!-- <v-col cols="12" sm="6" md="4">
+                        <ValidationProvider
+                          rules="required"
+                          name="Collaborators Count"
+                          v-slot="{ errors }"
+                        >
+                          <v-text-field
+                            v-model="editedItem.collaborators"
+                            :label="
+                              errors[0] ? errors[0] : 'Collaborators Count'
+                            "
+                            :error-messages="errors"
+                            hide-details=""
+                            clearable
+                            dense
+                          ></v-text-field>
+                        </ValidationProvider>
+                      </v-col> -->
                     </v-row>
                   </ValidationObserver>
                 </v-container>
@@ -346,9 +450,8 @@
           active
           indeterminate
           absolute
+          height="4"
           top
-          height="5px"
-          class="p-1"
           color="blue darken-4"
         ></v-progress-linear>
 
@@ -372,7 +475,7 @@ export default {
     ValidationProvider,
   },
   data: () => ({
-    dialog: false,
+    dialog: true,
     dialogDelete: false,
     headers: [],
     headersMap: [
@@ -381,7 +484,7 @@ export default {
         align: "start",
         sortable: true,
         value: "id",
-        width: "1%",
+        width: "4%",
       },
       {
         text: "project",
@@ -418,20 +521,32 @@ export default {
     editedItem: {
       id: "",
       title: "",
-      duration: "",
-      collaborators: "",
+      // duration: "",
+      // collaborators: "",
       status: "",
       deadline: "",
       startingdate: "",
+      // --------------------------
+      projectVersion: "",
+      teamMembers_id: [],
+      projectIncharge: "",
+      documentationLink: "",
+      cost: "",
     },
     defaultItem: {
       id: "",
       title: "",
-      duration: "",
-      collaborators: "",
+      // duration: "",
+      // collaborators: "",
       status: "",
       deadline: "",
       startingdate: "",
+      // --------------------------
+      projectVersion: "",
+      teamMembers_id: [],
+      projectIncharge: "",
+      documentationLink: "",
+      cost: "",
     },
     selectedHeaders: [],
     search: "",
