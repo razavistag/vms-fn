@@ -112,7 +112,7 @@
             </v-card-text>
           </v-card>
 
-          <v-card width="400" height="500" v-else>
+          <v-card width="400" height="650" v-else>
             <v-card-title>
               <v-tabs>
                 <v-tab @click="ActivateSingIn">Sign In</v-tab>
@@ -125,6 +125,7 @@
             <v-card-text>
               <ValidationObserver ref="Registerform">
                 <v-row>
+                  <!-- name -->
                   <v-col md="12" cols="12" class="  pa-0 mt-4 pl-4 pr-8">
                     <ValidationProvider
                       rules="required|min:4"
@@ -146,6 +147,7 @@
                     </ValidationProvider>
                   </v-col>
 
+                  <!-- company -->
                   <v-col md="12" cols="12" class="  pa-0 mt-4 pl-4 pr-8">
                     <ValidationProvider
                       rules="required|min:5"
@@ -167,6 +169,7 @@
                     </ValidationProvider>
                   </v-col>
 
+                  <!-- Email -->
                   <v-col md="12" cols="12" class="  pa-0 mt-4 pl-4 pr-8">
                     <ValidationProvider
                       rules="required|email"
@@ -188,6 +191,7 @@
                     </ValidationProvider>
                   </v-col>
 
+                  <!-- phone -->
                   <v-col md="12" cols="12" class="  pa-0 mt-4 pl-4 pr-8">
                     <ValidationProvider
                       rules="required|numeric|min:9|max:9"
@@ -204,12 +208,59 @@
                         :error-messages="errors"
                       >
                         <template v-slot:prepend>
-                          <v-icon>mdi-email</v-icon>
+                          <v-icon>mdi-phone</v-icon>
                         </template>
                       </v-text-field>
                     </ValidationProvider>
                   </v-col>
 
+                  <!-- nic -->
+                  <v-col md="12" cols="12" class="  pa-0 mt-4 pl-4 pr-8">
+                    <ValidationProvider
+                      rules="required|numeric"
+                      name="NIC"
+                      v-slot="{ errors }"
+                    >
+                      <v-text-field
+                        outlined
+                        dense
+                        suffix="V"
+                        v-model="RegisterForm.nic"
+                        hide-details=""
+                        :label="errors[0] ? errors[0] : 'NIC Number'"
+                        :error-messages="errors"
+                      >
+                        <template v-slot:prepend>
+                          <v-icon>mdi-card-account-details</v-icon>
+                        </template>
+                      </v-text-field>
+                    </ValidationProvider>
+                  </v-col>
+
+                  <!-- gender -->
+                  <v-col md="12" cols="12" class="  pa-0 mt-4 pl-4 pr-8">
+                    <ValidationProvider
+                      rules="required"
+                      name="Gender"
+                      v-slot="{ errors }"
+                    >
+                      <v-select
+                        :items="genderItems"
+                        v-model="RegisterForm.gender"
+                        outlined
+                        dense
+                        hide-details=""
+                        :label="errors[0] ? errors[0] : 'Gender'"
+                        :error-messages="errors"
+                      >
+                        <template v-slot:prepend>
+                          <v-icon>mdi-gender-female</v-icon>
+                        </template>
+                      </v-select>
+                    </ValidationProvider>
+                  </v-col>
+
+                  <!-- address -->
                   <v-col md="12" cols="12" class="  pa-0 mt-4 pl-4 pr-8">
                     <ValidationProvider
                       rules="required|min:5"
@@ -242,7 +293,7 @@
                         outlined
                         type="password"
                         dense
-                        v-model="RegisterForm.Password"
+                        v-model="RegisterForm.password"
                         hide-details=""
                         :label="errors[0] ? errors[0] : 'Password'"
                         :error-messages="errors"
@@ -254,27 +305,28 @@
                     </ValidationProvider>
                   </v-col>
 
-                  <!-- <v-col md="12" cols="12" class="  pa-0 mt-4 pl-4 pr-8">
+                  <!-- Password Confirm-->
+                  <v-col md="12" cols="12" class="  pa-0 mt-4 pl-4 pr-8">
                     <ValidationProvider
-                      rules="required"
-                      name="Employee Position"
+                      rules="required|min:5"
+                      name="confirm"
                       v-slot="{ errors }"
                     >
-                      <v-select
-                        :items="RoleAccess"
-                        v-model="RegisterForm.role"
-                        dense
+                      <v-text-field
                         outlined
+                        type="password"
+                        dense
+                        v-model="RegisterForm.passwordConfirm"
                         hide-details=""
-                        :label="errors[0] ? errors[0] : 'Employee Position'"
+                        :label="errors[0] ? errors[0] : 'Confirm Password'"
                         :error-messages="errors"
                       >
                         <template v-slot:prepend>
-                          <v-icon>mdi-access-point-check</v-icon>
-                        </template></v-select
-                      >
+                          <v-icon>mdi-form-textbox-password</v-icon>
+                        </template>
+                      </v-text-field>
                     </ValidationProvider>
-                  </v-col> -->
+                  </v-col>
 
                   <v-col
                     md="12"
@@ -324,10 +376,13 @@ export default {
         companyName: "",
         email: "",
         phone: "",
+        nic: "",
+        gender: "",
         address: "",
         password: "",
+        passwordConfirm: "",
       },
-      RoleAccess: ["Manager", "Supervisor", "Employee"],
+      genderItems: ["Male", "Female"],
     };
   },
   methods: {
@@ -394,27 +449,42 @@ export default {
           return;
         }
 
-        console.log("register");
+        const register = {
+          name: this.RegisterForm.name,
+          company: this.RegisterForm.companyName,
+          email: this.RegisterForm.email,
+          phone: this.RegisterForm.phone,
+          nic: this.RegisterForm.nic,
+          gender: this.RegisterForm.gender,
+          address: this.RegisterForm.address,
+          password: this.RegisterForm.password,
+          passwordConfirm: this.RegisterForm.passwordConfirm,
+        };
+        let url = "/usr_register";
 
-        localStorage.setItem("Key", "access_token");
-
-        let store = this.RegisterForm;
-        console.log(store);
+        this.$http
+          .post(url, register)
+          .then((response) => {
+            console.log(response);
+            this.ActivateSingIn();
+          })
+          .catch((response) => {
+            console.log(response);
+          });
 
         this.$nextTick(() => {
           this.$refs.Registerform.reset();
           console.log("cleared");
         });
 
-        this.$router.push({ path: "dashboard" });
+        // this.$router.push({ path: "system_login" });
       });
     },
 
     FacbookApi() {
-      
       let url = "auth/facebook";
       this.$http
-        .get(url )
+        .get(url)
         .then((response) => {
           console.log(response);
         })
@@ -431,10 +501,10 @@ export default {
 #wrapLogin {
   background-size: cover;
   background-repeat: no-repeat;
-  height: 720px;
+  height: 760px;
   width: 100%;
   font-family: "Numans", sans-serif;
-  padding-top: 100px;
+  padding-top: 80px;
   background-image: url("../assets/login_bg.jpg");
 }
 </style>

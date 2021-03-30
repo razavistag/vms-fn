@@ -106,6 +106,7 @@
             max-width="1200px"
             persistent
             content-class="form-dialog"
+            scrollable
           >
             <v-card>
               <v-card-title class="indigo lighten-4">
@@ -114,7 +115,7 @@
                 <v-icon @click="dialog = false">mdi-close</v-icon>
               </v-card-title>
 
-              <v-card-text>
+              <v-card-text style="height: 800px;">
                 <v-container>
                   <ValidationObserver ref="form">
                     <v-row>
@@ -263,9 +264,45 @@
                         </ValidationProvider>
                       </v-col>
 
+                      <!-- {{editedItem.teamMembers_id}} -->
                       <!-- team member ids -->
                       <v-col cols="12" sm="6" md="4">
                         <ValidationProvider
+                          rules="required"
+                          name="Team Members"
+                          v-slot="{ errors }"
+                        >
+                          <v-combobox
+                            v-model="editedItem.teamMembers_id"
+                            :items="teamMembers"
+                            item-text="name"
+                            hide-selected
+                            :label="errors[0] ? errors[0] : 'Team Members'"
+                            :error-messages="errors"
+                            multiple
+                            dense
+                            persistent-hint
+                            hide-details=""
+                            small-chips
+                            clearable
+                          >
+                            <template v-slot:no-data>
+                              <v-list-item>
+                                <v-list-item-content>
+                                  <!-- <v-list-item-title>
+                                    No results matching "<strong>{{
+                                      search
+                                    }}</strong
+                                    >". Press <kbd>enter</kbd> to create a new
+                                    one
+                                  </v-list-item-title> -->
+                                  <!-- <v-list-item>No Recodes Found</v-list-item> -->
+                                </v-list-item-content>
+                              </v-list-item>
+                            </template>
+                          </v-combobox>
+                        </ValidationProvider>
+                        <!-- <ValidationProvider
                           rules="required"
                           name="Team Members"
                           v-slot="{ errors }"
@@ -278,7 +315,7 @@
                             clearable
                             dense
                           ></v-text-field>
-                        </ValidationProvider>
+                        </ValidationProvider> -->
                       </v-col>
 
                       <!-- project incharage -->
@@ -288,14 +325,43 @@
                           name="Project Incharge"
                           v-slot="{ errors }"
                         >
-                          <v-text-field
+                          <v-combobox
+                            v-model="editedItem.projectIncharge"
+                            :items="teamMembers"
+                            item-text="name"
+                            hide-selected
+                            :label="errors[0] ? errors[0] : 'Project Incharge'"
+                            :error-messages="errors"
+                            multiple
+                            persistent-hint
+                            hide-details=""
+                            small-chips
+                            clearable
+                            dense
+                          >
+                            <template v-slot:no-data>
+                              <v-list-item>
+                                <v-list-item-content>
+                                  <!-- <v-list-item-title>
+                                    No results matching "<strong>{{
+                                      search
+                                    }}</strong
+                                    >". Press <kbd>enter</kbd> to create a new
+                                    one
+                                  </v-list-item-title> -->
+                                  <!-- <v-list-item>No Recodes Found</v-list-item> -->
+                                </v-list-item-content>
+                              </v-list-item>
+                            </template>
+                          </v-combobox>
+                          <!-- <v-text-field
                             v-model="editedItem.projectIncharge"
                             :label="errors[0] ? errors[0] : 'Project Incharge'"
                             :error-messages="errors"
                             hide-details=""
                             clearable
                             dense
-                          ></v-text-field>
+                          ></v-text-field> -->
                         </ValidationProvider>
                       </v-col>
 
@@ -337,15 +403,33 @@
                         </ValidationProvider>
                       </v-col>
 
+                      <!-- image -->
                       <v-col
                         cols="12"
                         sm="3"
                         md="4"
                         class="pa-0 pl-5 pt-4 text-center"
                       >
+                        <!-- {{editedItem.logo}} -->
+                        <v-icon
+                          v-if="editedItem.logo"
+                          class="upload_on_edit"
+                          @click="editedItem.logo = !editedItem.logo"
+                          >mdi-pencil</v-icon
+                        >
+                        <v-img
+                          v-if="editedItem.logo"
+                          :src="
+                            'http://localhost:8000/storage/' + editedItem.logo
+                          "
+                          width="285"
+                          height="250"
+                          class="editImage"
+                        />
                         <!-- upload image -->
 
                         <image-cropper
+                          v-if="!editedItem.logo"
                           v-model="avatar"
                           :width="285"
                           :height="250"
@@ -357,19 +441,30 @@
                         />
                       </v-col>
 
-                      <v-col cols="12" sm="6" md="4" class="">
+                      <!-- description -->
+                      <v-col cols="12" sm="6" md="8" class="">
                         <v-tooltip top>
                           <template v-slot:activator="{ on, attrs }">
                             <div v-bind="attrs" v-on="on">
-                              <vue-editor
-                                v-model="editedItem.description"
-                                :editorToolbar="editorToolBar"
-                              ></vue-editor>
+                              <ValidationProvider
+                                rules="required"
+                                name="description"
+                                v-slot="{ errors }"
+                              >
+                                <p class="errorDes" v-if="errors[0]">
+                                  {{ errors[0] }}
+                                </p>
+                                <vue-editor
+                                  v-model="editedItem.description"
+                                  :editorToolbar="editorToolBar"
+                                ></vue-editor>
+                              </ValidationProvider>
                             </div>
                           </template>
                           <span>Project Description</span>
                         </v-tooltip>
                       </v-col>
+                      <!-- features -->
                       <v-col cols="12" sm="6" md="4">
                         <v-tooltip top>
                           <template v-slot:activator="{ on, attrs }">
@@ -384,7 +479,7 @@
                         </v-tooltip>
                       </v-col>
 
-                      <v-col cols="12" sm="6" md="4">
+                      <!-- <v-col cols="12" sm="6" md="4">
                         <v-tooltip top>
                           <template v-slot:activator="{ on, attrs }">
                             <div v-bind="attrs" v-on="on">
@@ -396,7 +491,7 @@
                           </template>
                           <span>Project Notes</span>
                         </v-tooltip>
-                      </v-col>
+                      </v-col> -->
 
                       <v-col cols="12" sm="6" md="4">
                         <v-tooltip top>
@@ -615,26 +710,30 @@ export default {
         width: "10%",
         align: "center",
       },
+
       {
         text: "duration",
         value: "duration",
         width: "6%",
         align: "center",
       },
+
+      {
+        text: "Incharge",
+        value: "projectIncharge[0 ].name",
+        width: "10%",
+        align: "center",
+      },
+
       { text: "status", value: "status", width: "10%", align: "center" },
       {
         text: "version",
         value: "projectVersion",
         width: "6%",
-        align: "center",
+        align: "end",
       },
-      {
-        text: "incharge",
-        value: "projectIncharge",
-        width: "10%",
-        align: "center",
-      },
-      { text: "cost", value: "cost", width: "10%", align: "center" },
+
+      { text: "cost", value: "cost", width: "10%", align: "end" },
 
       {
         text: "Actions",
@@ -657,7 +756,7 @@ export default {
       // --------------------------
       projectVersion: "",
       teamMembers_id: [],
-      projectIncharge: "",
+      projectIncharge: [],
       documentationLink: "",
       cost: "",
       description: "",
@@ -679,7 +778,7 @@ export default {
       // --------------------------
       projectVersion: "",
       teamMembers_id: [],
-      projectIncharge: "",
+      projectIncharge: [],
       documentationLink: "",
       cost: "",
       description: "",
@@ -696,6 +795,7 @@ export default {
     picker1: false,
     picker2: false,
     profileLogo: [],
+    teamMembers: [],
   }),
 
   computed: {
@@ -734,6 +834,10 @@ export default {
         .get(url)
         .then((response) => {
           // console.log(response);
+          response.data.members.forEach((element) => {
+            // console.log(element);
+            this.teamMembers.push(element);
+          });
           response.data.projects.forEach((element) => {
             // console.log(element);
             // this.projects.push(element);
@@ -760,32 +864,15 @@ export default {
                 new Date(element.deadline)
               ),
             });
-
-            // : "",
-            // : [],
-            // : "",
-            // : "",
-            // : "",
-            // : "",
-            // : "",
-            // : "",
-            // : "",
-
-            var daysDuration = this.dateDiffInDays(
-              new Date(Date()),
-              new Date(element.deadline)
-            );
-            console.log("days", daysDuration);
           });
+
           console.log("data count", this.projects.length);
           if (this.projects.length <= 0) {
-            // console.log(0);
             // console.log("no data");
             this.existData = 1;
           } else {
             // console.log("have data");
             this.existData = -1;
-            // console.log(1);
           }
         })
         .catch((response) => {
@@ -797,11 +884,45 @@ export default {
       this.dialog = true;
       this.profileLogo.splice(0);
       this.avatar = {};
+      this.$nextTick(() => {
+        this.$refs.form.reset();
+        console.log("cleared");
+      });
     },
 
     editItem(item) {
+      console.log(item.id);
       this.editedIndex = this.projects.indexOf(item);
-      this.editedItem = Object.assign({}, item);
+
+      let url = "url_projects/" + item.id;
+      this.$http
+        .get(url)
+        .then((response) => {
+          console.log(response.data);
+          response.data.data.forEach((element) => {
+            console.log(element.name);
+
+            let obj = [];
+            obj.push(element.name);
+
+            this.editedItem = {
+              title: element.title,
+              deadline: element.deadline,
+              startingdate: element.startingdate,
+              status: element.status,
+              projectVersion: element.projectVersion,
+              teamMembers_id: [element.name],
+              // teamMembers_id:[ element.name],
+              // projectIncharge:element.name
+            };
+          });
+        })
+        .catch((response) => {
+          console.log("Error Fround. data cant get");
+        });
+
+      // this.editedIndex = this.projects.indexOf(item);
+      // this.editedItem = Object.assign({}, item);
       this.dialog = true;
     },
 
@@ -915,6 +1036,7 @@ export default {
             startingdate: this.editedItem.startingdate,
             projectVersion: this.editedItem.projectVersion,
             teamMembers_id: this.editedItem.teamMembers_id,
+            member_count: this.editedItem.teamMembers_id.length,
             projectIncharge: this.editedItem.projectIncharge,
             documentationLink: this.editedItem.documentationLink,
             cost: this.editedItem.cost,
@@ -925,6 +1047,8 @@ export default {
             logo: this.profileLogo[0],
             specialNote: this.editedItem.specialNote,
           };
+
+          console.log(this.editedItem.teamMembers_id.length);
 
           let url = "url_projects";
           this.$http

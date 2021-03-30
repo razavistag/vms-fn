@@ -24,6 +24,27 @@
   position: relative;
   top: 20px;
 }
+.errorDes {
+  color: rgb(235, 60, 60);
+  font-size: 15px;
+  position: absolute;
+  top: 72px;
+  left: 30px;
+}
+.editImage {
+  position: absolute;
+  top: 10px;
+  left: 60px;
+}
+.upload_on_edit {
+  color: red;
+  position: absolute;
+  left: 118px;
+  background-color: rgb(240, 233, 233);
+  padding: 10px;
+  top: 0px;
+  z-index: 1;
+}
 
 /* Home */
 .service_title {
