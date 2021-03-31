@@ -264,7 +264,6 @@
                         </ValidationProvider>
                       </v-col>
 
-                      <!-- {{editedItem.teamMembers_id}} -->
                       <!-- team member ids -->
                       <v-col cols="12" sm="6" md="4">
                         <ValidationProvider
@@ -272,8 +271,16 @@
                           name="Team Members"
                           v-slot="{ errors }"
                         >
+                          <!-- <div
+                            v-for="i in selectedTeam"
+                            :key="i.member_id"
+                            class="d-flex flex flex-row"
+                          >
+                            <v-chip x-small>{{ i }}</v-chip>
+                          </div> -->
+ 
                           <v-combobox
-                            v-model="editedItem.teamMembers_id"
+                            v-model="selectedTeam"
                             :items="teamMembers"
                             item-text="name"
                             hide-selected
@@ -796,6 +803,7 @@ export default {
     picker2: false,
     profileLogo: [],
     teamMembers: [],
+    selectedTeam: [],
   }),
 
   computed: {
@@ -899,19 +907,17 @@ export default {
         .get(url)
         .then((response) => {
           console.log(response.data);
+          this.selectedTeam.splice(0);
           response.data.data.forEach((element) => {
             console.log(element.name);
-
-            let obj = [];
-            obj.push(element.name);
-
+            this.selectedTeam.push(element);
             this.editedItem = {
               title: element.title,
               deadline: element.deadline,
               startingdate: element.startingdate,
               status: element.status,
               projectVersion: element.projectVersion,
-              teamMembers_id: [element.name],
+              // teamMembers_id: [element.name],
               // teamMembers_id:[ element.name],
               // projectIncharge:element.name
             };
@@ -1035,7 +1041,7 @@ export default {
             deadline: this.editedItem.deadline,
             startingdate: this.editedItem.startingdate,
             projectVersion: this.editedItem.projectVersion,
-            teamMembers_id: this.editedItem.teamMembers_id,
+            teamMembers_id: this.selectedTeam,
             member_count: this.editedItem.teamMembers_id.length,
             projectIncharge: this.editedItem.projectIncharge,
             documentationLink: this.editedItem.documentationLink,
