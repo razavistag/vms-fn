@@ -119,6 +119,7 @@
                 <v-container>
                   <ValidationObserver ref="form">
                     <v-row>
+                      <!-- {{editedItem.id}} -->
                       <!-- title -->
                       <v-col cols="12" sm="6" md="4">
                         <ValidationProvider
@@ -278,11 +279,11 @@
                           >
                             <v-chip x-small>{{ i }}</v-chip>
                           </div> -->
- 
+
                           <v-combobox
                             v-model="selectedTeam"
                             :items="teamMembers"
-                            item-text="name"
+                            item-text="members_name"
                             hide-selected
                             :label="errors[0] ? errors[0] : 'Team Members'"
                             :error-messages="errors"
@@ -333,9 +334,9 @@
                           v-slot="{ errors }"
                         >
                           <v-combobox
-                            v-model="editedItem.projectIncharge"
+                            v-model="selectedIncharge"
                             :items="teamMembers"
-                            item-text="name"
+                            item-text="members_name"
                             hide-selected
                             :label="errors[0] ? errors[0] : 'Project Incharge'"
                             :error-messages="errors"
@@ -804,6 +805,7 @@ export default {
     profileLogo: [],
     teamMembers: [],
     selectedTeam: [],
+    selectedIncharge: [],
   }),
 
   computed: {
@@ -901,26 +903,40 @@ export default {
     editItem(item) {
       console.log(item.id);
       this.editedIndex = this.projects.indexOf(item);
+      this.selectedTeam.splice(0);
+      this.selectedIncharge.splice(0);
 
       let url = "url_projects/" + item.id;
       this.$http
         .get(url)
         .then((response) => {
           console.log(response.data);
-          this.selectedTeam.splice(0);
+
+          this.selectedIncharge.push({
+              members_id:response.data.data[0].incharge_id,
+              members_name:response.data.data[0].incharge_name
+          });
           response.data.data.forEach((element) => {
-            console.log(element.name);
+            console.log(element);
             this.selectedTeam.push(element);
+            // this.selectedIncharge.push(element.incharge_name);
             this.editedItem = {
+              id: element.project_id,
               title: element.title,
               deadline: element.deadline,
               startingdate: element.startingdate,
               status: element.status,
               projectVersion: element.projectVersion,
-              // teamMembers_id: [element.name],
-              // teamMembers_id:[ element.name],
-              // projectIncharge:element.name
+              documentationLink: element.documentationLink,
+              cost: element.cost,
+              description: element.description,
+              features: element.features,
+              specialNote: element.specialNote,
+              remark: element.remark,
+              logo: element.logo,
             };
+
+            this.dialog = true;
           });
         })
         .catch((response) => {
@@ -929,7 +945,6 @@ export default {
 
       // this.editedIndex = this.projects.indexOf(item);
       // this.editedItem = Object.assign({}, item);
-      this.dialog = true;
     },
 
     deleteItem(item) {
@@ -989,22 +1004,42 @@ export default {
             // status: this.editedItem.status,
             // collaborators: this.editedItem.collaborators,
 
+            // title: this.editedItem.title,
+            // status: this.editedItem.status,
+            // deadline: this.editedItem.deadline,
+            // startingdate: this.editedItem.startingdate,
+            // projectVersion: this.editedItem.projectVersion,
+            // teamMembers_id: this.editedItem.teamMembers_id,
+            // projectIncharge: this.editedItem.projectIncharge,
+            // documentationLink: this.editedItem.documentationLink,
+            // cost: this.editedItem.cost,
+            // description: this.editedItem.description,
+            // features: this.editedItem.features,
+            // notes: this.editedItem.notes,
+            // remark: this.editedItem.remark,
+            // logo: this.editedItem.logo,
+
             title: this.editedItem.title,
             status: this.editedItem.status,
             deadline: this.editedItem.deadline,
             startingdate: this.editedItem.startingdate,
             projectVersion: this.editedItem.projectVersion,
-            teamMembers_id: this.editedItem.teamMembers_id,
-            projectIncharge: this.editedItem.projectIncharge,
+            teamMembers_id: this.selectedTeam,
+            member_count: this.selectedTeam.length,
+            projectIncharge: this.selectedIncharge,
             documentationLink: this.editedItem.documentationLink,
             cost: this.editedItem.cost,
             description: this.editedItem.description,
             features: this.editedItem.features,
             notes: this.editedItem.notes,
             remark: this.editedItem.remark,
-            logo: this.editedItem.logo,
+            logo: this.profileLogo[0],
+            specialNote: this.editedItem.specialNote,
           };
+
+          console.log(update);
           let url = "url_projects/" + this.editedItem.id;
+          console.log(url);
           this.$http
             .put(url, update)
             .then((response) => {
@@ -1043,7 +1078,7 @@ export default {
             projectVersion: this.editedItem.projectVersion,
             teamMembers_id: this.selectedTeam,
             member_count: this.editedItem.teamMembers_id.length,
-            projectIncharge: this.editedItem.projectIncharge,
+            projectIncharge: this.selectedIncharge,
             documentationLink: this.editedItem.documentationLink,
             cost: this.editedItem.cost,
             description: this.editedItem.description,
@@ -1054,7 +1089,7 @@ export default {
             specialNote: this.editedItem.specialNote,
           };
 
-          console.log(this.editedItem.teamMembers_id.length);
+          console.log(save);
 
           let url = "url_projects";
           this.$http
