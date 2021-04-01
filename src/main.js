@@ -8,6 +8,8 @@ import VueAgile from "vue-agile";
 import VeeValidate from "vee-validate";
 import axios from "axios";
 import Croppa from 'vue-croppa'
+import moment from 'moment'
+
 
 import { BootstrapVue, IconsPlugin } from "bootstrap-vue";
 // import { VueEditor } from "vue2-editor";
@@ -24,6 +26,7 @@ Vue.use(BootstrapVue);
 Vue.use(IconsPlugin);
 Vue.use(VueAgile);
 Vue.use(VeeValidate);
+Vue.use(moment);
 Vue.use(Croppa, { componentName: 'image-cropper' })       
 
 const base = axios.create({

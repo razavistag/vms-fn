@@ -121,7 +121,26 @@
                     <v-row>
                       <!-- {{editedItem.id}} -->
                       <!-- title -->
-                      <v-col cols="12" sm="6" md="4">
+
+                      <v-col cols="12" sm="6" md="4" v-if="editedIndex != -1">
+                        <ValidationProvider
+                          rules="required|min:5"
+                          name="Project Name"
+                          v-slot="{ errors }"
+                        >
+                          <v-text-field
+                            v-model="editedItem.title"
+                            disabled
+                            :label="errors[0] ? errors[0] : 'Project Name'"
+                            :error-messages="errors"
+                            hide-details=""
+                            clearable
+                            dense
+                          ></v-text-field>
+                        </ValidationProvider>
+                      </v-col>
+
+                      <v-col cols="12" sm="6" md="4" v-else>
                         <ValidationProvider
                           rules="required|min:5"
                           name="Project Name"
@@ -169,6 +188,7 @@
                           </template>
                           <v-date-picker
                             v-model="editedItem.startingdate"
+                            dateFormat="mm-YYYY"
                             @input="picker2 = false"
                           ></v-date-picker>
                         </v-menu>
@@ -182,7 +202,8 @@
                         ></v-text-field> -->
                         <!-- ------------------------ -->
                       </v-col>
-
+<!-- {{editedItem.deadline}} -->
+<!-- {{moment(editedItem.deadline).format("X")}} -->
                       <!-- dead line picker 1 -->
                       <v-col cols="12" sm="6" md="4">
                         <v-menu
@@ -607,9 +628,70 @@
         </v-toolbar>
       </template>
 
+      <!--Start Date -->
+      <template v-slot:item.startingdate="{ item }">
+        {{ item.startingdate.substring(0, 10) }}
+        <!-- {{new Date(item.startingdate * 1000)}} -->
+        <!-- {{
+          moment(item.startingdate * 1000).calendar(
+            "dddd, MMMM Do YYYY, h:mm:ss a"
+          )
+        }} -->
+
+        <!-- {{
+          moment(item.startingdate * 1000)
+            .format("DD/MM/YYYY")
+            .substring(0, 10)
+        }} -->
+      </template>
+      <!--end Date -->
+      <template v-slot:[`item.deadline`]="{ item }">
+        {{ item.deadline.substring(0, 10) }}
+        <!-- {{
+          moment(item.deadline * 1000).calendar("dddd, MMMM Do YYYY, h:mm:ss a")
+        }} -->
+
+        <!-- {{
+          moment(item.deadline * 1000)
+            .format("DD/MM/YYYY") 
+        }} -->
+      </template>
+
+      <!-- Avatar -->
+      <template v-slot:[`item.logo`]="{ item }">
+        <v-menu
+          bottom
+          min-width="150px"
+          rounded
+          offset-x
+          open-on-hover
+          transition="slide-x-transition"
+        >
+          <template v-slot:activator="{ on }">
+            <v-avatar size="25" v-on="on">
+              <img
+                :src="'http://localhost:8000/storage/' + item.logo"
+                alt="alt"
+                width="50"
+              />
+            </v-avatar>
+          </template>
+          <v-card class="">
+            <img
+              :src="'http://localhost:8000/storage/' + item.logo"
+              alt="alt"
+              width="150"
+              height="150"
+            />
+          </v-card>
+        </v-menu>
+      </template>
+
+      <!-- duration date -->
       <template v-slot:[`item.id`]="{ item, index }">
         <p class="m-1">{{ index + 1 }}</p>
       </template>
+
       <template v-slot:[`item.duration`]="{ item }">
         <p class="m-1">{{ item.duration + " Days" }}</p>
       </template>
@@ -663,6 +745,7 @@
 import DashboardLayout from "../../components/DashboardLayout";
 import { ValidationObserver, ValidationProvider } from "vee-validate";
 import { VueEditor } from "vue2-editor";
+import moment from "moment";
 // import Croppa from "vue-croppa";
 export default {
   name: "Projects",
@@ -701,6 +784,13 @@ export default {
         width: "4%",
       },
       {
+        text: "",
+        align: "start",
+        sortable: true,
+        value: "logo",
+        width: "1%",
+      },
+      {
         text: "project",
         align: "start",
         sortable: true,
@@ -709,13 +799,13 @@ export default {
       {
         text: "starting date",
         value: "startingdate",
-        width: "10%",
+        width: "7%",
         align: "center",
       },
       {
         text: "deadline",
         value: "deadline",
-        width: "10%",
+        width: "7%",
         align: "center",
       },
 
@@ -728,7 +818,7 @@ export default {
 
       {
         text: "Incharge",
-        value: "projectIncharge[0 ].name",
+        value: "incharge_name",
         width: "10%",
         align: "center",
       },
@@ -765,6 +855,7 @@ export default {
       projectVersion: "",
       teamMembers_id: [],
       projectIncharge: [],
+      incharge_name: "",
       documentationLink: "",
       cost: "",
       description: "",
@@ -806,11 +897,12 @@ export default {
     teamMembers: [],
     selectedTeam: [],
     selectedIncharge: [],
+    moment: moment,
   }),
 
   computed: {
     formTitle() {
-      return this.editedIndex === -1 ? "New Item" : "Edit Item";
+      return this.editedIndex === -1 ? "New Project" : "Edit Project";
     },
     showHeaders() {
       return this.headers.filter((s) => this.selectedHeaders.includes(s));
@@ -837,13 +929,20 @@ export default {
     dateDiffInDays(date1, date2) {
       return Math.round((date2 - date1) / (1000 * 60 * 60 * 24));
     },
+    momementDaateDiff(s_date, c_date, d_line) {
+      let startDate = moment(d_line, "DD/MM/YYYY");
+      let currenDate = moment(new Date()).format("DD/MM/YYYY");
+      let endDate = moment(currenDate, "DD/MM/YYYY");
+
+      return startDate.diff(endDate, "days");
+    },
     initialize() {
       this.projects.splice(0);
       let url = "url_projects";
       this.$http
         .get(url)
         .then((response) => {
-          // console.log(response);
+          console.log(response);
           response.data.members.forEach((element) => {
             // console.log(element);
             this.teamMembers.push(element);
@@ -852,14 +951,19 @@ export default {
             // console.log(element);
             // this.projects.push(element);
             this.projects.push({
-              id: element.id,
+              id: element.project_id,
               title: element.title,
               status: element.status,
-              deadline: element.deadline,
-              startingdate: element.startingdate,
+              // deadline: element.deadline,
+              // startingdate: element.startingdate,
+              startingdate: moment(element.startingdate * 1000).format(
+                "DD/MM/YYYY"
+              ),
+              deadline: moment(element.deadline * 1000).format("YYYY/MM/DD"),
               projectVersion: element.projectVersion,
               teamMembers_id: element.teamMembers_id,
               projectIncharge: element.projectIncharge,
+              incharge_name: element.incharge_name,
               documentationLink: element.documentationLink,
               cost: element.cost,
               description: element.description,
@@ -869,9 +973,14 @@ export default {
               remark: element.remark,
               notes: element.notes,
               logo: element.logo,
-              duration: this.dateDiffInDays(
-                new Date(Date()),
-                new Date(element.deadline)
+              // duration: this.dateDiffInDays(
+              //   new Date(Date()),
+              //   new Date(element.deadline)
+              // ),
+              duration: this.momementDaateDiff(
+                element.startingdate,
+                moment(new Date()).format("DD-MM-YYYY"),
+                moment(element.deadline * 1000).format("DD/MM/YYYY")
               ),
             });
           });
@@ -893,6 +1002,8 @@ export default {
     newDialog() {
       this.dialog = true;
       this.profileLogo.splice(0);
+      this.selectedIncharge.splice(0);
+      this.selectedTeam.splice(0);
       this.avatar = {};
       this.$nextTick(() => {
         this.$refs.form.reset();
@@ -901,7 +1012,7 @@ export default {
     },
 
     editItem(item) {
-      console.log(item.id);
+      console.log(item);
       this.editedIndex = this.projects.indexOf(item);
       this.selectedTeam.splice(0);
       this.selectedIncharge.splice(0);
@@ -913,8 +1024,8 @@ export default {
           console.log(response.data);
 
           this.selectedIncharge.push({
-              members_id:response.data.data[0].incharge_id,
-              members_name:response.data.data[0].incharge_name
+            member_id: response.data.data[0].incharge_id,
+            members_name: response.data.data[0].incharge_name,
           });
           response.data.data.forEach((element) => {
             console.log(element);
@@ -923,9 +1034,17 @@ export default {
             this.editedItem = {
               id: element.project_id,
               title: element.title,
-              deadline: element.deadline,
-              startingdate: element.startingdate,
+              // deadline: element.deadline,
+              // startingdate: element.startingdate,
+
+              startingdate: moment(element.startingdate * 1000)
+                .toISOString()
+                .substr(0, 10),
+              deadline: moment(element.deadline * 1000)
+                .toISOString()
+                .substr(0, 10),
               status: element.status,
+
               projectVersion: element.projectVersion,
               documentationLink: element.documentationLink,
               cost: element.cost,
@@ -1021,8 +1140,10 @@ export default {
 
             title: this.editedItem.title,
             status: this.editedItem.status,
-            deadline: this.editedItem.deadline,
-            startingdate: this.editedItem.startingdate,
+            // deadline: this.editedItem.deadline,
+            // startingdate: this.editedItem.startingdate,
+             startingdate: moment(this.editedItem.startingdate).format("X"),
+            deadline: moment(this.editedItem.deadline).format("X"),
             projectVersion: this.editedItem.projectVersion,
             teamMembers_id: this.selectedTeam,
             member_count: this.selectedTeam.length,
@@ -1073,8 +1194,11 @@ export default {
             // collaborators: this.editedItem.collaborators,
             title: this.editedItem.title,
             status: this.editedItem.status,
-            deadline: this.editedItem.deadline,
-            startingdate: this.editedItem.startingdate,
+            // deadline: this.editedItem.deadline,
+            // startingdate: this.editedItem.startingdate,
+            startingdate: moment(this.editedItem.startingdate).format("X"),
+            deadline: moment(this.editedItem.deadline).format("X"),
+ 
             projectVersion: this.editedItem.projectVersion,
             teamMembers_id: this.selectedTeam,
             member_count: this.editedItem.teamMembers_id.length,
