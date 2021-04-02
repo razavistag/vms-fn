@@ -202,8 +202,8 @@
                         ></v-text-field> -->
                         <!-- ------------------------ -->
                       </v-col>
-<!-- {{editedItem.deadline}} -->
-<!-- {{moment(editedItem.deadline).format("X")}} -->
+                      <!-- {{editedItem.deadline}} -->
+                      <!-- {{moment(editedItem.deadline).format("X")}} -->
                       <!-- dead line picker 1 -->
                       <v-col cols="12" sm="6" md="4">
                         <v-menu
@@ -730,7 +730,7 @@
           absolute
           height="4"
           top
-          color="blue darken-4"
+          color="red darken-1"
         ></v-progress-linear>
 
         <div v-if="existData == 1">
@@ -820,6 +820,12 @@ export default {
         text: "Incharge",
         value: "incharge_name",
         width: "10%",
+        align: "center",
+      },
+      {
+        text: "Team Members",
+        value: "memberCount",
+        width: "8%",
         align: "center",
       },
 
@@ -952,6 +958,7 @@ export default {
             // this.projects.push(element);
             this.projects.push({
               id: element.project_id,
+              memberCount: element.user_count,
               title: element.title,
               status: element.status,
               // deadline: element.deadline,
@@ -1022,7 +1029,6 @@ export default {
         .get(url)
         .then((response) => {
           console.log(response.data);
-
           this.selectedIncharge.push({
             member_id: response.data.data[0].incharge_id,
             members_name: response.data.data[0].incharge_name,
@@ -1059,7 +1065,7 @@ export default {
           });
         })
         .catch((response) => {
-          console.log("Error Fround. data cant get");
+          console.log("Error Fround. data cant get", response);
         });
 
       // this.editedIndex = this.projects.indexOf(item);
@@ -1142,7 +1148,7 @@ export default {
             status: this.editedItem.status,
             // deadline: this.editedItem.deadline,
             // startingdate: this.editedItem.startingdate,
-             startingdate: moment(this.editedItem.startingdate).format("X"),
+            startingdate: moment(this.editedItem.startingdate).format("X"),
             deadline: moment(this.editedItem.deadline).format("X"),
             projectVersion: this.editedItem.projectVersion,
             teamMembers_id: this.selectedTeam,
@@ -1198,7 +1204,7 @@ export default {
             // startingdate: this.editedItem.startingdate,
             startingdate: moment(this.editedItem.startingdate).format("X"),
             deadline: moment(this.editedItem.deadline).format("X"),
- 
+
             projectVersion: this.editedItem.projectVersion,
             teamMembers_id: this.selectedTeam,
             member_count: this.editedItem.teamMembers_id.length,

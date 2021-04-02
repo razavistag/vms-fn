@@ -33,6 +33,7 @@ const base = axios.create({
   baseURL: "http://localhost:8000/",
   headers: { Authorization: "Bearer " + localStorage.getItem("token") },
 });
+
 Vue.prototype.$http = base;
 
 Vue.config.productionTip = false;
