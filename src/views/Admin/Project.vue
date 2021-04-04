@@ -1040,15 +1040,15 @@ export default {
             this.editedItem = {
               id: element.project_id,
               title: element.title,
-              // deadline: element.deadline,
-              // startingdate: element.startingdate,
+              deadline: element.deadline,
+              startingdate: element.startingdate,
 
-              startingdate: moment(element.startingdate * 1000)
-                .toISOString()
-                .substr(0, 10),
-              deadline: moment(element.deadline * 1000)
-                .toISOString()
-                .substr(0, 10),
+              // startingdate: moment(element.startingdate * 1000)
+              //   .toISOString()
+              //   .substr(0, 10),
+              // deadline: moment(element.deadline * 1000)
+              //   .toISOString()
+              //   .substr(0, 10),
               status: element.status,
 
               projectVersion: element.projectVersion,
@@ -1120,29 +1120,16 @@ export default {
             return;
           }
 
+const tes_arr = []
+          this.selectedTeam.forEach(element => {
+              tes_arr.push(element.member_id)
+            })
+
+            console.log(tes_arr)
+
           Object.assign(this.projects[this.editedIndex], this.editedItem);
           const update = {
-            // title: this.editedItem.title,
-            // duration: this.editedItem.duration,
-            // startingdate: this.editedItem.startingdate,
-            // deadline: this.editedItem.deadline,
-            // status: this.editedItem.status,
-            // collaborators: this.editedItem.collaborators,
-
-            // title: this.editedItem.title,
-            // status: this.editedItem.status,
-            // deadline: this.editedItem.deadline,
-            // startingdate: this.editedItem.startingdate,
-            // projectVersion: this.editedItem.projectVersion,
-            // teamMembers_id: this.editedItem.teamMembers_id,
-            // projectIncharge: this.editedItem.projectIncharge,
-            // documentationLink: this.editedItem.documentationLink,
-            // cost: this.editedItem.cost,
-            // description: this.editedItem.description,
-            // features: this.editedItem.features,
-            // notes: this.editedItem.notes,
-            // remark: this.editedItem.remark,
-            // logo: this.editedItem.logo,
+            
 
             title: this.editedItem.title,
             status: this.editedItem.status,
@@ -1151,7 +1138,8 @@ export default {
             startingdate: moment(this.editedItem.startingdate).format("X"),
             deadline: moment(this.editedItem.deadline).format("X"),
             projectVersion: this.editedItem.projectVersion,
-            teamMembers_id: this.selectedTeam,
+            // teamMembers_id: this.selectedTeam,
+            teamMembers_id: tes_arr,
             member_count: this.selectedTeam.length,
             projectIncharge: this.selectedIncharge,
             documentationLink: this.editedItem.documentationLink,
@@ -1163,8 +1151,7 @@ export default {
             logo: this.profileLogo[0],
             specialNote: this.editedItem.specialNote,
           };
-
-          console.log(update);
+ 
           let url = "url_projects/" + this.editedItem.id;
           console.log(url);
           this.$http
