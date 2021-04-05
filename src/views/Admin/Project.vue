@@ -773,7 +773,7 @@
     >
       <v-card>
         <v-card-title class="indigo lighten-4">
-          <span class="headline ">{{ editedItem.title }}</span>
+          <span class="headline ">{{ viewData.title }}</span>
           <v-spacer></v-spacer>
           <v-icon @click="viewDialog = false">mdi-close</v-icon>
         </v-card-title>
@@ -784,8 +784,8 @@
               <!-- image -->
               <v-col md="3" sm="3" cols="12" class="  ma-0 pa-0 mt-4 ">
                 <v-img
-                  v-if="editedItem.logo"
-                  :src="'http://localhost:8000/storage/' + editedItem.logo"
+                  v-if="viewData.logo"
+                  :src="'http://localhost:8000/storage/' + viewData.logo"
                   width="250"
                   height="250"
                   class="pa-0 ma-0"
@@ -802,23 +802,23 @@
               <!-- title & description -->
               <v-col md="9" sm="9" cols="12" class=" ma-0 pa-0 mt-4">
                 <small>PROJECT TITLE :</small>
-                <h2>{{ editedItem.title }}</h2>
+                <h2>{{ viewData.title }}</h2>
                 <small>PROJECT DESCRIPTION :</small>
-                <p class="text-justify" v-html="editedItem.description"></p>
+                <p class="text-justify" v-html="viewData.description"></p>
               </v-col>
 
               <!-- project , version, start date, deadline -->
               <!-- <v-col md="3" sm="12" cols="12" class=" mt-5 "> </v-col> -->
               <v-col
                 md="2"
-                sm="12"
+                sm="3"
                 cols="12"
                 class="ma-0 pb-0 pt-0 pl-0 d-flex align-center "
               >
                 <p class="ml-5 pt-2">
                   <small>PROJECT VERSION: </small>
                   <span class="font-weight-bold">
-                    {{ editedItem.projectVersion }}
+                    {{ viewData.projectVersion }}
                   </span>
                 </p>
               </v-col>
@@ -826,12 +826,12 @@
                 md="3"
                 sm="12"
                 cols="12"
-                class="ma-0 pb-0 pt-0 pl-0 d-flex align-center  "
+                class=" ma-0 pb-0 pt-0 pl-0 d-flex align-center  "
               >
                 <p class="ml-5 pt-2">
                   <small>PROJECT STARTED: </small>
                   <span class="font-weight-bold">
-                    {{ editedItem.startingdate }}
+                    {{ viewData.startingdate }}
                   </span>
                 </p>
               </v-col>
@@ -843,9 +843,7 @@
               >
                 <p class="ml-5 pt-2">
                   <small>PROJECT DEADLINE: </small>
-                  <span class="font-weight-bold"
-                    >{{ editedItem.deadline }}
-                  </span>
+                  <span class="font-weight-bold">{{ viewData.deadline }} </span>
                 </p>
               </v-col>
               <v-col
@@ -860,26 +858,26 @@
                     color="orange"
                     small
                     class="white--text"
-                    v-if="editedItem.status == 'on progress'"
+                    v-if="viewData.status == 'on progress'"
                   >
-                    {{ editedItem.status }}
+                    {{ viewData.status }}
                   </v-chip>
                   <v-chip
                     color="green"
                     small
                     class="white--text"
-                    v-if="editedItem.status == 'completed'"
+                    v-if="viewData.status == 'completed'"
                   >
-                    {{ editedItem.status }}
+                    {{ viewData.status }}
                   </v-chip>
 
                   <v-chip
                     color="blue"
                     small
                     class="white--text"
-                    v-if="editedItem.status == 'on testing stage'"
+                    v-if="viewData.status == 'on testing stage'"
                   >
-                    {{ editedItem.status }}
+                    {{ viewData.status }}
                   </v-chip>
                 </p>
               </v-col>
@@ -899,24 +897,81 @@
                   <small>PROJECT PRICE: </small>
 
                   <span class="font-weight-bold">
-                    Rs. {{ editedItem.cost }}
+                    Rs. {{ viewData.cost }}
                   </span>
                 </p>
               </v-col>
 
-               <v-col
+              <v-col
                 md="9"
                 sm="9"
                 cols="12"
-                class="ml-5 pa-0 ma-0 d-flex align-center "
+                class=" pa-0 ma-0 d-flex align-center "
               >
                 <p class="pt-2">
                   <small>DOCUMENTATION URL: </small>
-
                   <span class="font-weight-bold">
-                    {{ editedItem.documentationLink }}
+                    <a
+                      :href="'https://' + viewData.documentationLink"
+                      target="blank"
+                    >
+                      {{ viewData.documentationLink }}
+                    </a>
                   </span>
                 </p>
+              </v-col>
+            </v-row>
+
+            <v-row class="m-0 ml-1">
+              <v-col md="4" sm="4" cols="12" class=" ">
+                <small class="">PROJECT INCHARGE</small>
+                <v-simple-table>
+                  <tr>
+                    <td class="text-uppercase text-start ">name:</td>
+                    <td class="text-uppercase text-start">
+                      {{ viewData.ic_name }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="text-uppercase text-start ">company:</td>
+                    <td class="text-uppercase text-start">
+                      {{ viewData.ic_company }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="text-uppercase text-start ">address:</td>
+                    <td class="text-uppercase text-start">
+                      {{ viewData.ic_address }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="text-uppercase text-start">nic:</td>
+                    <td class="text-uppercase text-start">
+                      {{ viewData.ic_nic }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="text-uppercase text-start">email:</td>
+                    <td class="text-uppercase text-start">
+                      {{ viewData.ic_email }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="text-uppercase text-start">phone:</td>
+                    <td class="text-uppercase text-start">
+                      {{ viewData.ic_phone }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="text-uppercase text-start">position:</td>
+                    <td class="text-uppercase text-start">
+                      <span v-if="viewData.ic_role == 0">Ordering  Incharge</span>
+                    </td>
+                  </tr>
+                </v-simple-table>
+              </v-col>
+              <v-col md="8" sm="8" cols="12" class="bg-info">
+                <small>TEAM MEMBERS</small>
               </v-col>
             </v-row>
           </v-container>
@@ -943,7 +998,7 @@ export default {
   },
   data: () => ({
     page: {},
-    viewDialog: false,
+    viewDialog: true,
     avatar: {},
     editorToolBar: [
       ["bold", "italic", "underline"],
@@ -1016,7 +1071,7 @@ export default {
       //   align: "center",
       // },
 
-      { text: "status", value: "status", width: "7%", align: "center" },
+      { text: "status", value: "status", width: "10%", align: "center" },
       {
         text: "version",
         value: "projectVersion",
@@ -1039,12 +1094,9 @@ export default {
     editedItem: {
       id: "",
       title: "",
-      // duration: "",
-      // collaborators: "",
       status: "",
       deadline: "",
       startingdate: "",
-      // --------------------------
       projectVersion: "",
       teamMembers_id: [],
       projectIncharge: [],
@@ -1062,12 +1114,9 @@ export default {
     defaultItem: {
       id: "",
       title: "",
-      // duration: "",
-      // collaborators: "",
       status: "",
       deadline: "",
       startingdate: "",
-      // --------------------------
       projectVersion: "",
       teamMembers_id: [],
       projectIncharge: [],
@@ -1096,6 +1145,7 @@ export default {
       localCurrentPage: parseInt(localStorage.getItem("paginateKey")),
       total: 1,
     },
+    viewData: {},
   }),
 
   computed: {
@@ -1122,48 +1172,43 @@ export default {
     this.headers = Object.values(this.headersMap);
     this.selectedHeaders = this.headers;
   },
-  mounted() {},
+  mounted() {
+    this.viewForm();
+  },
 
   methods: {
     viewForm(item) {
-      let url = "url_projects/" + item.id;
+      // let url = "url_projects/view/" + item.id;
+      let url = "url_projects/view/" + 21;
       this.$http
         .get(url)
         .then((response) => {
-          console.log(response.data);
-          this.selectedIncharge.push({
-            member_id: response.data.data[0].incharge_id,
-            members_name: response.data.data[0].incharge_name,
-          });
-          response.data.data.forEach((element) => {
-            console.log(element);
-            this.selectedTeam.push(element);
-            // this.selectedIncharge.push(element.incharge_name);
-            this.editedItem = {
-              id: element.project_id,
-              title: element.title,
-              // deadline: element.deadline,
-              // startingdate: element.startingdate,
+          response.data.viewData.forEach((element) => {
+            console.log("view data", element);
 
+            this.viewData = {
+              logo: element.logo,
+              title: element.title,
+              description: element.description,
+              projectVersion: element.projectVersion,
+              status: element.status,
+              cost: element.cost,
+              documentationLink: element.documentationLink,
               startingdate: moment(element.startingdate * 1000)
                 .toISOString()
                 .substr(0, 10),
               deadline: moment(element.deadline * 1000)
                 .toISOString()
                 .substr(0, 10),
-              // moment(element.deadline * 1000).format("YYYY/MM/DD")
-              status: element.status,
 
-              projectVersion: element.projectVersion,
-              documentationLink: element.documentationLink,
-              cost: element.cost,
-              description: element.description,
-              features: element.features,
-              specialNote: element.specialNote,
-              remark: element.remark,
-              logo: element.logo,
+              ic_name: element.ic_name,
+              ic_company: element.ic_company,
+              ic_nic: element.ic_nic,
+              ic_address: element.ic_address,
+              ic_email: element.ic_email,
+              ic_phone: element.ic_phone,
+              ic_role: element.ic_role,
             };
-
             this.viewDialog = true;
           });
         })
@@ -1603,11 +1648,4 @@ export default {
 };
 </script>
 
-<style>
-.theme--light.v-data-table tbody tr:nth-of-type(even) {
-  background-color: rgba(82, 82, 82, 0.03);
-}
-.theme--dark.v-data-table tbody tr:nth-of-type(even) {
-  background-color: rgba(209, 15, 15, 0.5);
-}
-</style>
+<style></style>

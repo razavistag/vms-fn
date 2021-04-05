@@ -92,3 +92,16 @@
   object-fit: cover;
   width: 100%;
 }
+
+
+
+
+
+
+
+.theme--light.v-data-table tbody tr:nth-of-type(even) {
+  background-color: rgba(82, 82, 82, 0.03);
+}
+.theme--dark.v-data-table tbody tr:nth-of-type(even) {
+  background-color: rgba(209, 15, 15, 0.5);
+}
