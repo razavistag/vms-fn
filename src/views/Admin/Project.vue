@@ -11,8 +11,8 @@
       :footer-props="{
         'items-per-page-options': [5, 20, 25, 30, 35, 40, 50, -1],
       }"
-      :search="search"
       height="755px"
+      hide-default-footer
       sort-by="calories"
       class="elevation-0"
       dense
@@ -27,6 +27,7 @@
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
+            @input="onSearch"
             label="Search"
             hide-details
             dense
@@ -721,6 +722,7 @@
           mdi-delete
         </v-icon>
       </template>
+
       <!-- no data -->
       <template v-slot:no-data>
         <v-progress-linear
@@ -738,6 +740,13 @@
         </div>
       </template>
     </v-data-table>
+    <v-row class=" pr-6" justify="end">
+      <v-pagination
+        v-model="pagination.localCurrentPage"
+        :length="pagination.total"
+        @input="onPageChange"
+      ></v-pagination>
+    </v-row>
   </div>
 </template>
 
@@ -757,6 +766,7 @@ export default {
     // 'croppa':Croppa,
   },
   data: () => ({
+    page: {},
     avatar: {},
     editorToolBar: [
       ["bold", "italic", "underline"],
@@ -904,6 +914,11 @@ export default {
     selectedTeam: [],
     selectedIncharge: [],
     moment: moment,
+    pagination: {
+      current: 1,
+      localCurrentPage: parseInt(localStorage.getItem("paginateKey")),
+      total: 2,
+    },
   }),
 
   computed: {
@@ -925,13 +940,120 @@ export default {
   },
 
   created() {
-    this.initialize();
+    // this.initialize();
+    this.paginateData();
     this.headers = Object.values(this.headersMap);
     this.selectedHeaders = this.headers;
   },
   mounted() {},
 
   methods: {
+    paginateData() {
+      this.projects.splice(0);
+      this.$http
+        .get("url_projects?page=" + localStorage.getItem("paginateKey"))
+        .then((res) => {
+          console.log(res.data);
+          this.pagination.total = res.data.projects_count;
+          res.data.projects.data.forEach((element) => {
+            this.projects.push({
+              id: element.project_id,
+              memberCount: element.user_count,
+              title: element.title,
+              status: element.status,
+              // deadline: element.deadline,
+              // startingdate: element.startingdate,
+              startingdate: moment(element.startingdate * 1000).format(
+                "DD/MM/YYYY"
+              ),
+              deadline: moment(element.deadline * 1000).format("YYYY/MM/DD"),
+              projectVersion: element.projectVersion,
+              teamMembers_id: element.teamMembers_id,
+              projectIncharge: element.projectIncharge,
+              incharge_name: element.incharge_name,
+              documentationLink: element.documentationLink,
+              cost: element.cost,
+              description: element.description,
+              features: element.features,
+              notes: element.notes,
+              specialNote: element.specialNote,
+              remark: element.remark,
+              notes: element.notes,
+              logo: element.logo,
+              // duration: this.dateDiffInDays(
+              //   new Date(Date()),
+              //   new Date(element.deadline)
+              // ),
+              duration: this.momementDaateDiff(
+                element.startingdate,
+                moment(new Date()).format("DD-MM-YYYY"),
+                moment(element.deadline * 1000).format("DD/MM/YYYY")
+              ),
+            });
+          });
+        });
+    },
+    onPageChange(e) {
+      // console.log(e)
+      localStorage.setItem("paginateKey", e);
+      this.paginateData();
+    },
+    onSearch(e) {
+      // console.log(e)
+      let url = "url_projects/find/" + e;
+
+      if (this.search.length > 0) {
+        console.log("find");
+        this.$http.get(url).then((res) => {
+          if (res.data.projects.data.length > 0) {
+            console.log("have data");
+            res.data.projects.data.forEach((element) => {
+              this.projects.splice(0);
+              this.projects.push({
+                id: element.project_id,
+                memberCount: element.user_count,
+                title: element.title,
+                status: element.status,
+                // deadline: element.deadline,
+                // startingdate: element.startingdate,
+                startingdate: moment(element.startingdate * 1000).format(
+                  "DD/MM/YYYY"
+                ),
+                deadline: moment(element.deadline * 1000).format("YYYY/MM/DD"),
+                projectVersion: element.projectVersion,
+                teamMembers_id: element.teamMembers_id,
+                projectIncharge: element.projectIncharge,
+                incharge_name: element.incharge_name,
+                documentationLink: element.documentationLink,
+                cost: element.cost,
+                description: element.description,
+                features: element.features,
+                notes: element.notes,
+                specialNote: element.specialNote,
+                remark: element.remark,
+                notes: element.notes,
+                logo: element.logo,
+                // duration: this.dateDiffInDays(
+                //   new Date(Date()),
+                //   new Date(element.deadline)
+                // ),
+                duration: this.momementDaateDiff(
+                  element.startingdate,
+                  moment(new Date()).format("DD-MM-YYYY"),
+                  moment(element.deadline * 1000).format("DD/MM/YYYY")
+                ),
+              });
+            });
+          } else {
+            console.log("no data");
+            this.projects.splice(0);
+            this.existData = 1;
+          }
+        }, 4000);
+      } else {
+        console.log("dont");
+      }
+    },
     dateDiffInDays(date1, date2) {
       return Math.round((date2 - date1) / (1000 * 60 * 60 * 24));
     },
@@ -1040,15 +1162,16 @@ export default {
             this.editedItem = {
               id: element.project_id,
               title: element.title,
-              deadline: element.deadline,
-              startingdate: element.startingdate,
+              // deadline: element.deadline,
+              // startingdate: element.startingdate,
 
-              // startingdate: moment(element.startingdate * 1000)
-              //   .toISOString()
-              //   .substr(0, 10),
-              // deadline: moment(element.deadline * 1000)
-              //   .toISOString()
-              //   .substr(0, 10),
+              startingdate: moment(element.startingdate * 1000)
+                .toISOString()
+                .substr(0, 10),
+              deadline: moment(element.deadline * 1000)
+                .toISOString()
+                .substr(0, 10),
+              // moment(element.deadline * 1000).format("YYYY/MM/DD")
               status: element.status,
 
               projectVersion: element.projectVersion,
@@ -1120,17 +1243,15 @@ export default {
             return;
           }
 
-const tes_arr = []
-          this.selectedTeam.forEach(element => {
-              tes_arr.push(element.member_id)
-            })
+          const tes_arr = [];
+          this.selectedTeam.forEach((element) => {
+            tes_arr.push(element.member_id);
+          });
 
-            console.log(tes_arr)
+          console.log(tes_arr);
 
           Object.assign(this.projects[this.editedIndex], this.editedItem);
           const update = {
-            
-
             title: this.editedItem.title,
             status: this.editedItem.status,
             // deadline: this.editedItem.deadline,
@@ -1141,7 +1262,7 @@ const tes_arr = []
             // teamMembers_id: this.selectedTeam,
             teamMembers_id: tes_arr,
             member_count: this.selectedTeam.length,
-            projectIncharge: this.selectedIncharge,
+            projectIncharge: this.selectedIncharge[0]["member_id"],
             documentationLink: this.editedItem.documentationLink,
             cost: this.editedItem.cost,
             description: this.editedItem.description,
@@ -1151,7 +1272,7 @@ const tes_arr = []
             logo: this.profileLogo[0],
             specialNote: this.editedItem.specialNote,
           };
- 
+
           let url = "url_projects/" + this.editedItem.id;
           console.log(url);
           this.$http
