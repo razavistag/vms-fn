@@ -12,10 +12,10 @@
         'items-per-page-options': [5, 20, 25, 30, 35, 40, 50, -1],
       }"
       height="755px"
-      hide-default-footer
       sort-by="calories"
       class="elevation-0"
       dense
+      hide-default-footer
     >
       <template v-slot:top>
         <v-toolbar flat>
@@ -42,7 +42,7 @@
             text
             tile
             small
-            @click="initialize"
+            @click="refresh"
           >
             <v-icon small dark left> mdi-refresh </v-icon> REFRESH
           </v-btn>
@@ -111,7 +111,12 @@
           >
             <v-card>
               <v-card-title class="indigo lighten-4">
-                <span class="headline ">{{ formTitle }}</span>
+                <span class="headline "
+                  >{{ formTitle }}
+                  <span v-if="editedIndex != -1">{{
+                    editedItem.title
+                  }}</span></span
+                >
                 <v-spacer></v-spacer>
                 <v-icon @click="dialog = false">mdi-close</v-icon>
               </v-card-title>
@@ -630,7 +635,7 @@
       </template>
 
       <!--Start Date -->
-      <template v-slot:item.startingdate="{ item }">
+      <template v-slot:[`item.startingdate`]="{ item }">
         {{ item.startingdate.substring(0, 10) }}
         <!-- {{new Date(item.startingdate * 1000)}} -->
         <!-- {{
@@ -669,15 +674,18 @@
           transition="slide-x-transition"
         >
           <template v-slot:activator="{ on }">
-            <v-avatar size="25" v-on="on">
+            <v-avatar size="25" v-on="on" v-if="item.logo">
               <img
                 :src="'http://localhost:8000/storage/' + item.logo"
                 alt="alt"
                 width="50"
               />
             </v-avatar>
+            <v-avatar size="25" v-on="on" v-else>
+              <img src="../../assets/default_logo.jpeg" alt="alt" width="50" />
+            </v-avatar>
           </template>
-          <v-card class="">
+          <v-card class="" v-if="item.logo">
             <img
               :src="'http://localhost:8000/storage/' + item.logo"
               alt="alt"
@@ -703,7 +711,7 @@
           small
           class="mr-2 blue darken-1  pa-1 shrink   white--text rounded"
           title="asd"
-          @click="editItem(item)"
+          @click="viewForm(item)"
         >
           mdi-eye
         </v-icon>
@@ -723,6 +731,20 @@
         </v-icon>
       </template>
 
+      <template v-slot:footer>
+        {{ pagination.test }}
+        <!-- <v-divider></v-divider> -->
+
+        <v-row justify="end" class="mr-3  ma-0 pa-0 m-0 ">
+          <v-pagination
+            class="text-right"
+            v-model="pagination.localCurrentPage"
+            :length="pagination.total"
+            @input="onPageChange"
+          ></v-pagination>
+        </v-row>
+      </template>
+
       <!-- no data -->
       <template v-slot:no-data>
         <v-progress-linear
@@ -740,13 +762,167 @@
         </div>
       </template>
     </v-data-table>
-    <v-row class=" pr-6" justify="end">
-      <v-pagination
-        v-model="pagination.localCurrentPage"
-        :length="pagination.total"
-        @input="onPageChange"
-      ></v-pagination>
-    </v-row>
+
+    <!-- view data -->
+    <v-dialog
+      v-model="viewDialog"
+      max-width="1200px"
+      persistent
+      content-class="form-dialog"
+      scrollable
+    >
+      <v-card>
+        <v-card-title class="indigo lighten-4">
+          <span class="headline ">{{ editedItem.title }}</span>
+          <v-spacer></v-spacer>
+          <v-icon @click="viewDialog = false">mdi-close</v-icon>
+        </v-card-title>
+
+        <v-card-text style="height: 800px;">
+          <v-container>
+            <v-row class="m-0">
+              <!-- image -->
+              <v-col md="3" sm="3" cols="12" class="  ma-0 pa-0 mt-4 ">
+                <v-img
+                  v-if="editedItem.logo"
+                  :src="'http://localhost:8000/storage/' + editedItem.logo"
+                  width="250"
+                  height="250"
+                  class="pa-0 ma-0"
+                />
+                <v-img
+                  v-else
+                  src="../../assets/default_logo.jpeg"
+                  width="250"
+                  height="250"
+                  class=" ma-0"
+                />
+              </v-col>
+
+              <!-- title & description -->
+              <v-col md="9" sm="9" cols="12" class=" ma-0 pa-0 mt-4">
+                <small>PROJECT TITLE :</small>
+                <h2>{{ editedItem.title }}</h2>
+                <small>PROJECT DESCRIPTION :</small>
+                <p class="text-justify" v-html="editedItem.description"></p>
+              </v-col>
+
+              <!-- project , version, start date, deadline -->
+              <!-- <v-col md="3" sm="12" cols="12" class=" mt-5 "> </v-col> -->
+              <v-col
+                md="2"
+                sm="12"
+                cols="12"
+                class="ma-0 pb-0 pt-0 pl-0 d-flex align-center "
+              >
+                <p class="ml-5 pt-2">
+                  <small>PROJECT VERSION: </small>
+                  <span class="font-weight-bold">
+                    {{ editedItem.projectVersion }}
+                  </span>
+                </p>
+              </v-col>
+              <v-col
+                md="3"
+                sm="12"
+                cols="12"
+                class="ma-0 pb-0 pt-0 pl-0 d-flex align-center  "
+              >
+                <p class="ml-5 pt-2">
+                  <small>PROJECT STARTED: </small>
+                  <span class="font-weight-bold">
+                    {{ editedItem.startingdate }}
+                  </span>
+                </p>
+              </v-col>
+              <v-col
+                md="3"
+                sm="12"
+                cols="12"
+                class="ma-0 pb-0 pt-0 pl-0 d-flex align-center"
+              >
+                <p class="ml-5 pt-2">
+                  <small>PROJECT DEADLINE: </small>
+                  <span class="font-weight-bold"
+                    >{{ editedItem.deadline }}
+                  </span>
+                </p>
+              </v-col>
+              <v-col
+                md="3"
+                sm="3"
+                cols="12"
+                class="pa-0 ma-0 d-flex align-center  "
+              >
+                <p class="pt-2 ml-5">
+                  <small>PROJECT STATUS: </small>
+                  <v-chip
+                    color="orange"
+                    small
+                    class="white--text"
+                    v-if="editedItem.status == 'on progress'"
+                  >
+                    {{ editedItem.status }}
+                  </v-chip>
+                  <v-chip
+                    color="green"
+                    small
+                    class="white--text"
+                    v-if="editedItem.status == 'completed'"
+                  >
+                    {{ editedItem.status }}
+                  </v-chip>
+
+                  <v-chip
+                    color="blue"
+                    small
+                    class="white--text"
+                    v-if="editedItem.status == 'on testing stage'"
+                  >
+                    {{ editedItem.status }}
+                  </v-chip>
+                </p>
+              </v-col>
+            </v-row>
+
+            <v-row class="m-0">
+              <!-- project status -->
+              <!-- <v-col md="3" sm="12" cols="12" class=" mt-5 "> </v-col> -->
+
+              <v-col
+                md="2"
+                sm="3"
+                cols="12"
+                class="ml-5  pa-0 ma-0 d-flex align-center "
+              >
+                <p class="pt-2">
+                  <small>PROJECT PRICE: </small>
+
+                  <span class="font-weight-bold">
+                    Rs. {{ editedItem.cost }}
+                  </span>
+                </p>
+              </v-col>
+
+               <v-col
+                md="9"
+                sm="9"
+                cols="12"
+                class="ml-5 pa-0 ma-0 d-flex align-center "
+              >
+                <p class="pt-2">
+                  <small>DOCUMENTATION URL: </small>
+
+                  <span class="font-weight-bold">
+                    {{ editedItem.documentationLink }}
+                  </span>
+                </p>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -767,6 +943,7 @@ export default {
   },
   data: () => ({
     page: {},
+    viewDialog: false,
     avatar: {},
     editorToolBar: [
       ["bold", "italic", "underline"],
@@ -809,7 +986,7 @@ export default {
       {
         text: "starting date",
         value: "startingdate",
-        width: "7%",
+        width: "8%",
         align: "center",
       },
       {
@@ -832,18 +1009,18 @@ export default {
         width: "10%",
         align: "center",
       },
-      {
-        text: "Team Members",
-        value: "memberCount",
-        width: "8%",
-        align: "center",
-      },
+      // {
+      //   text: "Team Members",
+      //   value: "memberCount",
+      //   width: "8%",
+      //   align: "center",
+      // },
 
-      { text: "status", value: "status", width: "10%", align: "center" },
+      { text: "status", value: "status", width: "7%", align: "center" },
       {
         text: "version",
         value: "projectVersion",
-        width: "6%",
+        width: "7%",
         align: "end",
       },
 
@@ -917,13 +1094,13 @@ export default {
     pagination: {
       current: 1,
       localCurrentPage: parseInt(localStorage.getItem("paginateKey")),
-      total: 2,
+      total: 1,
     },
   }),
 
   computed: {
     formTitle() {
-      return this.editedIndex === -1 ? "New Project" : "Edit Project";
+      return this.editedIndex === -1 ? "New Project" : "Edit ";
     },
     showHeaders() {
       return this.headers.filter((s) => this.selectedHeaders.includes(s));
@@ -948,13 +1125,75 @@ export default {
   mounted() {},
 
   methods: {
+    viewForm(item) {
+      let url = "url_projects/" + item.id;
+      this.$http
+        .get(url)
+        .then((response) => {
+          console.log(response.data);
+          this.selectedIncharge.push({
+            member_id: response.data.data[0].incharge_id,
+            members_name: response.data.data[0].incharge_name,
+          });
+          response.data.data.forEach((element) => {
+            console.log(element);
+            this.selectedTeam.push(element);
+            // this.selectedIncharge.push(element.incharge_name);
+            this.editedItem = {
+              id: element.project_id,
+              title: element.title,
+              // deadline: element.deadline,
+              // startingdate: element.startingdate,
+
+              startingdate: moment(element.startingdate * 1000)
+                .toISOString()
+                .substr(0, 10),
+              deadline: moment(element.deadline * 1000)
+                .toISOString()
+                .substr(0, 10),
+              // moment(element.deadline * 1000).format("YYYY/MM/DD")
+              status: element.status,
+
+              projectVersion: element.projectVersion,
+              documentationLink: element.documentationLink,
+              cost: element.cost,
+              description: element.description,
+              features: element.features,
+              specialNote: element.specialNote,
+              remark: element.remark,
+              logo: element.logo,
+            };
+
+            this.viewDialog = true;
+          });
+        })
+        .catch((response) => {
+          console.log("Error Fround. data cant get", response);
+        });
+    },
+    refresh() {
+      // this.initialize();
+      this.paginateData();
+    },
+    onPageChange(e) {
+      // console.log(e)
+      localStorage.setItem("paginateKey", e);
+      this.paginateData();
+    },
     paginateData() {
       this.projects.splice(0);
       this.$http
         .get("url_projects?page=" + localStorage.getItem("paginateKey"))
         .then((res) => {
           console.log(res.data);
-          this.pagination.total = res.data.projects_count;
+          this.pagination.total = res.data.projects.last_page;
+
+          //----------------------
+
+          res.data.members.forEach((element) => {
+            this.teamMembers.push(element);
+          });
+
           res.data.projects.data.forEach((element) => {
             this.projects.push({
               id: element.project_id,
@@ -992,11 +1231,6 @@ export default {
             });
           });
         });
-    },
-    onPageChange(e) {
-      // console.log(e)
-      localStorage.setItem("paginateKey", e);
-      this.paginateData();
     },
     onSearch(e) {
       // console.log(e)
@@ -1043,7 +1277,7 @@ export default {
                   moment(element.deadline * 1000).format("DD/MM/YYYY")
                 ),
               });
-            });
+            }, 4000);
           } else {
             console.log("no data");
             this.projects.splice(0);
@@ -1052,6 +1286,7 @@ export default {
         }, 4000);
       } else {
         console.log("dont");
+        this.paginateData();
       }
     },
     dateDiffInDays(date1, date2) {
@@ -1208,7 +1443,8 @@ export default {
         .delete(url)
         .then((response) => {
           console.log(response.data);
-          this.initialize();
+          // this.initialize();
+          this.paginateData();
         })
         .catch((response) => {
           console.log("Error Fround. Project Not Saved");
@@ -1279,7 +1515,8 @@ export default {
             .put(url, update)
             .then((response) => {
               console.log(response.data);
-              this.initialize();
+              // this.initialize();
+              this.paginateData();
             })
             .catch((response) => {
               console.log("Error Fround. Project Not Saved");
@@ -1334,7 +1571,8 @@ export default {
             .post(url, save)
             .then((response) => {
               console.log(response.data);
-              this.initialize();
+              // this.initialize();
+              this.paginateData();
             })
             .catch((response) => {
               console.log("Error Fround. Project Not Saved");
@@ -1365,4 +1603,11 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.theme--light.v-data-table tbody tr:nth-of-type(even) {
+  background-color: rgba(82, 82, 82, 0.03);
+}
+.theme--dark.v-data-table tbody tr:nth-of-type(even) {
+  background-color: rgba(209, 15, 15, 0.5);
+}
+</style>
