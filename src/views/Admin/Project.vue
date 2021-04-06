@@ -7,19 +7,16 @@
       :headers="showHeaders"
       :items="projects"
       :fixed-header="true"
-      :itemsPerPage="1"
-      :footer-props="{
-        'items-per-page-options': [1, 2, 5, 20, 25, 30, 35, 40, 50, -1],
-        'items-per-page-text': 'projects per page',
-      }"
+       hide-actions
+      
       height="470px"
       class="elevation-0"
       dense
       :loading="dataTableLoading"
       loading-text="Fetching Project Data"
-   
+     :disable-pagination="true"
     >
-        <!-- :server-items-length="parseInt(testPagination.total)" -->
+      <!-- :server-items-length="parseInt(testPagination.total)" -->
       <!-- :footer-props="{
         'items-per-page-options': [pagination.total, -1],
           pagination:{
@@ -822,8 +819,6 @@
         ></v-pagination>
       </template> -->
 
-     
-
       <template
         v-slot:footer.page-text="{
           pageStart,
@@ -835,7 +830,9 @@
         }"
       >
         <div class="d-flex align-center justify-center">
-          <p class="pt-5">Items: {{ testPagination.from }} - {{ testPagination.total }}</p>
+          <p class="pt-5">
+            Items: {{ testPagination.from }} - {{ testPagination.total }}
+          </p>
 
           <v-pagination
             class="text-right"

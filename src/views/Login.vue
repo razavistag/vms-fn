@@ -150,7 +150,7 @@
                   <!-- company -->
                   <v-col md="12" cols="12" class="  pa-0 mt-4 pl-4 pr-8">
                     <ValidationProvider
-                      rules="required|min:5"
+                      rules="required|min:2"
                       name="Company Name"
                       v-slot="{ errors }"
                     >
