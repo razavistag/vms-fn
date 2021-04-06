@@ -287,7 +287,7 @@
                         hide-details=""
                         :label="errors[0] ? errors[0] : 'Address'"
                         :error-messages="errors"
-                          rows="2"
+                        rows="2"
                         row-height="5"
                       >
                         <template v-slot:prepend>
@@ -348,9 +348,9 @@
                     cols="12"
                     class="  pt-0 pb-0  ma-0  mt-3 pl-12 pr-8 "
                   >
-                    <v-btn block color="success" @click="register"
-                      >Register</v-btn
-                    >
+                    <v-btn block color="success" @click="register">
+                      Register
+                    </v-btn>
                   </v-col>
                 </v-row>
               </ValidationObserver>

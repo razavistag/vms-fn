@@ -7,14 +7,15 @@
       :headers="showHeaders"
       :items="projects"
       :fixed-header="true"
-       hide-actions
-      
       height="470px"
       class="elevation-0"
       dense
       :loading="dataTableLoading"
       loading-text="Fetching Project Data"
-     :disable-pagination="true"
+      disable-pagination
+      :footer-props="{
+        'items-per-page-options': [pagination.total],
+      }"
     >
       <!-- :server-items-length="parseInt(testPagination.total)" -->
       <!-- :footer-props="{
