@@ -46,9 +46,32 @@
           >
             <v-icon small dark left> mdi-refresh </v-icon> REFRESH
           </v-btn>
+          <!-- -------------------------------- -->
+          <!-- Display coulmns -->
+          <!-- <v-select
+            style="maxWidth: 280px;"
+            v-model="selectedHeaders"
+            :items="headers"
+            multiple
+            return-object
+            class=""
+            hide-details=""
+            dense
+            :menu-props="{ maxHeight: '400', top: true, offsetY: true }"
+          >
+            <template v-slot:selection="{ item, index }">
+              <v-chip v-if="index < 2" x-small>
+                <span>{{ item.text }}</span>
+              </v-chip>
+              <span v-if="index === 2" class="grey--text caption">
+                (+{{ selectedHeaders.length - 2 }} others) Display Columns
+              </span>
+            </template>
+          </v-select> -->
+          <!-- -------------------------------- -->
 
           <!-- HIDE COLUMNS -->
-          <v-menu top :close-on-content-click="false">
+          <v-menu top :close-on-content-click="false"> 
             <template v-slot:activator="{ on, attrs }">
               <v-btn
                 color="white"
@@ -87,7 +110,7 @@
                 </v-select>
               </v-list-item>
             </v-list>
-          </v-menu>
+          </v-menu> 
 
           <!-- ADD BUTTONS -->
           <v-btn
@@ -614,10 +637,10 @@
           </v-dialog>
 
           <!-- delete dialog -->
-          <v-dialog v-model="dialogDelete" max-width="500px">
+          <v-dialog v-model="dialogDelete" max-width="800px">
             <v-card>
               <v-card-title class="headline"
-                >Are you sure you want to delete this item?</v-card-title
+                >Are you sure you want to delete this project <span class="font-weight-bold pl-3"> {{editedItem.title}}</span>  ?</v-card-title
               >
               <v-card-actions>
                 <v-spacer></v-spacer>
@@ -971,7 +994,6 @@
                         {{ viewData.ic_role }}
                       </v-list-item-subtitle>
                     </v-list-item-content>
-                
                   </v-list-item>
                 </v-card>
                 <!-- <v-simple-table>
@@ -1033,11 +1055,10 @@
                       two-line
                       v-for="(i, k) in viewData.TeamMembers"
                       :key="k"
-                   
                     >
-                      <v-list-item-content     class="text-uppercase ">
+                      <v-list-item-content class="text-uppercase ">
                         <v-list-item-title>
-                         {{k +1 + '.'}}  {{ i.members_name }}
+                          {{ k + 1 + "." }} {{ i.members_name }}
                         </v-list-item-title>
                         <v-list-item-subtitle class="pl-4">
                           {{ i.member_role }}
@@ -1064,10 +1085,9 @@
 
                 <div
                   v-if="
-                     ! viewData.specialNote &&
-                     ! viewData.remark &&
-                     ! viewData.specialNote
-                  
+                    !viewData.specialNote &&
+                      !viewData.remark &&
+                      !viewData.specialNote
                   "
                 >
                   <small>TEAM MEMBERS - {{ viewData.TeamMemberCount }}</small>
@@ -1077,9 +1097,9 @@
                       v-for="(i, k) in viewData.TeamMembers"
                       :key="k"
                     >
-                      <v-list-item-content     class="text-uppercase ">
+                      <v-list-item-content class="text-uppercase ">
                         <v-list-item-title>
-                         {{k +1 + '.'}} {{ i.members_name }}
+                          {{ k + 1 + "." }} {{ i.members_name }}
                         </v-list-item-title>
                         <v-list-item-subtitle class="pl-4">
                           {{ i.member_role }}
@@ -1290,11 +1310,12 @@ export default {
   },
   mounted() {
     // this.viewForm();
+    localStorage.setItem("paginateKey", 1);
   },
 
   methods: {
     viewForm(item) {
-      console.log('aaa',item)
+      console.log("aaa", item);
       let url = "url_projects/view/" + item.id;
       // let url = "url_projects/view/" + 21;
       this.$http
@@ -1316,7 +1337,7 @@ export default {
               cost: element.cost,
               documentationLink: element.documentationLink,
               startingdate: moment(element.startingdate * 1000)
-               .format("YYYY/MM/DD")
+                .format("YYYY/MM/DD")
                 .substr(0, 10),
               deadline: moment(element.deadline * 1000)
                 .format("YYYY/MM/DD")
@@ -1351,6 +1372,7 @@ export default {
       this.paginateData();
     },
     paginateData() {
+       
       this.projects.splice(0);
       this.$http
         .get("url_projects?page=" + localStorage.getItem("paginateKey"))
@@ -1570,11 +1592,13 @@ export default {
               // deadline: element.deadline,
               // startingdate: element.startingdate,
 
-              startingdate: moment(element.startingdate * 1000).add(1, 'd')
+              startingdate: moment(element.startingdate * 1000)
+                .add(1, "d")
                 .toISOString()
                 .substr(0, 10),
-              deadline: moment(element.deadline * 1000).add(1, 'd')
-             
+              deadline: moment(element.deadline * 1000)
+                .add(1, "d")
+
                 .toISOString()
                 .substr(0, 10),
               // moment(element.deadline * 1000).format("YYYY/MM/DD")
