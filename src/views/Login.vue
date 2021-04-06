@@ -224,7 +224,7 @@
                       <v-text-field
                         outlined
                         dense
-                        suffix="V"
+                        
                         v-model="RegisterForm.nic"
                         hide-details=""
                         :label="errors[0] ? errors[0] : 'NIC Number'"
@@ -382,7 +382,7 @@ export default {
         password: "",
         passwordConfirm: "",
       },
-      genderItems: ["Male", "Female"],
+      genderItems: ["Male", "Female","Other"],
     };
   },
   methods: {
