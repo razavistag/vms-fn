@@ -224,7 +224,6 @@
                       <v-text-field
                         outlined
                         dense
-                        
                         v-model="RegisterForm.nic"
                         hide-details=""
                         :label="errors[0] ? errors[0] : 'NIC Number'"
@@ -267,7 +266,7 @@
                       name="Address"
                       v-slot="{ errors }"
                     >
-                      <v-text-field
+                      <!-- <v-text-field
                         outlined
                         dense
                         v-model="RegisterForm.address"
@@ -278,7 +277,23 @@
                         <template v-slot:prepend>
                           <v-icon>mdi-map-marker</v-icon>
                         </template>
-                      </v-text-field>
+                      </v-text-field> -->
+
+                      <v-textarea
+                        name="input-4-1"
+                        outlined
+                        dense
+                        v-model="RegisterForm.address"
+                        hide-details=""
+                        :label="errors[0] ? errors[0] : 'Address'"
+                        :error-messages="errors"
+                          rows="2"
+                        row-height="5"
+                      >
+                        <template v-slot:prepend>
+                          <v-icon>mdi-map-marker</v-icon>
+                        </template>
+                      </v-textarea>
                     </ValidationProvider>
                   </v-col>
 
@@ -382,7 +397,7 @@ export default {
         password: "",
         passwordConfirm: "",
       },
-      genderItems: ["Male", "Female","Other"],
+      genderItems: ["Male", "Female", "Other"],
     };
   },
   methods: {
