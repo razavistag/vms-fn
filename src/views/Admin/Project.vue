@@ -883,7 +883,7 @@
               </v-col>
             </v-row>
 
-            <v-row class="m-0">
+            <v-row class="m-0 ml-5">
               <!-- project status -->
               <!-- <v-col md="3" sm="12" cols="12" class=" mt-5 "> </v-col> -->
 
@@ -891,7 +891,7 @@
                 md="2"
                 sm="3"
                 cols="12"
-                class="ml-5  pa-0 ma-0 d-flex align-center "
+                class="pa-0 ma-0 d-flex align-center "
               >
                 <p class="pt-2">
                   <small>PROJECT PRICE: </small>
@@ -906,7 +906,7 @@
                 md="9"
                 sm="9"
                 cols="12"
-                class=" pa-0 ma-0 d-flex align-center "
+                class="pa-0 ma-0 d-flex align-center "
               >
                 <p class="pt-2">
                   <small>DOCUMENTATION URL: </small>
@@ -925,7 +925,56 @@
             <v-row class="m-0 ml-1">
               <v-col md="4" sm="4" cols="12" class=" ">
                 <small class="">PROJECT INCHARGE</small>
-                <v-simple-table>
+                <v-card class="mt-1" max-width="400" tile flat>
+                  <v-list-item class=" " dense two-line>
+                    <v-list-item-content class="text-uppercase  p-1  ma-0">
+                      <v-list-item-title>
+                        name :
+                      </v-list-item-title>
+                      <v-list-item-subtitle>
+                        {{ viewData.ic_name }}
+                      </v-list-item-subtitle>
+                      <v-list-item-title>
+                        company :
+                      </v-list-item-title>
+                      <v-list-item-subtitle>
+                        {{ viewData.ic_company }}
+                      </v-list-item-subtitle>
+                      <v-list-item-title>
+                        address :
+                      </v-list-item-title>
+                      <v-list-item-subtitle>
+                        {{ viewData.ic_address }}
+                      </v-list-item-subtitle>
+                      <v-list-item-title>
+                        nic:
+                      </v-list-item-title>
+                      <v-list-item-subtitle>
+                        {{ viewData.ic_nic }}
+                      </v-list-item-subtitle>
+                      <v-list-item-title>
+                        email:
+                      </v-list-item-title>
+                      <v-list-item-subtitle>
+                        {{ viewData.ic_email }}
+                      </v-list-item-subtitle>
+                      <v-list-item-title>
+                        phone :
+                      </v-list-item-title>
+                      <v-list-item-subtitle>
+                        {{ viewData.ic_phone }}
+                      </v-list-item-subtitle>
+                      <v-list-item-title>
+                        position :
+                      </v-list-item-title>
+                      <v-list-item-subtitle>
+                        {{ viewData.ic_role }}
+                      </v-list-item-subtitle>
+                    </v-list-item-content>
+                
+                  </v-list-item>
+                </v-card>
+                <!-- <v-simple-table>
                   <tr>
                     <td class="text-uppercase text-start ">name:</td>
                     <td class="text-uppercase text-start">
@@ -965,13 +1014,80 @@
                   <tr>
                     <td class="text-uppercase text-start">position:</td>
                     <td class="text-uppercase text-start">
-                      <span v-if="viewData.ic_role == 0">Ordering  Incharge</span>
+                      <span>{{ viewData.ic_role }}</span>
                     </td>
                   </tr>
-                </v-simple-table>
+                </v-simple-table> -->
+
+                <div
+                  class="mt-3"
+                  v-if="
+                    viewData.specialNote ||
+                      viewData.remark ||
+                      viewData.specialNote
+                  "
+                >
+                  <small>TEAM MEMBERS - {{ viewData.TeamMemberCount }}</small>
+                  <v-card class="mt-1" max-width="400" tile flat>
+                    <v-list-item
+                      two-line
+                      v-for="(i, k) in viewData.TeamMembers"
+                      :key="k"
+                   
+                    >
+                      <v-list-item-content     class="text-uppercase ">
+                        <v-list-item-title>
+                         {{k +1 + '.'}}  {{ i.members_name }}
+                        </v-list-item-title>
+                        <v-list-item-subtitle class="pl-4">
+                          {{ i.member_role }}
+                        </v-list-item-subtitle>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-card>
+                </div>
               </v-col>
-              <v-col md="8" sm="8" cols="12" class="bg-info">
-                <small>TEAM MEMBERS</small>
+              <v-col md="8" sm="8" cols="12" class="  ">
+                <div v-if="viewData.features">
+                  <h6>FEATURES :</h6>
+                  <p class="text-justify" v-html="viewData.features"></p>
+                </div>
+
+                <div v-if="viewData.remark">
+                  <h6>REMARK :</h6>
+                  <p class="text-justify" v-html="viewData.remark"></p>
+                </div>
+                <div v-if="viewData.specialNote">
+                  <h6>SPECIAL NOTES :</h6>
+                  <p class="text-justify" v-html="viewData.specialNote"></p>
+                </div>
+
+                <div
+                  v-if="
+                     ! viewData.specialNote &&
+                     ! viewData.remark &&
+                     ! viewData.specialNote
+                  
+                  "
+                >
+                  <small>TEAM MEMBERS - {{ viewData.TeamMemberCount }}</small>
+                  <v-card class="mt-1" max-width="400" tile flat>
+                    <v-list-item
+                      two-line
+                      v-for="(i, k) in viewData.TeamMembers"
+                      :key="k"
+                    >
+                      <v-list-item-content     class="text-uppercase ">
+                        <v-list-item-title>
+                         {{k +1 + '.'}} {{ i.members_name }}
+                        </v-list-item-title>
+                        <v-list-item-subtitle class="pl-4">
+                          {{ i.member_role }}
+                        </v-list-item-subtitle>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-card>
+                </div>
               </v-col>
             </v-row>
           </v-container>
@@ -998,7 +1114,7 @@ export default {
   },
   data: () => ({
     page: {},
-    viewDialog: true,
+    viewDialog: false,
     avatar: {},
     editorToolBar: [
       ["bold", "italic", "underline"],
@@ -1026,11 +1142,11 @@ export default {
         width: "4%",
       },
       {
-        text: "",
-        align: "start",
-        sortable: true,
+        text: "logo",
+        align: "center",
+        sortable: false,
         value: "logo",
-        width: "1%",
+        width: "5%",
       },
       {
         text: "project",
@@ -1173,20 +1289,25 @@ export default {
     this.selectedHeaders = this.headers;
   },
   mounted() {
-    this.viewForm();
+    // this.viewForm();
   },
 
   methods: {
     viewForm(item) {
-      // let url = "url_projects/view/" + item.id;
-      let url = "url_projects/view/" + 21;
+      console.log('aaa',item)
+      let url = "url_projects/view/" + item.id;
+      // let url = "url_projects/view/" + 21;
       this.$http
         .get(url)
         .then((response) => {
+          console.log("viewForm", response);
+
           response.data.viewData.forEach((element) => {
             console.log("view data", element);
 
             this.viewData = {
+              TeamMemberCount: response.data.TeamMemberCount,
+              TeamMembers: response.data.TeamMembers,
               logo: element.logo,
               title: element.title,
               description: element.description,
@@ -1195,10 +1316,10 @@ export default {
               cost: element.cost,
               documentationLink: element.documentationLink,
               startingdate: moment(element.startingdate * 1000)
-                .toISOString()
+               .format("YYYY/MM/DD")
                 .substr(0, 10),
               deadline: moment(element.deadline * 1000)
-                .toISOString()
+                .format("YYYY/MM/DD")
                 .substr(0, 10),
 
               ic_name: element.ic_name,
@@ -1208,6 +1329,10 @@ export default {
               ic_email: element.ic_email,
               ic_phone: element.ic_phone,
               ic_role: element.ic_role,
+
+              specialNote: element.specialNote,
+              remark: element.remark,
+              features: element.features,
             };
             this.viewDialog = true;
           });
@@ -1445,10 +1570,11 @@ export default {
               // deadline: element.deadline,
               // startingdate: element.startingdate,
 
-              startingdate: moment(element.startingdate * 1000)
+              startingdate: moment(element.startingdate * 1000).add(1, 'd')
                 .toISOString()
                 .substr(0, 10),
-              deadline: moment(element.deadline * 1000)
+              deadline: moment(element.deadline * 1000).add(1, 'd')
+             
                 .toISOString()
                 .substr(0, 10),
               // moment(element.deadline * 1000).format("YYYY/MM/DD")
