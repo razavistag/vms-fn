@@ -7,16 +7,25 @@
       :headers="showHeaders"
       :items="projects"
       :fixed-header="true"
-      :itemsPerPage="20"
+      :itemsPerPage="1"
       :footer-props="{
-        'items-per-page-options': [5, 20, 25, 30, 35, 40, 50, -1],
+        'items-per-page-options': [1, 2, 5, 20, 25, 30, 35, 40, 50, -1],
+        'items-per-page-text': 'projects per page',
       }"
-      height="755px"
-      sort-by="calories"
+      height="470px"
       class="elevation-0"
       dense
-      hide-default-footer
+      :loading="dataTableLoading"
+      loading-text="Fetching Project Data"
+   
     >
+        <!-- :server-items-length="parseInt(testPagination.total)" -->
+      <!-- :footer-props="{
+        'items-per-page-options': [pagination.total, -1],
+          pagination:{
+          page:1
+        }
+      }" -->
       <template v-slot:top>
         <v-toolbar flat>
           <v-toolbar-title class="h6">PROJECTS</v-toolbar-title>
@@ -47,6 +56,7 @@
             <v-icon small dark left> mdi-refresh </v-icon> REFRESH
           </v-btn>
           <!-- -------------------------------- -->
+
           <!-- Display coulmns -->
           <!-- <v-select
             style="maxWidth: 280px;"
@@ -71,7 +81,7 @@
           <!-- -------------------------------- -->
 
           <!-- HIDE COLUMNS -->
-          <v-menu top :close-on-content-click="false"> 
+          <v-menu top :close-on-content-click="false">
             <template v-slot:activator="{ on, attrs }">
               <v-btn
                 color="white"
@@ -110,7 +120,7 @@
                 </v-select>
               </v-list-item>
             </v-list>
-          </v-menu> 
+          </v-menu>
 
           <!-- ADD BUTTONS -->
           <v-btn
@@ -624,7 +634,7 @@
                 </v-container>
               </v-card-text>
 
-              <v-card-actions>
+              <v-card-actions class="blue-grey lighten-4">
                 <v-spacer></v-spacer>
                 <v-btn color="blue darken-1" text @click="close">
                   Cancel
@@ -640,7 +650,11 @@
           <v-dialog v-model="dialogDelete" max-width="800px">
             <v-card>
               <v-card-title class="headline"
-                >Are you sure you want to delete this project <span class="font-weight-bold pl-3"> {{editedItem.title}}</span>  ?</v-card-title
+                >Are you sure you want to delete this project
+                <span class="font-weight-bold pl-3">
+                  {{ editedItem.title }}</span
+                >
+                ?</v-card-title
               >
               <v-card-actions>
                 <v-spacer></v-spacer>
@@ -724,6 +738,35 @@
         <p class="m-1">{{ index + 1 }}</p>
       </template>
 
+      <!-- project status -->
+      <template v-slot:[`item.status`]="{ item, index }">
+        <!-- {{ item.status }} -->
+        <v-chip
+          color="orange"
+          small
+          class="white--text"
+          v-if="item.status == 'on progress'"
+        >
+          {{ item.status }}
+        </v-chip>
+        <v-chip
+          color="green"
+          small
+          class="white--text"
+          v-if="item.status == 'completed'"
+        >
+          {{ item.status }}
+        </v-chip>
+        <v-chip
+          color="#039BE5"
+          small
+          class="white--text"
+          v-if="item.status == 'on testing stage'"
+        >
+          {{ item.status }}
+        </v-chip>
+      </template>
+
       <template v-slot:[`item.duration`]="{ item }">
         <p class="m-1">{{ item.duration + " Days" }}</p>
       </template>
@@ -755,17 +798,58 @@
       </template>
 
       <template v-slot:footer>
-        {{ pagination.test }}
-        <!-- <v-divider></v-divider> -->
-
         <v-row justify="end" class="mr-3  ma-0 pa-0 m-0 ">
+          <pre>
+            {{ testPagination }}
+          </pre>
+          <!-- <v-pagination
+            class="text-right"
+            v-model="pagination.localCurrentPage"
+            :length="pagination.total"
+            @input="onPageChange"
+            total-visible="0"
+          ></v-pagination> -->
+        </v-row>
+      </template>
+      <!-- <template v-slot:[`footer.page-text`]>
+        <v-pagination
+          class="text-right"
+          v-model="pagination.localCurrentPage"
+          :length="pagination.total"
+          @input="onPageChange"
+          total-visible="0"
+          
+        ></v-pagination>
+      </template> -->
+
+     
+
+      <template
+        v-slot:footer.page-text="{
+          pageStart,
+          pageStop,
+          page,
+          itemsPerPage,
+          pageCount,
+          itemsLength,
+        }"
+      >
+        <div class="d-flex align-center justify-center">
+          <p class="pt-5">Items: {{ testPagination.from }} - {{ testPagination.total }}</p>
+
           <v-pagination
             class="text-right"
             v-model="pagination.localCurrentPage"
             :length="pagination.total"
             @input="onPageChange"
+            total-visible="0"
           ></v-pagination>
-        </v-row>
+        </div>
+      </template>
+
+      <template slot="actions-prepend">
+        <div style="width:100%"><v-btn>action</v-btn>sdfsf</div>
+        sdfsdf
       </template>
 
       <!-- no data -->
@@ -1134,6 +1218,7 @@ export default {
   },
   data: () => ({
     page: {},
+    dataTableLoading: true,
     viewDialog: false,
     avatar: {},
     editorToolBar: [
@@ -1160,6 +1245,7 @@ export default {
         sortable: true,
         value: "id",
         width: "4%",
+        class: "grey--text ",
       },
       {
         text: "logo",
@@ -1167,24 +1253,28 @@ export default {
         sortable: false,
         value: "logo",
         width: "5%",
+        class: "grey--text ",
       },
       {
         text: "project",
         align: "start",
         sortable: true,
         value: "title",
+        class: "grey--text ",
       },
       {
         text: "starting date",
         value: "startingdate",
         width: "8%",
         align: "center",
+        class: "grey--text ",
       },
       {
         text: "deadline",
         value: "deadline",
         width: "7%",
         align: "center",
+        class: "grey--text ",
       },
 
       {
@@ -1192,6 +1282,7 @@ export default {
         value: "duration",
         width: "6%",
         align: "center",
+        class: "grey--text ",
       },
 
       {
@@ -1199,6 +1290,7 @@ export default {
         value: "incharge_name",
         width: "10%",
         align: "center",
+        class: "grey--text ",
       },
       // {
       //   text: "Team Members",
@@ -1207,15 +1299,28 @@ export default {
       //   align: "center",
       // },
 
-      { text: "status", value: "status", width: "10%", align: "center" },
+      {
+        text: "status",
+        value: "status",
+        width: "10%",
+        align: "center",
+        class: "grey--text ",
+      },
       {
         text: "version",
         value: "projectVersion",
         width: "7%",
         align: "end",
+        class: "grey--text ",
       },
 
-      { text: "cost", value: "cost", width: "10%", align: "end" },
+      {
+        text: "cost",
+        value: "cost",
+        width: "10%",
+        align: "end",
+        class: "grey--text ",
+      },
 
       {
         text: "Actions",
@@ -1223,6 +1328,7 @@ export default {
         sortable: false,
         width: "8%",
         align: "center",
+        class: "grey--text ",
       },
     ],
     projects: [],
@@ -1282,6 +1388,19 @@ export default {
       total: 1,
     },
     viewData: {},
+    testPagination: {
+      first_page_url: "",
+      from: "",
+      last_page: "",
+      last_page_url: "",
+      next_page_url: "",
+      path: "",
+      per_page: "",
+      prev_page_url: "",
+      to: "",
+      total: "",
+      links: [],
+    },
   }),
 
   computed: {
@@ -1372,12 +1491,28 @@ export default {
       this.paginateData();
     },
     paginateData() {
-       
+      this.dataTableLoading = true;
       this.projects.splice(0);
       this.$http
         .get("url_projects?page=" + localStorage.getItem("paginateKey"))
         .then((res) => {
-          console.log(res.data);
+          console.log("ppp", res.data);
+
+          this.testPagination = {
+            first_page_url: res.data.projects.first_page_url,
+            from: res.data.projects.from,
+            last_page: res.data.projects.last_page,
+            last_page_url: res.data.projects.last_page_url,
+            next_page_url: res.data.projects.next_page_url,
+            path: res.data.projects.path,
+            per_page: res.data.projects.per_page,
+            prev_page_url: res.data.projects.prev_page_url,
+            to: res.data.projects.to,
+            total: res.data.projects.total,
+            links: res.data.projects.links.forEach((element) => {
+              element;
+            }),
+          };
           this.pagination.total = res.data.projects.last_page;
 
           //----------------------
@@ -1422,6 +1557,7 @@ export default {
               ),
             });
           });
+          this.dataTableLoading = false;
         });
     },
     onSearch(e) {
@@ -1798,4 +1934,10 @@ export default {
 };
 </script>
 
-<style></style>
+<style lang="scss">
+.table-header {
+  thead {
+    background-color: red;
+  }
+}
+</style>
