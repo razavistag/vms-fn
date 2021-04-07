@@ -7,10 +7,8 @@ import vuetify from "./plugins/vuetify";
 import VueAgile from "vue-agile";
 import VeeValidate from "vee-validate";
 import axios from "axios";
-import Croppa from 'vue-croppa'
-import moment from 'moment'
-
-
+import Croppa from "vue-croppa";
+import moment from "moment";
 import { BootstrapVue, IconsPlugin } from "bootstrap-vue";
 // import { VueEditor } from "vue2-editor";
 // import { VueEditor, Quill } from "vue2-editor";
@@ -35,7 +33,7 @@ const base = axios.create({
 });
 
 Vue.prototype.$http = base;
-
+localStorage.setItem("fullScreen", 0);
 Vue.config.productionTip = false;
 
 new Vue({
