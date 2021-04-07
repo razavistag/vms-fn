@@ -6,7 +6,10 @@
       </v-btn>
       Dashboard
       <v-spacer></v-spacer>
-      <v-btn small icon @click="getFullScreen" v-if="!fullscreen">
+      <v-btn small icon @click="bugCapture">
+        <v-icon small>mdi-bug</v-icon>
+      </v-btn>
+       <v-btn small icon @click="getFullScreen" v-if="!fullscreen">
         <v-icon small>mdi-arrow-expand-all</v-icon>
       </v-btn>
       <v-btn small icon color="white" dark @click="exitFullScreen" v-else>
@@ -166,6 +169,9 @@ export default {
           console.log(e);
         });
     },
+    bugCapture(){
+      console.log('capture bug')
+    }
   },
 };
 </script>
