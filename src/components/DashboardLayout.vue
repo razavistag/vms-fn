@@ -96,17 +96,17 @@ export default {
         {
           title: "DASHBOARD",
           icon: "mdi-home",
-          to: "/usr_dashboard",
+          to: "/dashboard",
         },
         {
           title: "PROJECTS",
           icon: "mdi-image-filter-center-focus-strong",
-          to: "/usr_projects",
+          to: "/projects",
         },
         {
           title: "SYSTEMS",
           icon: "mdi-server",
-          to: "usr_systems",
+          to: "systems",
         },
         {
           title: "TASKS",
@@ -131,7 +131,7 @@ export default {
   methods: {
     logout() {
       console.log("loggedout");
-      let url = "/usr_logout";
+      let url = "/logout";
       this.$http
         .get(url)
         .then((response) => {

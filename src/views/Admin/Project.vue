@@ -7,7 +7,12 @@
       :items="projects"
       id="dt_table"
       :fixed-header="true"
+<<<<<<< Updated upstream
       height="757px"
+=======
+      
+      height="470px"
+>>>>>>> Stashed changes
       class="elevation-0"
       dense
       :loading="dataTableLoading"

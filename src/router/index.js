@@ -16,14 +16,14 @@ const routes = [
     component: Home,
   },
   {
-    path: "/system_login",
+    path: "/login",
     name: "Login",
     component: Login,
     beforeEnter: (to, from, next) => {
       if (localStorage.getItem("Remember") == 'true') {
         console.log("remember true");
         return next({
-          path: "/usr_dashboard",
+          path: "/dashboard",
           name: "AdminDashboard",
           component: AdminDashboard,
         });
@@ -36,14 +36,14 @@ const routes = [
   },
 
   {
-    path: "/usr_dashboard",
+    path: "/dashboard",
     name: "AdminDashboard",
     component: AdminDashboard,
     beforeEnter: (to, from, next) => {
       if (!localStorage.getItem("token")) {
         console.log("token not exsist");
         return next({
-          path: "/system_login",
+          path: "/login",
           name: "Login",
           component: Login,
         });
@@ -55,14 +55,14 @@ const routes = [
     },
   }, 
   {
-    path: "/usr_projects",
+    path: "/projects",
     name: "Project",
     component: Project,
     beforeEnter: (to, from, next) => {
       if (!localStorage.getItem("token")) {
         console.log("token not exsist");
         return next({
-          path: "/system_login",
+          path: "/login",
           name: "Login",
           component: Login,
         });
@@ -74,14 +74,14 @@ const routes = [
     },
   },
   {
-    path: "/usr_systems",
+    path: "/systems",
     name: "System",
     component: System,
     beforeEnter: (to, from, next) => {
       if (!localStorage.getItem("token")) {
         console.log("token not exsist");
         return next({
-          path: "/system_login",
+          path: "/login",
           name: "Login",
           component: Login,
         });

@@ -411,7 +411,7 @@ export default {
           return;
         }
 
-        let uri = "/usr_login";
+        let uri = "/login";
         const login = {
           email: this.email,
           password: this.password,
@@ -475,7 +475,7 @@ export default {
           password: this.RegisterForm.password,
           passwordConfirm: this.RegisterForm.passwordConfirm,
         };
-        let url = "/usr_register";
+        let url = "/register";
 
         this.$http
           .post(url, register)
