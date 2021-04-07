@@ -694,7 +694,7 @@
           Days
         </p>
 
-        <p v-else>
+        <p class="m-1" v-else>
           {{
             item.duration.toString().substring(0, 1) == "-"
               ? null
