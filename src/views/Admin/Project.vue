@@ -731,18 +731,77 @@
 
       <!-- body append -->
       <template slot="body.append">
-        <tr class="pink--text text-end">
-          <th class=""></th>
-          <th class=""></th>
-          <th class=""></th>
-          <th class=""></th>
-          <th class=""></th>
-          <th class=""></th>
-          <th class=""></th>
-          <th class=""></th>
-          <th class="text-end">Totals</th>
-          <th class="text-end total">Rs. {{ sumField("cost") }}</th>
-          <th class=""></th>
+        <tr
+          class="pink--text text-end"
+          :class="{ 'v-data-table__mobile-table-row': isMobile }"
+        >
+          <th
+            class=""
+            :colspan="`${isMobile ? 6 : 1}`"
+            :class="{ 'v-data-table__mobile-row': isMobile }"
+            v-if="!isMobile"
+          ></th>
+          <th
+            class=""
+            :colspan="`${isMobile ? 6 : 1}`"
+            :class="{ 'v-data-table__mobile-row': isMobile }"
+             v-if="!isMobile"
+          ></th>
+          <th
+            class=""
+            :colspan="`${isMobile ? 6 : 1}`"
+            :class="{ 'v-data-table__mobile-row': isMobile }"
+             v-if="!isMobile"
+          ></th>
+          <th
+            class=""
+            :colspan="`${isMobile ? 6 : 1}`"
+            :class="{ 'v-data-table__mobile-row': isMobile }"
+             v-if="!isMobile"
+          ></th>
+          <th
+            class=""
+            :colspan="`${isMobile ? 6 : 1}`"
+            :class="{ 'v-data-table__mobile-row': isMobile }"
+             v-if="!isMobile"
+          ></th>
+          <th
+            class=""
+            :colspan="`${isMobile ? 6 : 1}`"
+            :class="{ 'v-data-table__mobile-row': isMobile }"
+             v-if="!isMobile"
+          ></th>
+          <th
+            class=""
+            :colspan="`${isMobile ? 6 : 1}`"
+            :class="{ 'v-data-table__mobile-row': isMobile }"
+             v-if="!isMobile"
+          ></th>
+          <th
+            class=""
+            :colspan="`${isMobile ? 6 : 1}`"
+            :class="{ 'v-data-table__mobile-row': isMobile }"
+             v-if="!isMobile"
+          ></th>
+          <th
+            class="text-end"
+            :colspan="`${isMobile ? 6 : 1}`"
+            :class="{ 'v-data-table__mobile-row': isMobile }"
+          >
+            TOTAL COST
+          </th>
+          <th
+            class="text-end total"
+            :colspan="`${isMobile ? 6 : 1}`"
+            :class="{ 'v-data-table__mobile-row': isMobile }"
+          >
+            Rs. {{ sumField("cost") }}
+          </th>
+          <th
+            class=""
+            :colspan="`${isMobile ? 6 : 1}`"
+            :class="{ 'v-data-table__mobile-row': isMobile }"
+          ></th>
         </tr>
       </template>
 
@@ -1296,6 +1355,9 @@ export default {
     showHeaders() {
       return this.headers.filter((s) => this.selectedHeaders.includes(s));
     },
+    isMobile() {
+      return this.$vuetify.breakpoint.name === "xs";
+    },
   },
 
   watch: {
@@ -1643,6 +1705,8 @@ export default {
     close() {
       this.dialog = false;
       this.removeImage();
+      this.selectedIncharge.splice(0);
+      this.selectedTeam.splice(0);
       this.$nextTick(() => {
         this.editedItem = Object.assign({}, this.defaultItem);
         this.editedIndex = -1;
@@ -1719,7 +1783,7 @@ export default {
             return;
           }
 
-          this.projects.push(this.editedItem);
+          // this.projects.push(this.editedItem);
 
           const save = {
             title: this.editedItem.title,
@@ -1778,10 +1842,10 @@ export default {
   },
 };
 </script>
-<style >
+<style>
 .total {
   /* padding-top: 15px; */
- border-top: 2px solid red;
- border-bottom: double red;
+  border-top: 2px solid red;
+  border-bottom: double red;
 }
 </style>
