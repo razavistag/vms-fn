@@ -1,9 +1,9 @@
 <template>
   <div id="DashboardLayout">
     <v-app-bar :color="headerColor" dark app height="37" dense flat>
-      <!-- <v-btn small icon>
+      <v-btn small icon class="v_menu_icon_btn" @click="mobileDrawer = !mobileDrawer">
         <v-icon small>mdi-menu</v-icon>
-      </v-btn> -->
+      </v-btn>
       Dashboard
       <v-spacer></v-spacer>
       <v-btn small icon @click="getFullScreen" v-if="!fullscreen">
@@ -17,6 +17,7 @@
       </v-btn>
     </v-app-bar>
 
+    <!-- desktop navigation on hover -->
     <v-navigation-drawer
       elevation
       app
@@ -24,6 +25,37 @@
       :expand-on-hover="true"
       permanent
       mini-variant-width="40"
+      class="navigation_drawer_desktop"
+    >
+      <v-list dense nav class="pa-0">
+        <v-list-item
+          v-for="item in items"
+          :key="item.title"
+          link
+          :to="item.to"
+          class="text-decoration-none"
+        >
+          <v-list-item-icon>
+            <v-icon class="gray--text" small>{{ item.icon }}</v-icon>
+          </v-list-item-icon>
+
+          <v-list-item-content>
+            <v-list-item-title class="gray--text">
+              {{ item.title }}
+            </v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+    </v-navigation-drawer>
+
+    <!-- mobile Navigation on menu button click -->
+    <v-navigation-drawer
+      elevation
+      app
+      :color="sideBar"
+      temporary
+      
+      v-model="mobileDrawer"
     >
       <v-list dense nav class="pa-0">
         <v-list-item
@@ -55,6 +87,8 @@ export default {
     return {
       headerColor: "primary",
       sideBar: "indigo lighten-4",
+      expand_on_hover: true,
+      mobileDrawer: false,
       items: [
         {
           title: "DASHBOARD",
@@ -94,16 +128,16 @@ export default {
   methods: {
     logout() {
       console.log("loggedout");
-      let url = '/usr_logout'
+      let url = "/usr_logout";
       this.$http
         .get(url)
         .then((response) => {
           console.log(response.data);
-         console.log(response)
-         localStorage.removeItem('token')
+          console.log(response);
+          localStorage.removeItem("token");
           this.$router.push({
-              name: "Login",
-            });
+            name: "Login",
+          });
         })
         .catch((response) => {
           console.log("Error Fround. Project Not Saved");
@@ -135,5 +169,3 @@ export default {
   },
 };
 </script>
-
-<style></style>

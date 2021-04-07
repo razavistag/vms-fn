@@ -16,7 +16,7 @@ import { BootstrapVue, IconsPlugin } from "bootstrap-vue";
 // import { VueEditor, Quill } from "vue2-editor";
 
 // Import  CSS
-import "./styles/main.css";
+import "./styles/main.scss";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 import 'vue-croppa/dist/vue-croppa.css'

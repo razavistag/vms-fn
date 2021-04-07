@@ -2,33 +2,29 @@
   <div id="Projects">
     <!-- Layout -->
     <DashboardLayout />
-
     <v-data-table
       :headers="showHeaders"
       :items="projects"
+      id="dt_table"
       :fixed-header="true"
-      height="470px"
+      height="757px"
       class="elevation-0"
       dense
       :loading="dataTableLoading"
       loading-text="Fetching Project Data"
       disable-pagination
       :footer-props="{
-        'items-per-page-options': [pagination.total], 
+        'items-per-page-options': [pagination.total],
         prevIcon: '',
         nextIcon: '',
       }"
     >
-      <!-- :server-items-length="parseInt(testPagination.total)" -->
-      <!-- :footer-props="{
-        'items-per-page-options': [pagination.total, -1],
-          pagination:{
-          page:1
-        }
-      }" -->
+      <!-- DataTable Header -->
       <template v-slot:top>
-        <v-toolbar flat>
-          <v-toolbar-title class="h6">PROJECTS</v-toolbar-title>
+        <v-toolbar flat id="toolbar">
+          <v-toolbar-title class="h6" id="v_table_title">
+            PROJECTS
+          </v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-spacer></v-spacer>
 
@@ -40,24 +36,28 @@
             label="Search"
             hide-details
             dense
-            class="shrink mx-4 my-4"
+            class="shrink mx-4 my-4  v_toolbar_search_text_field"
           >
           </v-text-field>
 
           <!-- REFRESH BUTTONS -->
           <v-btn
             color="white"
-            class="indigo lighten-1 ma-1"
+            class="indigo lighten-1 ma-1 text-center"
+            id="v_toolbar_refresh_btn"
             text
             tile
             small
             @click="refresh"
           >
-            <v-icon small dark left> mdi-refresh </v-icon> REFRESH
+            <v-icon small dark class="v_toolbar_refresh_icon">
+              mdi-refresh
+            </v-icon>
+            <span class="v_toolbar_refresh_text">REFRESH</span>
           </v-btn>
           <!-- -------------------------------- -->
 
-          <!-- Display coulmns -->
+          <!-- HIDE COLUMNS without button -->
           <!-- <v-select
             style="maxWidth: 280px;"
             v-model="selectedHeaders"
@@ -80,7 +80,7 @@
           </v-select> -->
           <!-- -------------------------------- -->
 
-          <!-- HIDE COLUMNS -->
+          <!-- HIDE COLUMNS with button-->
           <v-menu top :close-on-content-click="false">
             <template v-slot:activator="{ on, attrs }">
               <v-btn
@@ -92,7 +92,10 @@
                 v-bind="attrs"
                 v-on="on"
               >
-                <v-icon left small dark> mdi-eye </v-icon> DISPLAY COLUMNS
+                <v-icon small dark> mdi-eye </v-icon>
+                <span class="v_toolbar_display_column_text"
+                  >DISPLAY COLUMNS</span
+                >
               </v-btn>
             </template>
 
@@ -131,10 +134,11 @@
             small
             @click="newDialog"
           >
-            <v-icon small dark left> mdi-plus </v-icon> ADD PROJECTS
+            <v-icon small dark> mdi-plus </v-icon>
+            <span class="v_toolbar_add_project_text">ADD PROJECTS</span>
           </v-btn>
 
-          <!-- form dialog -->
+          <!-- FORM DIALOG -->
           <v-dialog
             v-model="dialog"
             max-width="1200px"
@@ -144,12 +148,12 @@
           >
             <v-card>
               <v-card-title class="indigo lighten-4">
-                <span class="headline "
-                  >{{ formTitle }}
-                  <span v-if="editedIndex != -1">{{
-                    editedItem.title
-                  }}</span></span
-                >
+                <span class="headline ">
+                  {{ formTitle }}
+                  <span v-if="editedIndex != -1">
+                    {{ editedItem.title }}
+                  </span>
+                </span>
                 <v-spacer></v-spacer>
                 <v-icon @click="dialog = false">mdi-close</v-icon>
               </v-card-title>
@@ -158,9 +162,7 @@
                 <v-container>
                   <ValidationObserver ref="form">
                     <v-row>
-                      <!-- {{editedItem.id}} -->
                       <!-- title -->
-
                       <v-col cols="12" sm="6" md="4" v-if="editedIndex != -1">
                         <ValidationProvider
                           rules="required|min:5"
@@ -241,8 +243,7 @@
                         ></v-text-field> -->
                         <!-- ------------------------ -->
                       </v-col>
-                      <!-- {{editedItem.deadline}} -->
-                      <!-- {{moment(editedItem.deadline).format("X")}} -->
+
                       <!-- dead line picker 1 -->
                       <v-col cols="12" sm="6" md="4">
                         <v-menu
@@ -332,14 +333,6 @@
                           name="Team Members"
                           v-slot="{ errors }"
                         >
-                          <!-- <div
-                            v-for="i in selectedTeam"
-                            :key="i.member_id"
-                            class="d-flex flex flex-row"
-                          >
-                            <v-chip x-small>{{ i }}</v-chip>
-                          </div> -->
-
                           <v-combobox
                             v-model="selectedTeam"
                             :items="teamMembers"
@@ -422,14 +415,6 @@
                               </v-list-item>
                             </template>
                           </v-combobox>
-                          <!-- <v-text-field
-                            v-model="editedItem.projectIncharge"
-                            :label="errors[0] ? errors[0] : 'Project Incharge'"
-                            :error-messages="errors"
-                            hide-details=""
-                            clearable
-                            dense
-                          ></v-text-field> -->
                         </ValidationProvider>
                       </v-col>
 
@@ -478,13 +463,13 @@
                         md="4"
                         class="pa-0 pl-5 pt-4 text-center"
                       >
-                        <!-- {{editedItem.logo}} -->
                         <v-icon
                           v-if="editedItem.logo"
                           class="upload_on_edit"
                           @click="editedItem.logo = !editedItem.logo"
-                          >mdi-pencil</v-icon
                         >
+                          mdi-pencil
+                        </v-icon>
                         <v-img
                           v-if="editedItem.logo"
                           :src="
@@ -494,12 +479,12 @@
                           height="250"
                           class="editImage"
                         />
-                        <!-- upload image -->
 
+                        <!-- upload image -->
                         <image-cropper
                           v-if="!editedItem.logo"
                           v-model="avatar"
-                          :width="285"
+                          :width="265"
                           :height="250"
                           placeholder="Choose company logo"
                           :show-remove-button="true"
@@ -532,6 +517,7 @@
                           <span>Project Description</span>
                         </v-tooltip>
                       </v-col>
+
                       <!-- features -->
                       <v-col cols="12" sm="6" md="4">
                         <v-tooltip top>
@@ -547,20 +533,6 @@
                         </v-tooltip>
                       </v-col>
 
-                      <!-- <v-col cols="12" sm="6" md="4">
-                        <v-tooltip top>
-                          <template v-slot:activator="{ on, attrs }">
-                            <div v-bind="attrs" v-on="on">
-                              <vue-editor
-                                v-model="editedItem.notes"
-                                :editorToolbar="editorToolBar"
-                              ></vue-editor>
-                            </div>
-                          </template>
-                          <span>Project Notes</span>
-                        </v-tooltip>
-                      </v-col> -->
-
                       <v-col cols="12" sm="6" md="4">
                         <v-tooltip top>
                           <template v-slot:activator="{ on, attrs }">
@@ -575,6 +547,7 @@
                         </v-tooltip>
                       </v-col>
 
+                      <!-- special note -->
                       <v-col cols="12" sm="6" md="4">
                         <v-tooltip top>
                           <template v-slot:activator="{ on, attrs }">
@@ -589,46 +562,6 @@
                           <span>Project Special Note</span>
                         </v-tooltip>
                       </v-col>
-
-                      <!-- ---------------------------------------------------- -->
-
-                      <!-- duration -->
-                      <!-- <v-col cols="12" sm="6" md="4">
-                        <ValidationProvider
-                          rules="required"
-                          name="Project Duration"
-                          v-slot="{ errors }"
-                        >
-                          <v-text-field
-                            v-model="editedItem.duration"
-                            :label="errors[0] ? errors[0] : 'Duration'"
-                            :error-messages="errors"
-                            hide-details=""
-                            clearable
-                            dense
-                          ></v-text-field>
-                        </ValidationProvider>
-                      </v-col> -->
-
-                      <!-- collanorators count -->
-                      <!-- <v-col cols="12" sm="6" md="4">
-                        <ValidationProvider
-                          rules="required"
-                          name="Collaborators Count"
-                          v-slot="{ errors }"
-                        >
-                          <v-text-field
-                            v-model="editedItem.collaborators"
-                            :label="
-                              errors[0] ? errors[0] : 'Collaborators Count'
-                            "
-                            :error-messages="errors"
-                            hide-details=""
-                            clearable
-                            dense
-                          ></v-text-field>
-                        </ValidationProvider>
-                      </v-col> -->
                     </v-row>
                   </ValidationObserver>
                 </v-container>
@@ -649,21 +582,21 @@
           <!-- delete dialog -->
           <v-dialog v-model="dialogDelete" max-width="800px">
             <v-card>
-              <v-card-title class="headline"
-                >Are you sure you want to delete this project
+              <v-card-title class="headline">
+                Are you sure you want to delete this project
                 <span class="font-weight-bold pl-3">
-                  {{ editedItem.title }}</span
-                >
-                ?</v-card-title
-              >
+                  {{ editedItem.title }}
+                </span>
+                ?
+              </v-card-title>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeDelete"
-                  >Cancel</v-btn
-                >
-                <v-btn color="blue darken-1" text @click="deleteItemConfirm"
-                  >OK</v-btn
-                >
+                <v-btn color="blue darken-1" text @click="closeDelete">
+                  Cancel
+                </v-btn>
+                <v-btn color="blue darken-1" text @click="deleteItemConfirm">
+                  OK
+                </v-btn>
                 <v-spacer></v-spacer>
               </v-card-actions>
             </v-card>
@@ -671,33 +604,18 @@
         </v-toolbar>
       </template>
 
+      <!-- index id -->
+      <template v-slot:[`item.id`]="{ item, index }">
+        <p class="m-1">{{ index + 1 }}</p>
+      </template>
+
       <!--Start Date -->
       <template v-slot:[`item.startingdate`]="{ item }">
         {{ item.startingdate.substring(0, 10) }}
-        <!-- {{new Date(item.startingdate * 1000)}} -->
-        <!-- {{
-          moment(item.startingdate * 1000).calendar(
-            "dddd, MMMM Do YYYY, h:mm:ss a"
-          )
-        }} -->
-
-        <!-- {{
-          moment(item.startingdate * 1000)
-            .format("DD/MM/YYYY")
-            .substring(0, 10)
-        }} -->
       </template>
       <!--end Date -->
       <template v-slot:[`item.deadline`]="{ item }">
         {{ item.deadline.substring(0, 10) }}
-        <!-- {{
-          moment(item.deadline * 1000).calendar("dddd, MMMM Do YYYY, h:mm:ss a")
-        }} -->
-
-        <!-- {{
-          moment(item.deadline * 1000)
-            .format("DD/MM/YYYY") 
-        }} -->
       </template>
 
       <!-- Avatar -->
@@ -733,14 +651,8 @@
         </v-menu>
       </template>
 
-      <!-- duration date -->
-      <template v-slot:[`item.id`]="{ item, index }">
-        <p class="m-1">{{ index + 1 }}</p>
-      </template>
-
       <!-- project status -->
       <template v-slot:[`item.status`]="{ item, index }">
-        <!-- {{ item.status }} -->
         <v-chip
           color="orange"
           small
@@ -767,8 +679,28 @@
         </v-chip>
       </template>
 
+      <!-- duration -->
       <template v-slot:[`item.duration`]="{ item }">
-        <p class="m-1">{{ item.duration + " Days" }}</p>
+        <p
+          class="m-1 red--text"
+          v-if="item.duration.toString().substring(0, 1) == '-'"
+        >
+          {{
+            item.duration.toString().substring(0, 1) == "-"
+              ? "(" + item.duration + ")"
+              : null
+          }}
+          Days
+        </p>
+
+        <p v-else>
+          {{
+            item.duration.toString().substring(0, 1) == "-"
+              ? null
+              : item.duration
+          }}
+          Days
+        </p>
       </template>
 
       <!-- Table Action -->
@@ -797,31 +729,24 @@
         </v-icon>
       </template>
 
-      <template v-slot:footer>
-        <v-row justify="end" class="mr-3  ma-0 pa-0 m-0 ">
-          <pre>
-            {{ testPagination }}
-          </pre>
-          <!-- <v-pagination
-            class="text-right"
-            v-model="pagination.localCurrentPage"
-            :length="pagination.total"
-            @input="onPageChange"
-            total-visible="0"
-          ></v-pagination> -->
-        </v-row>
+      <!-- body append -->
+      <template slot="body.append">
+        <tr class="pink--text text-end">
+          <th class=""></th>
+          <th class=""></th>
+          <th class=""></th>
+          <th class=""></th>
+          <th class=""></th>
+          <th class=""></th>
+          <th class=""></th>
+          <th class=""></th>
+          <th class="text-end">Totals</th>
+          <th class="text-end total">Rs. {{ sumField("cost") }}</th>
+          <th class=""></th>
+        </tr>
       </template>
-      <!-- <template v-slot:[`footer.page-text`]>
-        <v-pagination
-          class="text-right"
-          v-model="pagination.localCurrentPage"
-          :length="pagination.total"
-          @input="onPageChange"
-          total-visible="0"
-          
-        ></v-pagination>
-      </template> -->
 
+      <!-- Footer Page Text -->
       <template
         v-slot:footer.page-text="{
           pageStart,
@@ -832,9 +757,11 @@
           itemsLength,
         }"
       >
-        <div class="d-flex align-center justify-center">
-          <p class="pt-5">
-            Projects: {{ testPagination.from }} - {{ testPagination.total }}
+        <div class="d-flex align-center   ">
+          <p class="pt-5">Projects Per Page: {{ dtPagination.per_page }}</p>
+
+          <p class="pt-5 ml-4">
+            Projects: {{ dtPagination.from }} - {{ dtPagination.total }}
           </p>
 
           <v-pagination
@@ -845,11 +772,6 @@
             total-visible="0"
           ></v-pagination>
         </div>
-      </template>
-
-      <template slot="actions-prepend">
-        <div style="width:100%"><v-btn>action</v-btn>sdfsf</div>
-        sdfsdf
       </template>
 
       <!-- no data -->
@@ -914,8 +836,7 @@
                 <p class="text-justify" v-html="viewData.description"></p>
               </v-col>
 
-              <!-- project , version, start date, deadline -->
-              <!-- <v-col md="3" sm="12" cols="12" class=" mt-5 "> </v-col> -->
+              <!-- project version -->
               <v-col
                 md="2"
                 sm="3"
@@ -929,6 +850,8 @@
                   </span>
                 </p>
               </v-col>
+
+              <!-- project started  -->
               <v-col
                 md="3"
                 sm="12"
@@ -942,6 +865,8 @@
                   </span>
                 </p>
               </v-col>
+
+              <!-- project deadline -->
               <v-col
                 md="3"
                 sm="12"
@@ -953,6 +878,8 @@
                   <span class="font-weight-bold">{{ viewData.deadline }} </span>
                 </p>
               </v-col>
+
+              <!-- project status  -->
               <v-col
                 md="3"
                 sm="3"
@@ -991,9 +918,7 @@
             </v-row>
 
             <v-row class="m-0 ml-5">
-              <!-- project status -->
-              <!-- <v-col md="3" sm="12" cols="12" class=" mt-5 "> </v-col> -->
-
+              <!-- project price -->
               <v-col
                 md="2"
                 sm="3"
@@ -1009,6 +934,7 @@
                 </p>
               </v-col>
 
+              <!-- documentation url -->
               <v-col
                 md="9"
                 sm="9"
@@ -1030,6 +956,7 @@
             </v-row>
 
             <v-row class="m-0 ml-1">
+              <!-- incharge info -->
               <v-col md="4" sm="4" cols="12" class=" ">
                 <small class="">PROJECT INCHARGE</small>
                 <v-card class="mt-1" max-width="400" tile flat>
@@ -1080,51 +1007,8 @@
                     </v-list-item-content>
                   </v-list-item>
                 </v-card>
-                <!-- <v-simple-table>
-                  <tr>
-                    <td class="text-uppercase text-start ">name:</td>
-                    <td class="text-uppercase text-start">
-                      {{ viewData.ic_name }}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="text-uppercase text-start ">company:</td>
-                    <td class="text-uppercase text-start">
-                      {{ viewData.ic_company }}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="text-uppercase text-start ">address:</td>
-                    <td class="text-uppercase text-start">
-                      {{ viewData.ic_address }}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="text-uppercase text-start">nic:</td>
-                    <td class="text-uppercase text-start">
-                      {{ viewData.ic_nic }}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="text-uppercase text-start">email:</td>
-                    <td class="text-uppercase text-start">
-                      {{ viewData.ic_email }}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="text-uppercase text-start">phone:</td>
-                    <td class="text-uppercase text-start">
-                      {{ viewData.ic_phone }}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="text-uppercase text-start">position:</td>
-                    <td class="text-uppercase text-start">
-                      <span>{{ viewData.ic_role }}</span>
-                    </td>
-                  </tr>
-                </v-simple-table> -->
 
+                <!-- Display Team members below the incharge details if project remark and note are exsist -->
                 <div
                   class="mt-3"
                   v-if="
@@ -1152,21 +1036,27 @@
                   </v-card>
                 </div>
               </v-col>
+
               <v-col md="8" sm="8" cols="12" class="  ">
+                <!-- project features -->
                 <div v-if="viewData.features">
                   <h6>FEATURES :</h6>
                   <p class="text-justify" v-html="viewData.features"></p>
                 </div>
 
+                <!-- remark -->
                 <div v-if="viewData.remark">
                   <h6>REMARK :</h6>
                   <p class="text-justify" v-html="viewData.remark"></p>
                 </div>
+
+                <!-- special note -->
                 <div v-if="viewData.specialNote">
                   <h6>SPECIAL NOTES :</h6>
                   <p class="text-justify" v-html="viewData.specialNote"></p>
                 </div>
 
+                <!-- display team member if remark and note are doesn't exsist -->
                 <div
                   v-if="
                     !viewData.specialNote &&
@@ -1206,7 +1096,6 @@ import DashboardLayout from "../../components/DashboardLayout";
 import { ValidationObserver, ValidationProvider } from "vee-validate";
 import { VueEditor } from "vue2-editor";
 import moment from "moment";
-// import Croppa from "vue-croppa";
 export default {
   name: "Projects",
   components: {
@@ -1214,13 +1103,34 @@ export default {
     ValidationObserver,
     ValidationProvider,
     VueEditor,
-    // 'croppa':Croppa,
   },
   data: () => ({
+    moment: moment,
+    search: "",
+
     page: {},
+    avatar: {},
+    viewData: {},
+
+    headers: [],
+    projects: [],
+    selectedHeaders: [],
+    profileLogo: [],
+    teamMembers: [],
+    selectedTeam: [],
+    selectedIncharge: [],
+    statusItems: ["on progress", "on testing stage", "completed"],
+
     dataTableLoading: true,
     viewDialog: false,
-    avatar: {},
+    dialog: false,
+    dialogDelete: false,
+    picker1: false,
+    picker2: false,
+
+    editedIndex: -1,
+    existData: -1,
+
     editorToolBar: [
       ["bold", "italic", "underline"],
       [{ list: "ordered" }, { list: "bullet" }],
@@ -1235,104 +1145,92 @@ export default {
       [{ header: [false, 1, 2, 3, 4, 5, 6] }],
       ["clean"],
     ],
-    dialog: false,
-    dialogDelete: false,
-    headers: [],
     headersMap: [
       {
         text: "#",
         align: "start",
         sortable: true,
         value: "id",
-        width: "4%",
-        class: "grey--text ",
+        // width: "4%",
+        class: " ",
       },
       {
         text: "logo",
         align: "center",
         sortable: false,
         value: "logo",
-        width: "5%",
-        class: "grey--text ",
+        // width: "5%",
+        class: " ",
       },
       {
         text: "project",
         align: "start",
         sortable: true,
         value: "title",
-        class: "grey--text ",
+        class: " ",
       },
       {
         text: "starting date",
         value: "startingdate",
-        width: "8%",
+        // width: "8%",
         align: "center",
-        class: "grey--text ",
+        class: " ",
       },
       {
         text: "deadline",
         value: "deadline",
-        width: "7%",
+        // width: "7%",
         align: "center",
-        class: "grey--text ",
+        class: " ",
       },
 
       {
         text: "duration",
         value: "duration",
-        width: "6%",
+        // width: "6%",
         align: "center",
-        class: "grey--text ",
+        class: " ",
       },
 
       {
         text: "Incharge",
         value: "incharge_name",
-        width: "10%",
+        // width: "10%",
         align: "center",
-        class: "grey--text ",
+        class: " ",
       },
-      // {
-      //   text: "Team Members",
-      //   value: "memberCount",
-      //   width: "8%",
-      //   align: "center",
-      // },
-
       {
         text: "status",
         value: "status",
-        width: "10%",
+        // width: "10%",
         align: "center",
-        class: "grey--text ",
+        class: " ",
       },
       {
         text: "version",
         value: "projectVersion",
-        width: "7%",
+        // width: "7%",
         align: "end",
-        class: "grey--text ",
+        class: " ",
       },
 
       {
         text: "cost",
         value: "cost",
-        width: "10%",
+        // width: "10%",
         align: "end",
-        class: "grey--text ",
+        class: " ",
       },
 
       {
         text: "Actions",
         value: "actions",
         sortable: false,
-        width: "8%",
+        // width: "10%",
         align: "center",
-        class: "grey--text ",
+        class: "dark--text",
       },
     ],
-    projects: [],
-    editedIndex: -1,
     editedItem: {
       id: "",
       title: "",
@@ -1371,24 +1269,12 @@ export default {
       logo: "",
       specialNote: "",
     },
-    selectedHeaders: [],
-    search: "",
-    existData: -1,
-    statusItems: ["on progress", "on testing stage", "completed"],
-    picker1: false,
-    picker2: false,
-    profileLogo: [],
-    teamMembers: [],
-    selectedTeam: [],
-    selectedIncharge: [],
-    moment: moment,
     pagination: {
       current: 1,
       localCurrentPage: parseInt(localStorage.getItem("paginateKey")),
       total: 1,
     },
-    viewData: {},
-    testPagination: {
+    dtPagination: {
       first_page_url: "",
       from: "",
       last_page: "",
@@ -1428,11 +1314,14 @@ export default {
     this.selectedHeaders = this.headers;
   },
   mounted() {
-    // this.viewForm();
     localStorage.setItem("paginateKey", 1);
   },
 
   methods: {
+    sumField(key) {
+      // sum data in give key (property)
+      return this.projects.reduce((a, b) => a + (b[key] || 0), 0);
+    },
     viewForm(item) {
       console.log("aaa", item);
       let url = "url_projects/view/" + item.id;
@@ -1441,10 +1330,8 @@ export default {
         .get(url)
         .then((response) => {
           console.log("viewForm", response);
-
           response.data.viewData.forEach((element) => {
             console.log("view data", element);
-
             this.viewData = {
               TeamMemberCount: response.data.TeamMemberCount,
               TeamMembers: response.data.TeamMembers,
@@ -1461,7 +1348,6 @@ export default {
               deadline: moment(element.deadline * 1000)
                 .format("YYYY/MM/DD")
                 .substr(0, 10),
-
               ic_name: element.ic_name,
               ic_company: element.ic_company,
               ic_nic: element.ic_nic,
@@ -1469,7 +1355,6 @@ export default {
               ic_email: element.ic_email,
               ic_phone: element.ic_phone,
               ic_role: element.ic_role,
-
               specialNote: element.specialNote,
               remark: element.remark,
               features: element.features,
@@ -1492,13 +1377,12 @@ export default {
     },
     paginateData() {
       this.dataTableLoading = true;
-      this.projects.splice(0);
       this.$http
         .get("url_projects?page=" + localStorage.getItem("paginateKey"))
         .then((res) => {
           console.log("ppp", res.data);
-
-          this.testPagination = {
+          this.projects.splice(0);
+          this.dtPagination = {
             first_page_url: res.data.projects.first_page_url,
             from: res.data.projects.from,
             last_page: res.data.projects.last_page,
@@ -1514,9 +1398,6 @@ export default {
             }),
           };
           this.pagination.total = res.data.projects.last_page;
-
-          //----------------------
-
           res.data.members.forEach((element) => {
             this.teamMembers.push(element);
           });
@@ -1527,8 +1408,6 @@ export default {
               memberCount: element.user_count,
               title: element.title,
               status: element.status,
-              // deadline: element.deadline,
-              // startingdate: element.startingdate,
               startingdate: moment(element.startingdate * 1000).format(
                 "DD/MM/YYYY"
               ),
@@ -1546,10 +1425,6 @@ export default {
               remark: element.remark,
               notes: element.notes,
               logo: element.logo,
-              // duration: this.dateDiffInDays(
-              //   new Date(Date()),
-              //   new Date(element.deadline)
-              // ),
               duration: this.momementDaateDiff(
                 element.startingdate,
                 moment(new Date()).format("DD-MM-YYYY"),
@@ -1558,6 +1433,11 @@ export default {
             });
           });
           this.dataTableLoading = false;
+        })
+        .catch((response) => {
+          console.log("catch ");
+          this.dataTableLoading = false;
+          this.existData = 1;
         });
     },
     onSearch(e) {
@@ -1569,15 +1449,13 @@ export default {
         this.$http.get(url).then((res) => {
           if (res.data.projects.data.length > 0) {
             console.log("have data");
+            this.projects.splice(0);
             res.data.projects.data.forEach((element) => {
-              this.projects.splice(0);
               this.projects.push({
                 id: element.project_id,
                 memberCount: element.user_count,
                 title: element.title,
                 status: element.status,
-                // deadline: element.deadline,
-                // startingdate: element.startingdate,
                 startingdate: moment(element.startingdate * 1000).format(
                   "DD/MM/YYYY"
                 ),
@@ -1595,10 +1473,6 @@ export default {
                 remark: element.remark,
                 notes: element.notes,
                 logo: element.logo,
-                // duration: this.dateDiffInDays(
-                //   new Date(Date()),
-                //   new Date(element.deadline)
-                // ),
                 duration: this.momementDaateDiff(
                   element.startingdate,
                   moment(new Date()).format("DD-MM-YYYY"),
@@ -1609,11 +1483,14 @@ export default {
           } else {
             console.log("no data");
             this.projects.splice(0);
+            this.paginateData();
+            this.dataTableLoading = false;
             this.existData = 1;
           }
         }, 4000);
       } else {
         console.log("dont");
+        this.projects.splice(0);
         this.paginateData();
       }
     },
@@ -1635,19 +1512,14 @@ export default {
         .then((response) => {
           console.log(response);
           response.data.members.forEach((element) => {
-            // console.log(element);
             this.teamMembers.push(element);
           });
           response.data.projects.forEach((element) => {
-            // console.log(element);
-            // this.projects.push(element);
             this.projects.push({
               id: element.project_id,
               memberCount: element.user_count,
               title: element.title,
               status: element.status,
-              // deadline: element.deadline,
-              // startingdate: element.startingdate,
               startingdate: moment(element.startingdate * 1000).format(
                 "DD/MM/YYYY"
               ),
@@ -1665,10 +1537,6 @@ export default {
               remark: element.remark,
               notes: element.notes,
               logo: element.logo,
-              // duration: this.dateDiffInDays(
-              //   new Date(Date()),
-              //   new Date(element.deadline)
-              // ),
               duration: this.momementDaateDiff(
                 element.startingdate,
                 moment(new Date()).format("DD-MM-YYYY"),
@@ -1679,15 +1547,13 @@ export default {
 
           console.log("data count", this.projects.length);
           if (this.projects.length <= 0) {
-            // console.log("no data");
             this.existData = 1;
           } else {
-            // console.log("have data");
             this.existData = -1;
           }
         })
         .catch((response) => {
-          // console.log("response");
+          // console.log(response);
         });
     },
 
@@ -1721,13 +1587,9 @@ export default {
           response.data.data.forEach((element) => {
             console.log(element);
             this.selectedTeam.push(element);
-            // this.selectedIncharge.push(element.incharge_name);
             this.editedItem = {
               id: element.project_id,
               title: element.title,
-              // deadline: element.deadline,
-              // startingdate: element.startingdate,
-
               startingdate: moment(element.startingdate * 1000)
                 .add(1, "d")
                 .toISOString()
@@ -1737,9 +1599,7 @@ export default {
 
                 .toISOString()
                 .substr(0, 10),
-              // moment(element.deadline * 1000).format("YYYY/MM/DD")
               status: element.status,
-
               projectVersion: element.projectVersion,
               documentationLink: element.documentationLink,
               cost: element.cost,
@@ -1756,9 +1616,6 @@ export default {
         .catch((response) => {
           console.log("Error Fround. data cant get", response);
         });
-
-      // this.editedIndex = this.projects.indexOf(item);
-      // this.editedItem = Object.assign({}, item);
     },
 
     deleteItem(item) {
@@ -1821,12 +1678,9 @@ export default {
           const update = {
             title: this.editedItem.title,
             status: this.editedItem.status,
-            // deadline: this.editedItem.deadline,
-            // startingdate: this.editedItem.startingdate,
             startingdate: moment(this.editedItem.startingdate).format("X"),
             deadline: moment(this.editedItem.deadline).format("X"),
             projectVersion: this.editedItem.projectVersion,
-            // teamMembers_id: this.selectedTeam,
             teamMembers_id: tes_arr,
             member_count: this.selectedTeam.length,
             projectIncharge: this.selectedIncharge[0]["member_id"],
@@ -1868,19 +1722,10 @@ export default {
           this.projects.push(this.editedItem);
 
           const save = {
-            // title: this.editedItem.title,
-            // duration: this.editedItem.duration,
-            // startingdate: this.editedItem.startingdate,
-            // deadline: this.editedItem.deadline,
-            // status: this.editedItem.status,
-            // collaborators: this.editedItem.collaborators,
             title: this.editedItem.title,
             status: this.editedItem.status,
-            // deadline: this.editedItem.deadline,
-            // startingdate: this.editedItem.startingdate,
             startingdate: moment(this.editedItem.startingdate).format("X"),
             deadline: moment(this.editedItem.deadline).format("X"),
-
             projectVersion: this.editedItem.projectVersion,
             teamMembers_id: this.selectedTeam,
             member_count: this.editedItem.teamMembers_id.length,
@@ -1933,11 +1778,10 @@ export default {
   },
 };
 </script>
-
-<style lang="scss">
-.table-header {
-  thead {
-    background-color: red;
-  }
+<style >
+.total {
+  /* padding-top: 15px; */
+ border-top: 2px solid red;
+ border-bottom: double red;
 }
 </style>
