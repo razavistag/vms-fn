@@ -14,7 +14,9 @@
       loading-text="Fetching Project Data"
       disable-pagination
       :footer-props="{
-        'items-per-page-options': [pagination.total],
+        'items-per-page-options': [pagination.total], 
+        prevIcon: '',
+        nextIcon: '',
       }"
     >
       <!-- :server-items-length="parseInt(testPagination.total)" -->
@@ -832,7 +834,7 @@
       >
         <div class="d-flex align-center justify-center">
           <p class="pt-5">
-            Items: {{ testPagination.from }} - {{ testPagination.total }}
+            Projects: {{ testPagination.from }} - {{ testPagination.total }}
           </p>
 
           <v-pagination
