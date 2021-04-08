@@ -106,7 +106,6 @@
                   </v-row>
                   <v-row class="justify-center">
                     <v-cal><Footer /></v-cal>
-                    <!-- footer -->
                   </v-row>
                 </ValidationObserver>
               </v-card-text>
