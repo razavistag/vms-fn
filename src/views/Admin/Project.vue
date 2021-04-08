@@ -9,7 +9,7 @@
       id="dt_table"
       :fixed-header="true"
       
-      height="470px"
+      height="760px"
       class="elevation-0"
       dense
       :loading="dataTableLoading"
