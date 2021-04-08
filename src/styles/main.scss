@@ -111,8 +111,8 @@
   th:nth-child(1) {
     min-width: 1px !important;
     width: 1px !important;
-    padding-left: 0px !important;
-    padding-right: 0px !important;
+    padding-left: 3px !important;
+    padding-right: 0px !important; 
   }
 
   th:nth-child(2) {
@@ -171,22 +171,29 @@
     text-align: center !important;
   }
 }
-
+.index_id_column {
+  margin-left: -13px !important;
+}
 .chip_bar_on_progress {
   background-color: orange !important;
-  width: 2px;
+  width: 4px;
+  height: 40px;
+
   border-radius: 0px;
   margin-right: 3px;
 }
 .chip_bar_on_test {
   background-color: #039be5 !important;
-  width: 2px;
+  width: 4px;
+  height: 40px;
   border-radius: 0px;
   margin-right: 3px;
 }
 .chip_bar_on_complete {
   background-color: green !important;
-  width: 2px;
+  width: 4px;
+  height: 36px;
+
   border-radius: 0px;
   margin-right: 3px;
 }
@@ -335,7 +342,6 @@
       min-width: 119px !important;
     }
     th:nth-child(8) {
-     
       padding-left: 0px !important;
       padding-right: 0px !important;
       width: 35px !important;
@@ -343,7 +349,6 @@
       text-align: center !important;
     }
     th:nth-child(9) {
-    
       padding-left: 0px !important;
       padding-right: 0px !important;
       width: 35px !important;
@@ -351,7 +356,6 @@
       text-align: center !important;
     }
     th:nth-child(10) {
-    
       padding-left: 0px !important;
       padding-right: 0px !important;
       width: 35px !important;

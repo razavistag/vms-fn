@@ -16,9 +16,8 @@
 
           nextIcon: '',
         }"
-        id="dt_table"
-        height="760px"
-        class="elevation-0"
+        id="dt_table" 
+        class="elevation-0 "
         dense
         loading-text="Fetching Project Data"
         disable-pagination
@@ -622,7 +621,7 @@
 
         <!-- index id -->
         <template v-slot:[`item.id`]="{ item, index }">
-          <div class="d-flex pa-0">
+          <div class="d-flex  index_id_column">
             <div
               class="chip_bar_on_progress"
               v-if="item.status == 'on progress'"
@@ -638,7 +637,7 @@
               v-if="item.status == 'on testing stage'"
             ></div>
 
-            <p class="m-1">{{ index + 1 }}</p>
+            <span class="ma-1 pa-0">{{ index + 1 }}</span>
           </div>
         </template>
 
@@ -1894,5 +1893,10 @@ export default {
   /* padding-top: 15px; */
   border-top: 2px solid red;
   border-bottom: double red;
+}
+.v-data-footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
 }
 </style>
