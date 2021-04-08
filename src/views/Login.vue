@@ -197,6 +197,7 @@
                         name="Phone"
                         v-slot="{ errors }"
                       >
+<<<<<<< HEAD
                         <v-text-field
                           outlined
                           dense
@@ -219,6 +220,32 @@
                         rules="required|numeric"
                         name="NIC"
                         v-slot="{ errors }"
+=======
+                        <template v-slot:prepend>
+                          <v-icon>mdi-card-account-details</v-icon>
+                        </template>
+                      </v-text-field>
+                    </ValidationProvider>
+                  </v-col>
+
+              
+
+                  <!-- gender -->
+                  <v-col md="12" cols="12" class="  pa-0 mt-4 pl-4 pr-8">
+                    <ValidationProvider
+                      rules="required"
+                      name="Gender"
+                      v-slot="{ errors }"
+                    >
+                      <v-select
+                        :items="genderItems"
+                        v-model="RegisterForm.gender"
+                        outlined
+                        dense
+                        hide-details=""
+                        :label="errors[0] ? errors[0] : 'Gender'"
+                        :error-messages="errors"
+>>>>>>> 7367ff61b3ca6ac34e3ba5f527f08acb12fcd9a9
                       >
                         <v-text-field
                           outlined
@@ -521,4 +548,5 @@ export default {
   padding-top: 80px;
   background-image: url("../assets/login_bg.jpg");
 }
+
 </style>
