@@ -22,6 +22,7 @@
 
     <!-- desktop navigation on hover -->
     <v-navigation-drawer
+  
       elevation
       app
       :color="sideBar"
@@ -53,6 +54,7 @@
 
     <!-- mobile Navigation on menu button click -->
     <v-navigation-drawer
+    data-html2canvas-ignore="true"
       elevation
       app
       :color="sideBar"
@@ -84,6 +86,8 @@
 </template>
 
 <script>
+import html2canvas from "html2canvas";
+
 export default {
   name: "DashboardLayout",
   data() {
@@ -171,6 +175,25 @@ export default {
     },
     bugCapture(){
       console.log('capture bug')
+      html2canvas(document.getElementById("app"), {
+      // html2canvas(document.getElementsByClassName(".v-main__wrap"), {
+      logging: true,
+      letterRendering: true,
+      allowTaint: false,
+      useCORS: true,
+      // scale: (1920 * 2) / window.innerWidth,
+    //   scale: globalThis.screen.availWidth,
+      backgroundColor: null,
+    })
+      .then((canvas) => {
+        console.log(canvas.toDataURL("image/jpg"));
+        localStorage.setItem('screenshot',canvas.toDataURL("image/jpg"))
+        // this.saveAs(canvas.toDataURL("image/jpg"), "FastFest.jpg");
+      })
+
+      .catch((error) => {
+        console.log("ERROR SAVING BUG CAPTURE IMAGE", error);
+      });
     }
   },
 };

@@ -1,7 +1,8 @@
 <template>
-  <div id="Projects">
+  <div id="Projects"> 
     <!-- Layout -->
     <DashboardLayout />
+    <!-- <ScreenCapture :get="p_C"/> -->
     <v-data-table
       :headers="showHeaders"
       :items="projects"
@@ -1153,6 +1154,7 @@
 
 <script>
 import DashboardLayout from "../../components/DashboardLayout";
+import ScreenCapture from "../../components/ScreenCapture";
 import { ValidationObserver, ValidationProvider } from "vee-validate";
 import { VueEditor } from "vue2-editor";
 import moment from "moment";
@@ -1160,6 +1162,7 @@ export default {
   name: "Projects",
   components: {
     DashboardLayout,
+    ScreenCapture,
     ValidationObserver,
     ValidationProvider,
     VueEditor,
@@ -1167,6 +1170,7 @@ export default {
   data: () => ({
     moment: moment,
     search: "",
+    p_C: "PC",
 
     page: {},
     avatar: {},
