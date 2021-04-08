@@ -236,6 +236,8 @@
                     </ValidationProvider>
                   </v-col>
 
+              
+
                   <!-- gender -->
                   <v-col md="12" cols="12" class="  pa-0 mt-4 pl-4 pr-8">
                     <ValidationProvider
@@ -522,4 +524,5 @@ export default {
   padding-top: 80px;
   background-image: url("../assets/login_bg.jpg");
 }
+
 </style>

@@ -1,371 +1,382 @@
 <template>
-  <div id="Projects"> 
+  <div id="Projects">
     <!-- Layout -->
+
     <DashboardLayout />
-    <!-- <ScreenCapture :get="p_C"/> -->
-    <v-data-table
-      :headers="showHeaders"
-      :items="projects"
-      id="dt_table"
-      :fixed-header="true"
-      
-      height="760px"
-      class="elevation-0"
-      dense
-      :loading="dataTableLoading"
-      loading-text="Fetching Project Data"
-      disable-pagination
-      :footer-props="{
-        'items-per-page-options': [pagination.total],
-        prevIcon: '',
-        nextIcon: '',
-      }"
-    >
-      <!-- DataTable Header -->
-      <template v-slot:top>
-        <v-toolbar flat id="toolbar">
-          <v-toolbar-title class="h6" id="v_table_title">
-            PROJECTS
-          </v-toolbar-title>
-          <v-divider class="mx-4" inset vertical></v-divider>
-          <v-spacer></v-spacer>
+    <v-card color="yellow pa-0">
+      <v-data-table
+        :headers="showHeaders"
+        :items="projects"
+        :fixed-header="true"
+        :loading="dataTableLoading"
+        :footer-props="{
+          'items-per-page-options': [pagination.total],
 
-          <!-- SEARCH -->
-          <v-text-field
-            v-model="search"
-            append-icon="mdi-magnify"
-            @input="onSearch"
-            label="Search"
-            hide-details
-            dense
-            class="shrink mx-4 my-4  v_toolbar_search_text_field"
-          >
-          </v-text-field>
+          prevIcon: '',
 
-          <!-- REFRESH BUTTONS -->
-          <v-btn
-            color="white"
-            class="indigo lighten-1 ma-1 text-center"
-            id="v_toolbar_refresh_btn"
-            text
-            tile
-            small
-            @click="refresh"
-          >
-            <v-icon small dark class="v_toolbar_refresh_icon">
-              mdi-refresh
-            </v-icon>
-            <span class="v_toolbar_refresh_text">REFRESH</span>
-          </v-btn>
-          <!-- -------------------------------- -->
+          nextIcon: '',
+        }"
+        id="dt_table"
+        height="760px"
+        class="elevation-0"
+        dense
+        loading-text="Fetching Project Data"
+        disable-pagination
+      >
+        <!-- DataTable Header -->
 
-          <!-- HIDE COLUMNS without button -->
-          <!-- <v-select
-            style="maxWidth: 280px;"
-            v-model="selectedHeaders"
-            :items="headers"
-            multiple
-            return-object
-            class=""
-            hide-details=""
-            dense
-            :menu-props="{ maxHeight: '400', top: true, offsetY: true }"
-          >
-            <template v-slot:selection="{ item, index }">
-              <v-chip v-if="index < 2" x-small>
-                <span>{{ item.text }}</span>
-              </v-chip>
-              <span v-if="index === 2" class="grey--text caption">
-                (+{{ selectedHeaders.length - 2 }} others) Display Columns
-              </span>
-            </template>
+        <template v-slot:top>
+          <v-toolbar flat id="toolbar">
+            <v-toolbar-title class="h6" id="v_table_title">
+              <v-icon small left>mdi-image-filter-center-focus-strong</v-icon>
+
+              PROJECTS
+            </v-toolbar-title>
+
+            <v-divider class="mx-4" inset vertical></v-divider>
+
+            <v-spacer></v-spacer>
+
+            <!-- SEARCH -->
+
+            <v-text-field
+              v-model="search"
+              append-icon="mdi-magnify"
+              @input="onSearch"
+              label="Search"
+              hide-details
+              dense
+              class="shrink mx-4 my-4  v_toolbar_search_text_field"
+            >
+            </v-text-field>
+
+            <!-- REFRESH BUTTONS -->
+
+            <v-btn
+              color="indigo lighten-1"
+              class=" ma-1 text-center"
+              id="v_toolbar_refresh_btn"
+              outlined
+              small
+              @click="refresh"
+            >
+              <v-icon small dark class="v_toolbar_refresh_icon">
+                mdi-refresh
+              </v-icon>
+
+              <span class="v_toolbar_refresh_text">REFRESH</span>
+            </v-btn>
+
+            <!-- -------------------------------- -->
+
+            <!-- HIDE COLUMNS without button -->
+
+            <!-- <v-select
+                            style="maxWidth: 280px;"
+                            v-model="selectedHeaders"
+                            :items="headers"
+                            multiple
+                            return-object
+                            class=""
+                            hide-details=""
+                            dense    
+                            :menu-props="{ maxHeight: '400', top: true, offsetY: true }"
+                          >
+                            <template v-slot:selection="{ item, index }">
+                              <v-chip v-if="index < 2" x-small>
+                                <span>{{ item.text }}</span> </v-chip>  <span v-if="index === 2" class="grey--text caption">  (+{{ selectedHeaders.length - 2 }} others) Display Columns
+             </span>
+</template>
           </v-select> -->
-          <!-- -------------------------------- -->
+            <!-- -------------------------------- -->
 
-          <!-- HIDE COLUMNS with button-->
-          <v-menu top :close-on-content-click="false">
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                color="white"
-                class="indigo lighten-1 ma-1"
-                text
-                tile
-                small
-                v-bind="attrs"
-                v-on="on"
-              >
-                <v-icon small dark> mdi-eye </v-icon>
-                <span class="v_toolbar_display_column_text"
-                  >DISPLAY COLUMNS</span
+            <!-- HIDE COLUMNS with button-->
+            <v-menu top :close-on-content-click="false">
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  color="indigo lighten-1"
+                  class=" ma-1"
+                  outlined
+                  small
+                  v-bind="attrs"
+                  v-on="on"
                 >
-              </v-btn>
-            </template>
+                  <v-icon small dark> mdi-eye </v-icon>
 
-            <v-list flat>
-              <v-list-item class="fixed">
-                <v-select
-                  v-model="selectedHeaders"
-                  :items="headers"
-                  label="Display Columns"
-                  multiple
-                  return-object
-                  class=""
-                  hide-details=""
-                  dense
-                  :menu-props="{ maxHeight: '400', top: true, offsetY: true }"
-                >
-                  <template v-slot:selection="{ item, index }">
-                    <v-chip v-if="index < 2" x-small>
-                      <span>{{ item.text }}</span>
-                    </v-chip>
-                    <span v-if="index === 2" class="grey--text caption">
-                      (+{{ selectedHeaders.length - 2 }} others)
+                  <span class="v_toolbar_display_column_text"
+                    >DISPLAY COLUMNS</span
+                  >
+                </v-btn>
+              </template>
+
+              <v-list flat>
+                <v-list-item class="fixed">
+                  <v-select
+                    v-model="selectedHeaders"
+                    :items="headers"
+                    label="Display Columns"
+                    multiple
+                    return-object
+                    class=""
+                    hide-details=""
+                    dense
+                    :menu-props="{ maxHeight: '400', top: true, offsetY: true }"
+                  >
+                    <template v-slot:selection="{ item, index }">
+                      <v-chip v-if="index < 2" x-small>
+                        <span>{{ item.text }}</span>
+                      </v-chip>
+
+                      <span v-if="index === 2" class="grey--text caption">
+                        (+{{ selectedHeaders.length - 2 }} others)
+                      </span>
+                    </template>
+                  </v-select>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+
+            <!-- ADD BUTTONS -->
+
+            <v-btn
+              color="indigo lighten-1"
+              class=" ma-1"
+              outlined
+              small
+              @click="newDialog"
+            >
+              <v-icon small dark> mdi-plus </v-icon>
+              <span class="v_toolbar_add_project_text">ADD PROJECTS</span>
+            </v-btn>
+
+            <!-- FORM DIALOG -->
+            <v-dialog
+              v-model="dialog"
+              max-width="1200px"
+              persistent
+              content-class="form-dialog"
+              scrollable
+            >
+              <v-card>
+                <v-card-title class="indigo lighten-4">
+                  <span class="headline ">
+                    {{ formTitle }}
+                    <span v-if="editedIndex != -1">
+                      {{ editedItem.title }}
                     </span>
-                  </template>
-                </v-select>
-              </v-list-item>
-            </v-list>
-          </v-menu>
-
-          <!-- ADD BUTTONS -->
-          <v-btn
-            color="white"
-            class="indigo lighten-1 ma-1"
-            text
-            tile
-            small
-            @click="newDialog"
-          >
-            <v-icon small dark> mdi-plus </v-icon>
-            <span class="v_toolbar_add_project_text">ADD PROJECTS</span>
-          </v-btn>
-
-          <!-- FORM DIALOG -->
-          <v-dialog
-            v-model="dialog"
-            max-width="1200px"
-            persistent
-            content-class="form-dialog"
-            scrollable
-          >
-            <v-card>
-              <v-card-title class="indigo lighten-4">
-                <span class="headline ">
-                  {{ formTitle }}
-                  <span v-if="editedIndex != -1">
-                    {{ editedItem.title }}
                   </span>
-                </span>
-                <v-spacer></v-spacer>
-                <v-icon @click="dialog = false">mdi-close</v-icon>
-              </v-card-title>
+                  <v-spacer></v-spacer>
+                  <v-icon @click="dialog = false">mdi-close</v-icon>
+                </v-card-title>
 
-              <v-card-text style="height: 800px;">
-                <v-container>
-                  <ValidationObserver ref="form">
-                    <v-row>
-                      <!-- title -->
-                      <v-col cols="12" sm="6" md="4" v-if="editedIndex != -1">
-                        <ValidationProvider
-                          rules="required|min:5"
-                          name="Project Name"
-                          v-slot="{ errors }"
-                        >
-                          <v-text-field
-                            v-model="editedItem.title"
-                            disabled
-                            :label="errors[0] ? errors[0] : 'Project Name'"
-                            :error-messages="errors"
-                            hide-details=""
-                            clearable
-                            dense
-                          ></v-text-field>
-                        </ValidationProvider>
-                      </v-col>
+                <v-card-text style="height: 800px;">
+                  <v-container>
+                    <ValidationObserver ref="form">
+                      <v-row>
+                        <!-- title -->
+                        <v-col cols="12" sm="6" md="4" v-if="editedIndex != -1">
+                          <ValidationProvider
+                            rules="required|min:5"
+                            name="Project Name"
+                            v-slot="{ errors }"
+                          >
+                            <v-text-field
+                              v-model="editedItem.title"
+                              disabled
+                              :label="errors[0] ? errors[0] : 'Project Name'"
+                              :error-messages="errors"
+                              hide-details=""
+                              clearable
+                              dense
+                            ></v-text-field>
+                          </ValidationProvider>
+                        </v-col>
 
-                      <v-col cols="12" sm="6" md="4" v-else>
-                        <ValidationProvider
-                          rules="required|min:5"
-                          name="Project Name"
-                          v-slot="{ errors }"
-                        >
-                          <v-text-field
-                            v-model="editedItem.title"
-                            :label="errors[0] ? errors[0] : 'Project Name'"
-                            :error-messages="errors"
-                            hide-details=""
-                            clearable
-                            dense
-                          ></v-text-field>
-                        </ValidationProvider>
-                      </v-col>
+                        <v-col cols="12" sm="6" md="4" v-else>
+                          <ValidationProvider
+                            rules="required|min:5"
+                            name="Project Name"
+                            v-slot="{ errors }"
+                          >
+                            <v-text-field
+                              v-model="editedItem.title"
+                              :label="errors[0] ? errors[0] : 'Project Name'"
+                              :error-messages="errors"
+                              hide-details=""
+                              clearable
+                              dense
+                            ></v-text-field>
+                          </ValidationProvider>
+                        </v-col>
 
-                      <!-- started picker 1 -->
-                      <v-col cols="12" sm="6" md="4">
-                        <v-menu
-                          v-model="picker2"
-                          :close-on-content-click="false"
-                          :nudge-right="40"
-                          transition="scale-transition"
-                          offset-y
-                          min-width="auto"
-                        >
-                          <template v-slot:activator="{ on, attrs }">
-                            <ValidationProvider
-                              rules="required"
-                              name="started date"
-                              v-slot="{ errors }"
-                            >
-                              <v-text-field
-                                v-model="editedItem.startingdate"
-                                :label="errors[0] ? errors[0] : 'started date'"
-                                :error-messages="errors"
-                                hide-details=""
-                                clearable
-                                dense
-                                readonly
-                                v-bind="attrs"
-                                v-on="on"
-                              ></v-text-field>
-                            </ValidationProvider>
-                          </template>
-                          <v-date-picker
-                            v-model="editedItem.startingdate"
-                            dateFormat="mm-YYYY"
-                            @input="picker2 = false"
-                          ></v-date-picker>
-                        </v-menu>
-                        <!-- ------------------- -->
-                        <!-- <v-text-field
+                        <!-- started picker 1 -->
+                        <v-col cols="12" sm="6" md="4">
+                          <v-menu
+                            v-model="picker2"
+                            :close-on-content-click="false"
+                            :nudge-right="40"
+                            transition="scale-transition"
+                            offset-y
+                            min-width="auto"
+                          >
+                            <template v-slot:activator="{ on, attrs }">
+                              <ValidationProvider
+                                rules="required"
+                                name="started date"
+                                v-slot="{ errors }"
+                              >
+                                <v-text-field
+                                  v-model="editedItem.startingdate"
+                                  :label="
+                                    errors[0] ? errors[0] : 'started date'
+                                  "
+                                  :error-messages="errors"
+                                  hide-details=""
+                                  clearable
+                                  dense
+                                  readonly
+                                  v-bind="attrs"
+                                  v-on="on"
+                                ></v-text-field>
+                              </ValidationProvider>
+                            </template>
+                            <v-date-picker
+                              v-model="editedItem.startingdate"
+                              dateFormat="mm-YYYY"
+                              @input="picker2 = false"
+                            ></v-date-picker>
+                          </v-menu>
+                          <!-- ------------------- -->
+                          <!-- <v-text-field
                           v-model="editedItem.startingdate"
                           label="started date"
                           hide-details=""
                           clearable
                           dense
                         ></v-text-field> -->
-                        <!-- ------------------------ -->
-                      </v-col>
+                          <!-- ------------------------ -->
+                        </v-col>
 
-                      <!-- dead line picker 1 -->
-                      <v-col cols="12" sm="6" md="4">
-                        <v-menu
-                          v-model="picker1"
-                          :close-on-content-click="false"
-                          :nudge-right="40"
-                          transition="scale-transition"
-                          offset-y
-                          min-width="auto"
-                        >
-                          <template v-slot:activator="{ on, attrs }">
-                            <ValidationProvider
-                              rules="required"
-                              name="dead line"
-                              v-slot="{ errors }"
-                            >
-                              <v-text-field
-                                v-model="editedItem.deadline"
-                                :label="errors[0] ? errors[0] : 'dead line'"
-                                :error-messages="errors"
-                                hide-details=""
-                                clearable
-                                dense
-                                readonly
-                                v-bind="attrs"
-                                v-on="on"
-                              ></v-text-field>
-                            </ValidationProvider>
-                          </template>
-                          <v-date-picker
-                            v-model="editedItem.deadline"
-                            @input="picker1 = false"
-                          ></v-date-picker>
-                        </v-menu>
-                        <!-- ----------------------------------- -->
-                        <!-- <v-text-field
+                        <!-- dead line picker 1 -->
+                        <v-col cols="12" sm="6" md="4">
+                          <v-menu
+                            v-model="picker1"
+                            :close-on-content-click="false"
+                            :nudge-right="40"
+                            transition="scale-transition"
+                            offset-y
+                            min-width="auto"
+                          >
+                            <template v-slot:activator="{ on, attrs }">
+                              <ValidationProvider
+                                rules="required"
+                                name="dead line"
+                                v-slot="{ errors }"
+                              >
+                                <v-text-field
+                                  v-model="editedItem.deadline"
+                                  :label="errors[0] ? errors[0] : 'dead line'"
+                                  :error-messages="errors"
+                                  hide-details=""
+                                  clearable
+                                  dense
+                                  readonly
+                                  v-bind="attrs"
+                                  v-on="on"
+                                ></v-text-field>
+                              </ValidationProvider>
+                            </template>
+                            <v-date-picker
+                              v-model="editedItem.deadline"
+                              @input="picker1 = false"
+                            ></v-date-picker>
+                          </v-menu>
+                          <!-- ----------------------------------- -->
+                          <!-- <v-text-field
                           v-model="editedItem.deadline"
                           label="dead line"
                           hide-details=""
                           clearable
                           dense
                         ></v-text-field> -->
-                        <!-- ----------------------------------- -->
-                      </v-col>
+                          <!-- ----------------------------------- -->
+                        </v-col>
 
-                      <!-- status -->
-                      <v-col cols="12" sm="6" md="4">
-                        <ValidationProvider
-                          rules="required"
-                          name="Project Status"
-                          v-slot="{ errors }"
-                        >
-                          <v-select
-                            :items="statusItems"
-                            v-model="editedItem.status"
-                            :label="errors[0] ? errors[0] : 'Project Status'"
-                            :error-messages="errors"
-                            hide-details=""
-                            clearable
-                            dense
-                          ></v-select>
-                        </ValidationProvider>
-                      </v-col>
-
-                      <!-- Project Version -->
-                      <v-col cols="12" sm="6" md="4">
-                        <ValidationProvider
-                          rules="required|decimal:4"
-                          name="Project Version"
-                          v-slot="{ errors }"
-                        >
-                          <v-text-field
-                            v-model="editedItem.projectVersion"
-                            :label="errors[0] ? errors[0] : 'Project Version'"
-                            :error-messages="errors"
-                            hide-details=""
-                            clearable
-                            dense
-                          ></v-text-field>
-                        </ValidationProvider>
-                      </v-col>
-
-                      <!-- team member ids -->
-                      <v-col cols="12" sm="6" md="4">
-                        <ValidationProvider
-                          rules="required"
-                          name="Team Members"
-                          v-slot="{ errors }"
-                        >
-                          <v-combobox
-                            v-model="selectedTeam"
-                            :items="teamMembers"
-                            item-text="members_name"
-                            hide-selected
-                            :label="errors[0] ? errors[0] : 'Team Members'"
-                            :error-messages="errors"
-                            multiple
-                            dense
-                            persistent-hint
-                            hide-details=""
-                            small-chips
-                            clearable
+                        <!-- status -->
+                        <v-col cols="12" sm="6" md="4">
+                          <ValidationProvider
+                            rules="required"
+                            name="Project Status"
+                            v-slot="{ errors }"
                           >
-                            <template v-slot:no-data>
-                              <v-list-item>
-                                <v-list-item-content>
-                                  <!-- <v-list-item-title>
-                                    No results matching "<strong>{{
-                                      search
-                                    }}</strong
-                                    >". Press <kbd>enter</kbd> to create a new
-                                    one
-                                  </v-list-item-title> -->
-                                  <!-- <v-list-item>No Recodes Found</v-list-item> -->
-                                </v-list-item-content>
-                              </v-list-item>
-                            </template>
-                          </v-combobox>
-                        </ValidationProvider>
-                        <!-- <ValidationProvider
+                            <v-select
+                              :items="statusItems"
+                              v-model="editedItem.status"
+                              :label="errors[0] ? errors[0] : 'Project Status'"
+                              :error-messages="errors"
+                              hide-details=""
+                              clearable
+                              dense
+                            ></v-select>
+                          </ValidationProvider>
+                        </v-col>
+
+                        <!-- Project Version -->
+                        <v-col cols="12" sm="6" md="4">
+                          <ValidationProvider
+                            rules="required|decimal:4"
+                            name="Project Version"
+                            v-slot="{ errors }"
+                          >
+                            <v-text-field
+                              v-model="editedItem.projectVersion"
+                              :label="errors[0] ? errors[0] : 'Project Version'"
+                              :error-messages="errors"
+                              hide-details=""
+                              clearable
+                              dense
+                            ></v-text-field>
+                          </ValidationProvider>
+                        </v-col>
+
+                        <!-- team member ids -->
+                        <v-col cols="12" sm="6" md="4">
+                          <ValidationProvider
+                            rules="required"
+                            name="Team Members"
+                            v-slot="{ errors }"
+                          >
+                            <v-combobox
+                              v-model="selectedTeam"
+                              :items="teamMembers"
+                              item-text="members_name"
+                              hide-selected
+                              :label="errors[0] ? errors[0] : 'Team Members'"
+                              :error-messages="errors"
+                              multiple
+                              dense
+                              persistent-hint
+                              hide-details=""
+                              small-chips
+                              clearable
+                            >
+                              <template v-slot:no-data>
+                                <v-list-item>
+                                  <v-list-item-content>
+                                    <!-- <v-list-item-title>
+                                                    No results matching "<strong>{{
+                                                      search
+                                                    }}</strong
+                                                    >". Press <kbd>enter</kbd> to create a new
+                                                    one
+                                                  </v-list-item-title> -->
+                                    <!-- <v-list-item>No Recodes Found</v-list-item> -->
+                                  </v-list-item-content>
+                                </v-list-item>
+                              </template>
+                            </v-combobox>
+                          </ValidationProvider>
+                          <!-- <ValidationProvider
                           rules="required"
                           name="Team Members"
                           v-slot="{ errors }"
@@ -379,479 +390,511 @@
                             dense
                           ></v-text-field>
                         </ValidationProvider> -->
-                      </v-col>
+                        </v-col>
 
-                      <!-- project incharage -->
-                      <v-col cols="12" sm="6" md="4">
-                        <ValidationProvider
-                          rules="required"
-                          name="Project Incharge"
-                          v-slot="{ errors }"
-                        >
-                          <v-combobox
-                            v-model="selectedIncharge"
-                            :items="teamMembers"
-                            item-text="members_name"
-                            hide-selected
-                            :label="errors[0] ? errors[0] : 'Project Incharge'"
-                            :error-messages="errors"
-                            multiple
-                            persistent-hint
-                            hide-details=""
-                            small-chips
-                            clearable
-                            dense
+                        <!-- project incharage -->
+                        <v-col cols="12" sm="6" md="4">
+                          <ValidationProvider
+                            rules="required"
+                            name="Project Incharge"
+                            v-slot="{ errors }"
                           >
-                            <template v-slot:no-data>
-                              <v-list-item>
-                                <v-list-item-content>
-                                  <!-- <v-list-item-title>
-                                    No results matching "<strong>{{
-                                      search
-                                    }}</strong
-                                    >". Press <kbd>enter</kbd> to create a new
-                                    one
-                                  </v-list-item-title> -->
-                                  <!-- <v-list-item>No Recodes Found</v-list-item> -->
-                                </v-list-item-content>
-                              </v-list-item>
-                            </template>
-                          </v-combobox>
-                        </ValidationProvider>
-                      </v-col>
+                            <v-combobox
+                              v-model="selectedIncharge"
+                              :items="teamMembers"
+                              item-text="members_name"
+                              hide-selected
+                              :label="
+                                errors[0] ? errors[0] : 'Project Incharge'
+                              "
+                              :error-messages="errors"
+                              multiple
+                              persistent-hint
+                              hide-details=""
+                              small-chips
+                              clearable
+                              dense
+                            >
+                              <template v-slot:no-data>
+                                <v-list-item>
+                                  <v-list-item-content>
+                                    <!-- <v-list-item-title>
+                                                    No results matching "<strong>{{
+                                                      search
+                                                    }}</strong
+                                                    >". Press <kbd>enter</kbd> to create a new
+                                                    one
+                                                  </v-list-item-title> -->
+                                    <!-- <v-list-item>No Recodes Found</v-list-item> -->
+                                  </v-list-item-content>
+                                </v-list-item>
+                              </template>
+                            </v-combobox>
+                          </ValidationProvider>
+                        </v-col>
 
-                      <!-- documentation link -->
-                      <v-col cols="12" sm="6" md="4">
-                        <ValidationProvider
-                          rules="required"
-                          name="documentation link"
-                          v-slot="{ errors }"
+                        <!-- documentation link -->
+                        <v-col cols="12" sm="6" md="4">
+                          <ValidationProvider
+                            rules="required"
+                            name="documentation link"
+                            v-slot="{ errors }"
+                          >
+                            <v-text-field
+                              v-model="editedItem.documentationLink"
+                              :label="
+                                errors[0] ? errors[0] : 'documentation link'
+                              "
+                              :error-messages="errors"
+                              hide-details=""
+                              clearable
+                              dense
+                            ></v-text-field>
+                          </ValidationProvider>
+                        </v-col>
+
+                        <!-- cost -->
+                        <v-col cols="12" sm="6" md="4">
+                          <ValidationProvider
+                            rules="required|numeric"
+                            name="Cost"
+                            v-slot="{ errors }"
+                          >
+                            <v-text-field
+                              v-model="editedItem.cost"
+                              :label="errors[0] ? errors[0] : 'Cost'"
+                              :error-messages="errors"
+                              hide-details=""
+                              clearable
+                              dense
+                            ></v-text-field>
+                          </ValidationProvider>
+                        </v-col>
+
+                        <!-- image -->
+                        <v-col
+                          cols="12"
+                          sm="3"
+                          md="4"
+                          class="pa-0 pl-5 pt-4 text-center"
                         >
-                          <v-text-field
-                            v-model="editedItem.documentationLink"
-                            :label="
-                              errors[0] ? errors[0] : 'documentation link'
+                          <v-icon
+                            v-if="editedItem.logo"
+                            class="upload_on_edit"
+                            @click="editedItem.logo = !editedItem.logo"
+                          >
+                            mdi-pencil
+                          </v-icon>
+                          <v-img
+                            v-if="editedItem.logo"
+                            :src="
+                              'http://localhost:8000/storage/' + editedItem.logo
                             "
-                            :error-messages="errors"
-                            hide-details=""
-                            clearable
-                            dense
-                          ></v-text-field>
-                        </ValidationProvider>
-                      </v-col>
+                            width="285"
+                            height="250"
+                            class="editImage"
+                          />
 
-                      <!-- cost -->
-                      <v-col cols="12" sm="6" md="4">
-                        <ValidationProvider
-                          rules="required|numeric"
-                          name="Cost"
-                          v-slot="{ errors }"
-                        >
-                          <v-text-field
-                            v-model="editedItem.cost"
-                            :label="errors[0] ? errors[0] : 'Cost'"
-                            :error-messages="errors"
-                            hide-details=""
-                            clearable
-                            dense
-                          ></v-text-field>
-                        </ValidationProvider>
-                      </v-col>
+                          <!-- upload image -->
+                          <image-cropper
+                            v-if="!editedItem.logo"
+                            v-model="avatar"
+                            :width="265"
+                            :height="250"
+                            placeholder="Choose company logo"
+                            :show-remove-button="true"
+                            @file-choose="FileUpload($event)"
+                            @image-remove="removeImage"
+                            class="pa-0 ma-0"
+                          />
+                        </v-col>
 
-                      <!-- image -->
-                      <v-col
-                        cols="12"
-                        sm="3"
-                        md="4"
-                        class="pa-0 pl-5 pt-4 text-center"
-                      >
-                        <v-icon
-                          v-if="editedItem.logo"
-                          class="upload_on_edit"
-                          @click="editedItem.logo = !editedItem.logo"
-                        >
-                          mdi-pencil
-                        </v-icon>
-                        <v-img
-                          v-if="editedItem.logo"
-                          :src="
-                            'http://localhost:8000/storage/' + editedItem.logo
-                          "
-                          width="285"
-                          height="250"
-                          class="editImage"
-                        />
+                        <!-- description -->
+                        <v-col cols="12" sm="6" md="8" class="">
+                          <v-tooltip top>
+                            <template v-slot:activator="{ on, attrs }">
+                              <div v-bind="attrs" v-on="on">
+                                <ValidationProvider
+                                  rules="required"
+                                  name="description"
+                                  v-slot="{ errors }"
+                                >
+                                  <p class="errorDes" v-if="errors[0]">
+                                    {{ errors[0] }}
+                                  </p>
 
-                        <!-- upload image -->
-                        <image-cropper
-                          v-if="!editedItem.logo"
-                          v-model="avatar"
-                          :width="265"
-                          :height="250"
-                          placeholder="Choose company logo"
-                          :show-remove-button="true"
-                          @file-choose="FileUpload($event)"
-                          @image-remove="removeImage"
-                          class="pa-0 ma-0"
-                        />
-                      </v-col>
+                                  <vue-editor
+                                    v-model="editedItem.description"
+                                    :editorToolbar="editorToolBar"
+                                  ></vue-editor>
+                                </ValidationProvider>
+                              </div>
+                            </template>
+                            <span>Project Description</span>
+                          </v-tooltip>
+                        </v-col>
 
-                      <!-- description -->
-                      <v-col cols="12" sm="6" md="8" class="">
-                        <v-tooltip top>
-                          <template v-slot:activator="{ on, attrs }">
-                            <div v-bind="attrs" v-on="on">
-                              <ValidationProvider
-                                rules="required"
-                                name="description"
-                                v-slot="{ errors }"
-                              >
-                                <p class="errorDes" v-if="errors[0]">
-                                  {{ errors[0] }}
-                                </p>
+                        <!-- features -->
+                        <v-col cols="12" sm="6" md="4">
+                          <v-tooltip top>
+                            <template v-slot:activator="{ on, attrs }">
+                              <div v-bind="attrs" v-on="on">
                                 <vue-editor
-                                  v-model="editedItem.description"
+                                  v-model="editedItem.features"
                                   :editorToolbar="editorToolBar"
                                 ></vue-editor>
-                              </ValidationProvider>
-                            </div>
-                          </template>
-                          <span>Project Description</span>
-                        </v-tooltip>
-                      </v-col>
+                              </div>
+                            </template>
+                            <span>Project Features</span>
+                          </v-tooltip>
+                        </v-col>
 
-                      <!-- features -->
-                      <v-col cols="12" sm="6" md="4">
-                        <v-tooltip top>
-                          <template v-slot:activator="{ on, attrs }">
-                            <div v-bind="attrs" v-on="on">
-                              <vue-editor
-                                v-model="editedItem.features"
-                                :editorToolbar="editorToolBar"
-                              ></vue-editor>
-                            </div>
-                          </template>
-                          <span>Project Features</span>
-                        </v-tooltip>
-                      </v-col>
+                        <v-col cols="12" sm="6" md="4">
+                          <v-tooltip top>
+                            <template v-slot:activator="{ on, attrs }">
+                              <div v-bind="attrs" v-on="on">
+                                <vue-editor
+                                  v-model="editedItem.remark"
+                                  :editorToolbar="editorToolBar"
+                                ></vue-editor>
+                              </div>
+                            </template>
+                            <span>Project Remark</span>
+                          </v-tooltip>
+                        </v-col>
 
-                      <v-col cols="12" sm="6" md="4">
-                        <v-tooltip top>
-                          <template v-slot:activator="{ on, attrs }">
-                            <div v-bind="attrs" v-on="on">
-                              <vue-editor
-                                v-model="editedItem.remark"
-                                :editorToolbar="editorToolBar"
-                              ></vue-editor>
-                            </div>
-                          </template>
-                          <span>Project Remark</span>
-                        </v-tooltip>
-                      </v-col>
+                        <!-- special note -->
+                        <v-col cols="12" sm="6" md="4">
+                          <v-tooltip top>
+                            <template v-slot:activator="{ on, attrs }">
+                              <div v-bind="attrs" v-on="on">
+                                <vue-editor
+                                  title="Enter special note"
+                                  v-model="editedItem.specialNote"
+                                  :editorToolbar="editorToolBar"
+                                ></vue-editor>
+                              </div>
+                            </template>
+                            <span>Project Special Note</span>
+                          </v-tooltip>
+                        </v-col>
+                      </v-row>
+                    </ValidationObserver>
+                  </v-container>
+                </v-card-text>
 
-                      <!-- special note -->
-                      <v-col cols="12" sm="6" md="4">
-                        <v-tooltip top>
-                          <template v-slot:activator="{ on, attrs }">
-                            <div v-bind="attrs" v-on="on">
-                              <vue-editor
-                                title="Enter special note"
-                                v-model="editedItem.specialNote"
-                                :editorToolbar="editorToolBar"
-                              ></vue-editor>
-                            </div>
-                          </template>
-                          <span>Project Special Note</span>
-                        </v-tooltip>
-                      </v-col>
-                    </v-row>
-                  </ValidationObserver>
-                </v-container>
-              </v-card-text>
+                <v-card-actions class="blue-grey lighten-4">
+                  <v-spacer></v-spacer>
+                  <v-btn color="blue darken-1" text @click="close">
+                    Cancel
+                  </v-btn>
+                  <v-btn color="blue darken-1" text @click="save">
+                    Save
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
 
-              <v-card-actions class="blue-grey lighten-4">
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="close">
-                  Cancel
-                </v-btn>
-                <v-btn color="blue darken-1" text @click="save">
-                  Save
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
+            <!-- delete dialog -->
+            <v-dialog v-model="dialogDelete" max-width="800px">
+              <v-card>
+                <v-card-title class="headline">
+                  Are you sure you want to delete this project
+                  <span class="font-weight-bold pl-3">
+                    {{ editedItem.title }}
+                  </span>
+                  ?
+                </v-card-title>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn color="blue darken-1" text @click="closeDelete">
+                    Cancel
+                  </v-btn>
+                  <v-btn color="blue darken-1" text @click="deleteItemConfirm">
+                    OK
+                  </v-btn>
+                  <v-spacer></v-spacer>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+          </v-toolbar>
+        </template>
 
-          <!-- delete dialog -->
-          <v-dialog v-model="dialogDelete" max-width="800px">
-            <v-card>
-              <v-card-title class="headline">
-                Are you sure you want to delete this project
-                <span class="font-weight-bold pl-3">
-                  {{ editedItem.title }}
-                </span>
-                ?
-              </v-card-title>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeDelete">
-                  Cancel
-                </v-btn>
-                <v-btn color="blue darken-1" text @click="deleteItemConfirm">
-                  OK
-                </v-btn>
-                <v-spacer></v-spacer>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-        </v-toolbar>
-      </template>
+        <!-- index id -->
+        <template v-slot:[`item.id`]="{ item, index }">
+          <div class="d-flex pa-0">
+            <div
+              class="chip_bar_on_progress"
+              v-if="item.status == 'on progress'"
+            ></div>
 
-      <!-- index id -->
-      <template v-slot:[`item.id`]="{ item, index }">
-        <p class="m-1">{{ index + 1 }}</p>
-      </template>
+            <div
+              class="chip_bar_on_complete"
+              v-if="item.status == 'completed'"
+            ></div>
 
-      <!--Start Date -->
-      <template v-slot:[`item.startingdate`]="{ item }">
-        {{ item.startingdate.substring(0, 10) }}
-      </template>
-      <!--end Date -->
-      <template v-slot:[`item.deadline`]="{ item }">
-        {{ item.deadline.substring(0, 10) }}
-      </template>
+            <div
+              class="chip_bar_on_test"
+              v-if="item.status == 'on testing stage'"
+            ></div>
 
-      <!-- Avatar -->
-      <template v-slot:[`item.logo`]="{ item }">
-        <v-menu
-          bottom
-          min-width="150px"
-          rounded
-          offset-x
-          open-on-hover
-          transition="slide-x-transition"
-        >
-          <template v-slot:activator="{ on }">
-            <v-avatar size="25" v-on="on" v-if="item.logo">
+            <p class="m-1">{{ index + 1 }}</p>
+          </div>
+        </template>
+
+        <!--Start Date -->
+        <template v-slot:[`item.startingdate`]="{ item }">
+          {{ item.startingdate.substring(0, 10) }}
+        </template>
+
+        <!--end Date -->
+        <template v-slot:[`item.deadline`]="{ item }">
+          {{ item.deadline.substring(0, 10) }}
+        </template>
+
+        <!-- Avatar -->
+        <template v-slot:[`item.logo`]="{ item }">
+          <v-menu
+            bottom
+            min-width="150px"
+            rounded
+            offset-x
+            open-on-hover
+            transition="slide-x-transition"
+          >
+            <template v-slot:activator="{ on }">
+              <v-avatar size="25" v-on="on" v-if="item.logo">
+                <img
+                  :src="'http://localhost:8000/storage/' + item.logo"
+                  alt="alt"
+                  width="50"
+                />
+              </v-avatar>
+
+              <v-avatar size="25" v-on="on" v-else>
+                <img
+                  src="../../assets/default_logo.jpeg"
+                  alt="alt"
+                  width="50"
+                />
+              </v-avatar>
+            </template>
+            <v-card class="" v-if="item.logo">
               <img
                 :src="'http://localhost:8000/storage/' + item.logo"
                 alt="alt"
-                width="50"
+                width="150"
+                height="150"
               />
-            </v-avatar>
-            <v-avatar size="25" v-on="on" v-else>
-              <img src="../../assets/default_logo.jpeg" alt="alt" width="50" />
-            </v-avatar>
-          </template>
-          <v-card class="" v-if="item.logo">
-            <img
-              :src="'http://localhost:8000/storage/' + item.logo"
-              alt="alt"
-              width="150"
-              height="150"
-            />
-          </v-card>
-        </v-menu>
-      </template>
+            </v-card>
+          </v-menu>
+        </template>
 
-      <!-- project status -->
-      <template v-slot:[`item.status`]="{ item, index }">
-        <v-chip
-          color="orange"
-          small
-          class="white--text"
-          v-if="item.status == 'on progress'"
-        >
-          {{ item.status }}
-        </v-chip>
-        <v-chip
-          color="green"
-          small
-          class="white--text"
-          v-if="item.status == 'completed'"
-        >
-          {{ item.status }}
-        </v-chip>
-        <v-chip
-          color="#039BE5"
-          small
-          class="white--text"
-          v-if="item.status == 'on testing stage'"
-        >
-          {{ item.status }}
-        </v-chip>
-      </template>
+        <!-- project status -->
+        <!--<template v-slot:[`item.status`]="{ item, index }">
+               <v-chip color="orange" small class="white--text" v-if="item.status == 'on progress'">
+               {{ item.status }}
+              </v-chip>
+              <v-chip color="green" small class="white--text" v-if="item.status == 'completed'">
+              {{ item.status }}
+              </v-chip>
+             <v-chip color="#039BE5" small class="white--text" v-if="item.status == 'on testing stage'">
+            {{ item.status }}
+            </v-chip>
+            </template>-->
 
-      <!-- duration -->
-      <template v-slot:[`item.duration`]="{ item }">
-        <p
-          class="m-1 red--text"
-          v-if="item.duration.toString().substring(0, 1) == '-'"
-        >
-          {{
-            item.duration.toString().substring(0, 1) == "-"
-              ? "(" + item.duration + ")"
-              : null
-          }}
-          Days
-        </p>
-
-        <p class="m-1" v-else>
-          {{
-            item.duration.toString().substring(0, 1) == "-"
-              ? null
-              : item.duration
-          }}
-          Days
-        </p>
-      </template>
-
-      <!-- Table Action -->
-      <template v-slot:[`item.actions`]="{ item }">
-        <v-icon
-          small
-          class="mr-2 blue darken-1  pa-1 shrink   white--text rounded"
-          title="asd"
-          @click="viewForm(item)"
-        >
-          mdi-eye
-        </v-icon>
-        <v-icon
-          small
-          class="mr-2 orange darken-1 pa-1 white--text rounded"
-          @click="editItem(item)"
-        >
-          mdi-pencil
-        </v-icon>
-        <v-icon
-          small
-          class="mr-2 red darken-1 pa-1 white--text rounded"
-          @click="deleteItem(item)"
-        >
-          mdi-delete
-        </v-icon>
-      </template>
-
-      <!-- body append -->
-      <template slot="body.append">
-        <tr
-          class="pink--text text-end"
-          :class="{ 'v-data-table__mobile-table-row': isMobile }"
-        >
-          <th
-            class=""
-            :colspan="`${isMobile ? 6 : 1}`"
-            :class="{ 'v-data-table__mobile-row': isMobile }"
-            v-if="!isMobile"
-          ></th>
-          <th
-            class=""
-            :colspan="`${isMobile ? 6 : 1}`"
-            :class="{ 'v-data-table__mobile-row': isMobile }"
-             v-if="!isMobile"
-          ></th>
-          <th
-            class=""
-            :colspan="`${isMobile ? 6 : 1}`"
-            :class="{ 'v-data-table__mobile-row': isMobile }"
-             v-if="!isMobile"
-          ></th>
-          <th
-            class=""
-            :colspan="`${isMobile ? 6 : 1}`"
-            :class="{ 'v-data-table__mobile-row': isMobile }"
-             v-if="!isMobile"
-          ></th>
-          <th
-            class=""
-            :colspan="`${isMobile ? 6 : 1}`"
-            :class="{ 'v-data-table__mobile-row': isMobile }"
-             v-if="!isMobile"
-          ></th>
-          <th
-            class=""
-            :colspan="`${isMobile ? 6 : 1}`"
-            :class="{ 'v-data-table__mobile-row': isMobile }"
-             v-if="!isMobile"
-          ></th>
-          <th
-            class=""
-            :colspan="`${isMobile ? 6 : 1}`"
-            :class="{ 'v-data-table__mobile-row': isMobile }"
-             v-if="!isMobile"
-          ></th>
-          <th
-            class=""
-            :colspan="`${isMobile ? 6 : 1}`"
-            :class="{ 'v-data-table__mobile-row': isMobile }"
-             v-if="!isMobile"
-          ></th>
-          <th
-            class="text-end"
-            :colspan="`${isMobile ? 6 : 1}`"
-            :class="{ 'v-data-table__mobile-row': isMobile }"
+        <!-- duration -->
+        <template v-slot:[`item.duration`]="{ item }">
+          <p
+            class="m-1 red--text"
+            v-if="item.duration.toString().substring(0, 1) == '-'"
           >
-            TOTAL COST
-          </th>
-          <th
-            class="text-end total"
-            :colspan="`${isMobile ? 6 : 1}`"
-            :class="{ 'v-data-table__mobile-row': isMobile }"
-          >
-            Rs. {{ sumField("cost") }}
-          </th>
-          <th
-            class=""
-            :colspan="`${isMobile ? 6 : 1}`"
-            :class="{ 'v-data-table__mobile-row': isMobile }"
-          ></th>
-        </tr>
-      </template>
-
-      <!-- Footer Page Text -->
-      <template
-        v-slot:footer.page-text="{
-          pageStart,
-          pageStop,
-          page,
-          itemsPerPage,
-          pageCount,
-          itemsLength,
-        }"
-      >
-        <div class="d-flex align-center   ">
-          <p class="pt-5">Projects Per Page: {{ dtPagination.per_page }}</p>
-
-          <p class="pt-5 ml-4">
-            Projects: {{ dtPagination.from }} - {{ dtPagination.total }}
+            {{
+              item.duration.toString().substring(0, 1) == "-"
+                ? "(" + item.duration + ")"
+                : null
+            }}
+            Days
           </p>
 
-          <v-pagination
-            class="text-right"
-            v-model="pagination.localCurrentPage"
-            :length="pagination.total"
-            @input="onPageChange"
-            total-visible="0"
-          ></v-pagination>
-        </div>
-      </template>
+          <p class="m-1" v-else>
+            {{
+              item.duration.toString().substring(0, 1) == "-"
+                ? null
+                : item.duration
+            }}
+            Days
+          </p>
+        </template>
 
-      <!-- no data -->
-      <template v-slot:no-data>
-        <v-progress-linear
-          v-if="existData == -1"
-          active
-          indeterminate
-          absolute
-          height="4"
-          top
-          color="red darken-1"
-        ></v-progress-linear>
+        <!-- Table Action -->
+        <template v-slot:[`item.actions`]="{ item }">
+          <v-icon
+            id="dt-view-action-button"
+            small
+            class="mr-2 blue darken-1  pa-1 shrink   white--text rounded"
+            title="asd"
+            @click="viewForm(item)"
+          >
+            mdi-eye
+          </v-icon>
 
-        <div v-if="existData == 1">
-          <p class="pa-2">RECODES NOT FOUND</p>
-        </div>
-      </template>
-    </v-data-table>
+          <v-icon
+            id="dt-edit-action-button"
+            small
+            class="mr-2 orange darken-1 pa-1 white--text rounded"
+            @click="editItem(item)"
+          >
+            mdi-pencil
+          </v-icon>
+
+          <v-icon
+            id="dt-trash-action-button"
+            small
+            class="red darken-1 pa-1 white--text rounded"
+            @click="deleteItem(item)"
+          >
+            mdi-delete
+          </v-icon>
+        </template>
+
+        <!-- body append -->
+        <template slot="body.append">
+          <tr
+            class="pink--text text-end"
+            :class="{ 'v-data-table__mobile-table-row': isMobile }"
+          >
+            <th
+              id="th_sum-1"
+              class=""
+              :colspan="`${isMobile ? 6 : 1}`"
+              :class="{ 'v-data-table__mobile-row': isMobile }"
+              v-if="!isMobile"
+            ></th>
+
+            <th
+              id="th_sum-2"
+              class=""
+              :colspan="`${isMobile ? 6 : 1}`"
+              :class="{ 'v-data-table__mobile-row': isMobile }"
+              v-if="!isMobile"
+            ></th>
+
+            <th
+              id="th_sum-3"
+              class=""
+              :colspan="`${isMobile ? 6 : 1}`"
+              :class="{ 'v-data-table__mobile-row': isMobile }"
+              v-if="!isMobile"
+            ></th>
+
+            <th
+              id="th_sum-4"
+              class=""
+              :colspan="`${isMobile ? 6 : 1}`"
+              :class="{ 'v-data-table__mobile-row': isMobile }"
+              v-if="!isMobile"
+            ></th>
+
+            <th
+              id="th_sum-5"
+              class=""
+              :colspan="`${isMobile ? 6 : 1}`"
+              :class="{ 'v-data-table__mobile-row': isMobile }"
+              v-if="!isMobile"
+            ></th>
+
+            <th
+              id="th_sum-6"
+              class=""
+              :colspan="`${isMobile ? 6 : 1}`"
+              :class="{ 'v-data-table__mobile-row': isMobile }"
+              v-if="!isMobile"
+            ></th>
+
+            <th
+              id="th_sum-8"
+              class=""
+              :colspan="`${isMobile ? 6 : 1}`"
+              :class="{ 'v-data-table__mobile-row': isMobile }"
+              v-if="!isMobile"
+            ></th>
+
+            <th
+              id="th_sum-9"
+              class="text-end"
+              :colspan="`${isMobile ? 6 : 1}`"
+              :class="{ 'v-data-table__mobile-row': isMobile }"
+            >
+              TOTAL
+            </th>
+
+            <th
+              id="th_sum-10"
+              class="text-end total"
+              :colspan="`${isMobile ? 6 : 1}`"
+              :class="{ 'v-data-table__mobile-row': isMobile }"
+            >
+              Rs. {{ sumField("cost") }}
+            </th>
+
+            <th
+              id="th_sum-7"
+              class=""
+              :colspan="`${isMobile ? 6 : 1}`"
+              :class="{ 'v-data-table__mobile-row': isMobile }"
+              v-if="!isMobile"
+            ></th>
+          </tr>
+        </template>
+
+        <!-- Footer Page Text -->
+        <template
+          v-slot:footer.page-text="{
+            pageStart,
+            pageStop,
+            page,
+            itemsPerPage,
+            pageCount,
+            itemsLength,
+          }"
+        >
+          <div class="d-flex align-center   ">
+            <p class="pt-5">Projects Per Page: {{ dtPagination.per_page }}</p>
+
+            <p class="pt-5 ml-4">
+              Projects: {{ dtPagination.from }} - {{ dtPagination.total }}
+            </p>
+
+            <v-pagination
+              class="text-right"
+              v-model="pagination.localCurrentPage"
+              :length="pagination.total"
+              @input="onPageChange"
+              total-visible="0"
+            ></v-pagination>
+          </div>
+        </template>
+
+        <!-- no data -->
+        <template v-slot:no-data>
+          <v-progress-linear
+            v-if="existData == -1"
+            active
+            indeterminate
+            absolute
+            height="4"
+            top
+            color="red darken-1"
+          >
+          </v-progress-linear>
+
+          <div v-if="existData == 1">
+            <p class="pa-2">RECODES NOT FOUND</p>
+          </div>
+        </template>
+      </v-data-table>
+    </v-card>
 
     <!-- view data -->
     <v-dialog
@@ -1154,7 +1197,6 @@
 
 <script>
 import DashboardLayout from "../../components/DashboardLayout";
-import ScreenCapture from "../../components/ScreenCapture";
 import { ValidationObserver, ValidationProvider } from "vee-validate";
 import { VueEditor } from "vue2-editor";
 import moment from "moment";
@@ -1162,7 +1204,6 @@ export default {
   name: "Projects",
   components: {
     DashboardLayout,
-    ScreenCapture,
     ValidationObserver,
     ValidationProvider,
     VueEditor,
@@ -1170,7 +1211,6 @@ export default {
   data: () => ({
     moment: moment,
     search: "",
-    p_C: "PC",
 
     page: {},
     avatar: {},
@@ -1212,19 +1252,20 @@ export default {
     headersMap: [
       {
         text: "#",
-        align: "start",
+        align: "center",
         sortable: true,
         value: "id",
-        // width: "4%",
-        class: " ",
+        align: "center",
+        // width: "4",
+        // class: "bg-danger",
       },
       {
         text: "logo",
         align: "center",
         sortable: false,
         value: "logo",
-        // width: "5%",
-        class: " ",
+        // width: "5",
+        // class: "bg-info",
       },
       {
         text: "project",
@@ -1263,13 +1304,13 @@ export default {
         align: "center",
         class: " ",
       },
-      {
-        text: "status",
-        value: "status",
-        // width: "10%",
-        align: "center",
-        class: " ",
-      },
+      // {
+      //   text: "status",
+      //   value: "status",
+      //   // width: "10%",
+      // align: "center",
+      //   class: " ",
+      // },
       {
         text: "version",
         value: "projectVersion",
@@ -1290,8 +1331,8 @@ export default {
         text: "Actions",
         value: "actions",
         sortable: false,
-        // width: "10%",
-        align: "center",
+        width: "10%",
+        align: "end",
         class: "dark--text",
       },
     ],
@@ -1445,6 +1486,7 @@ export default {
     paginateData() {
       this.dataTableLoading = true;
       this.$http
+
         .get("url_projects?page=" + localStorage.getItem("paginateKey"))
         .then((res) => {
           console.log("ppp", res.data);
