@@ -9,19 +9,14 @@ import VeeValidate from "vee-validate";
 import axios from "axios";
 import Croppa from "vue-croppa";
 import moment from "moment";
-import { BootstrapVue, IconsPlugin } from "bootstrap-vue";
 // import { VueEditor } from "vue2-editor";
 // import { VueEditor, Quill } from "vue2-editor";
 
 // Import  CSS
 import "./styles/main.scss";
-import "bootstrap/dist/css/bootstrap.css";
-import "bootstrap-vue/dist/bootstrap-vue.css";
 import 'vue-croppa/dist/vue-croppa.css'
 
 // Global Use
-Vue.use(BootstrapVue);
-Vue.use(IconsPlugin);
 Vue.use(VueAgile);
 Vue.use(VeeValidate);
 Vue.use(moment);
