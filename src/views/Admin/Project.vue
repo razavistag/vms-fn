@@ -67,6 +67,10 @@
               append-icon="mdi-magnify"
               @input="onSearch"
               label="Search"
+              v-shortkey.focus="['alt','v']"
+              @shortkey="focusSearchKey()"
+              ref="searchbar_ref"
+              type="input"
               hide-details
               dense
               class="shrink mx-4 my-4  v_toolbar_search_text_field"
@@ -80,6 +84,8 @@
               class=" ma-1 text-center"
               id="v_toolbar_refresh_btn"
               outlined
+              v-shortkey="['alt', 'r']"
+              @shortkey="refresh()"
               small
               @click="refresh"
             >
@@ -123,12 +129,13 @@
                   small
                   v-bind="attrs"
                   v-on="on"
+                  v-shortkey="['alt', 'd']"
                 >
                   <v-icon small dark> mdi-eye </v-icon>
 
-                  <span class="v_toolbar_display_column_text"
-                    >DISPLAY COLUMNS</span
-                  >
+                  <span class="v_toolbar_display_column_text">
+                    DISPLAY COLUMNS
+                  </span>
                 </v-btn>
               </template>
 
@@ -166,6 +173,8 @@
               class=" ma-1"
               outlined
               small
+              v-shortkey="['alt', 'n']"
+              @shortkey="newDialog()"
               @click="newDialog"
             >
               <v-icon small dark> mdi-plus </v-icon>
@@ -1452,9 +1461,18 @@ export default {
     localStorage.setItem("paginateKey", 1);
     let helper = this.$helper.apiGet();
     // console.log("From Helper", helper);
+
+        // this.$refs.searchbar_ref.$refs.input.focus();
+
   },
 
   methods: {
+    focusSearchKey() {
+      this.$nextTick(() => {
+        this.$refs.searchbar_ref.$refs.input.focus();
+      });
+      console.log("a");
+    },
     sumField(key) {
       // sum data in give key (property)
       return this.projects.reduce((a, b) => a + (b[key] || 0), 0);

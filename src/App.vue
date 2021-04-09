@@ -10,6 +10,8 @@
         rounded
         id="fixed_button"
         class="fixed_button"
+        v-shortkey="['alt', 'b']"
+        @shortkey="bugCapture()"
         @click="bugCapture"
       >
         <v-icon>mdi-bug</v-icon>
