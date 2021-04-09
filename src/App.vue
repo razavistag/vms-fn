@@ -107,11 +107,15 @@
             </v-toolbar-items>
           </v-toolbar>
 
-          <v-card-text class=" pa-5" >
-           <v-container class=" ">
-              <v-img :src="screenShot_dataURL" max-width="100%" max-height="100%">
-            </v-img>
-           </v-container>
+          <v-card-text class=" pa-5">
+            <v-container class=" ">
+              <v-img
+                :src="screenShot_dataURL"
+                max-width="100%"
+                max-height="100%"
+              >
+              </v-img>
+            </v-container>
           </v-card-text>
         </v-card>
       </v-dialog>

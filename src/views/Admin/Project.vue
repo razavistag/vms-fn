@@ -1422,6 +1422,8 @@ export default {
   },
   mounted() {
     localStorage.setItem("paginateKey", 1);
+    let helper = this.$helper.apiGet();
+    console.log('From Helper', helper);
   },
 
   methods: {
@@ -1895,8 +1897,8 @@ export default {
   border-bottom: double red;
 }
 .v-data-footer {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
 }
 </style>

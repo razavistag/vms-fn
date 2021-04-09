@@ -9,8 +9,7 @@ import VeeValidate from "vee-validate";
 import axios from "axios";
 import Croppa from "vue-croppa";
 import moment from "moment";
-// import { VueEditor } from "vue2-editor";
-// import { VueEditor, Quill } from "vue2-editor";
+import Helper from "./helpers/index";
 
 // Import  CSS
 import "./styles/main.scss";
@@ -22,14 +21,31 @@ Vue.use(VeeValidate);
 Vue.use(moment);
 Vue.use(Croppa, { componentName: 'image-cropper' })       
 
-const base = axios.create({
-  baseURL: "http://127.0.0.1:8000/",
-  headers: { Authorization: "Bearer " + localStorage.getItem("token") },
-});
+Vue.config.productionTip = false;
 
 Vue.prototype.$http = base;
+Vue.prototype.$helper = Helper;
+
 localStorage.setItem("fullScreen", 0);
-Vue.config.productionTip = false;
+const base = axios.create({
+  baseURL: "http://127.0.0.1:8000/", 
+});
+
+// base.defaults.headers.common['Authorization'] = "Bearer " +localStorage.getItem("token");
+Vue.prototype.$http.interceptors.request.use(
+  config => {
+      let accessToken = localStorage.getItem('token');
+      if (accessToken) {
+          config.headers = Object.assign({
+              Authorization: `Bearer ${accessToken}`
+          }, config.headers);
+      }
+      return config;
+  },
+  error => {
+      return Promise.reject(error);
+  }
+);
 
 new Vue({
   router,
