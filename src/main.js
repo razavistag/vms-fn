@@ -21,15 +21,16 @@ Vue.use(VeeValidate);
 Vue.use(moment);
 Vue.use(Croppa, { componentName: 'image-cropper' })       
 
-Vue.config.productionTip = false;
 
-Vue.prototype.$http = base;
-Vue.prototype.$helper = Helper;
 
 localStorage.setItem("fullScreen", 0);
 const base = axios.create({
   baseURL: "http://127.0.0.1:8000/", 
 });
+
+
+Vue.prototype.$http = base;
+Vue.prototype.$helper = Helper;
 
 // base.defaults.headers.common['Authorization'] = "Bearer " +localStorage.getItem("token");
 Vue.prototype.$http.interceptors.request.use(
@@ -46,6 +47,7 @@ Vue.prototype.$http.interceptors.request.use(
       return Promise.reject(error);
   }
 );
+Vue.config.productionTip = false;
 
 new Vue({
   router,
