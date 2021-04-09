@@ -79,12 +79,12 @@ export default {
       progressCount: null,
       files: [],
       images: [],
-      ImageCountLimit: 6,
+      maxImage: 6,
     };
   },
   methods: {
     OnDragEnter(e) {
-      if (this.images.length < 6) {
+      if (this.images.length < this.maxImage) {
         e.preventDefault();
 
         this.dragCount++;
@@ -95,42 +95,48 @@ export default {
       }
     },
     OnDragLeave(e) {
-      if (this.images.length < 6) {
-        e.preventDefault();
-        this.dragCount--;
-        if (this.dragCount <= 0) this.isDragging = false;
-      } else {
-        console.log("false OnDragLeave");
-      }
+      e.preventDefault();
+      this.dragCount--;
+      if (this.dragCount <= 0) this.isDragging = false;
     },
     onInputChange(e) {
       //   console.log(e);
-      if (this.images.length < 6) {
-        console.log("true", this.images.length);
-        const files = e.target.files;
-        Array.from(files).forEach((file) => this.addImage(file));
-      } else {
-        console.log("false onInputChange");
+
+      const files = e.target.files;
+      if (!this.isValidNumberOfImages(files.length)) {
+        return false;
       }
+      Array.from(files).forEach((file) => this.addImage(file));
     },
     onDrop(e) {
       e.preventDefault();
       e.stopPropagation();
       this.isDragging = false;
       const files = e.dataTransfer.files;
-      if (files.length < 6) {
-        console.log(files.length);
-        Array.from(files).forEach((file) => this.addImage(file));
+      if (!this.isValidNumberOfImages(files.length)) {
+        return false;
+      }
+
+      Array.from(files).forEach((file) => this.addImage(file));
+    },
+    isValidNumberOfImages(amount) {
+      if (amount > this.maxImage) {
+        // this.$emit("limit-exceeded", amount);
+        console.log("limit exceed");
+        return false;
       } else {
-        console.log("false onDrop");
+        return true;
       }
     },
     addImage(file) {
-      if (this.images.length < 6) {
+      if (this.images.length < this.maxImage) {
         console.log(true, this.images.length);
         if (!file.type.match("image.*")) {
           //   this.$toastr.e(`${file.name} is not an image`);
           return;
+        }
+        if (!this.isValidNumberOfImages(file.length)) {
+          return false;
         }
         // this.files.push(file);
         const img = new Image(),
