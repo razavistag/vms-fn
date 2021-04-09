@@ -16,7 +16,7 @@
 
           nextIcon: '',
         }"
-        id="dt_table" 
+        id="dt_table"
         class="elevation-0 "
         dense
         loading-text="Fetching Project Data"
@@ -201,10 +201,13 @@
                               v-model="editedItem.title"
                               :label="errors[0] ? errors[0] : 'Project Name'"
                               :error-messages="errors"
-                              hide-details=""
+                              ad
                               clearable
-                              dense
-                            ></v-text-field>
+                              dense 
+                              counter="12"
+                              hide-details=""
+                            >
+                            </v-text-field>
                           </ValidationProvider>
                         </v-col>
 
@@ -858,7 +861,7 @@
             itemsLength,
           }"
         >
-          <div class="d-flex align-center   ">
+          <div class="d-flex align-center dt_footer  ">
             <p class="pt-5">Projects Per Page: {{ dtPagination.per_page }}</p>
 
             <p class="pt-5 ml-4">
@@ -1210,6 +1213,7 @@ export default {
   data: () => ({
     moment: moment,
     search: "",
+    test: 0,
 
     page: {},
     avatar: {},
@@ -1423,7 +1427,7 @@ export default {
   mounted() {
     localStorage.setItem("paginateKey", 1);
     let helper = this.$helper.apiGet();
-    console.log('From Helper', helper);
+    // console.log("From Helper", helper);
   },
 
   methods: {
@@ -1490,7 +1494,7 @@ export default {
 
         .get("url_projects?page=" + localStorage.getItem("paginateKey"))
         .then((res) => {
-          console.log("ppp", res.data);
+          // console.log("ppp", res.data);
           this.projects.splice(0);
           this.dtPagination = {
             first_page_url: res.data.projects.first_page_url,

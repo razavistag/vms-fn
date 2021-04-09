@@ -112,7 +112,7 @@
     min-width: 1px !important;
     width: 1px !important;
     padding-left: 3px !important;
-    padding-right: 0px !important; 
+    padding-right: 0px !important;
   }
 
   th:nth-child(2) {
@@ -213,6 +213,34 @@
 
 // Large Screen
 @media screen and (max-width: 425px) {
+  /* View - App.vue */
+  #fixed_button {
+    width: 30px;
+    height: 30px;
+    color: #fff;
+    text-align: center;
+    background-color: #b0bec5;
+    border-radius: 50px;
+    position: fixed;
+    bottom: 30px;
+    right: 10px;
+    cursor: pointer;
+    font-size: 10px;
+    line-height: 50px;
+    z-index: 999;
+    transition: 0.5s;
+  }
+  .Bug_CaptureDialog {
+    align-self: flex-start;
+    position: relative;
+    top: 20px;
+  }
+  .v_icon_zoom_img {
+    // background-color: red !important;
+    font-size: -20px;
+    position: absolute;
+  }
+
   /* View - Projects.vue */
   .v-toolbar__content {
     height: 56px;
@@ -242,6 +270,30 @@
   .v_toolbar_add_project_text {
     display: none;
   }
+  .dt_footer {
+    display: flex !important;
+    // background-color: blue;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    left: 16px;
+    padding: 0px 0px 0px 0px !important;
+    margin: 0px 0px 0px 0px !important;
+    // background: chartreuse;
+    top: 94%;
+  }
+  .theme--light.v-pagination .v-pagination__navigation{
+    background-color: #eceff1;
+
+  }
+  .v-data-footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    padding-top: 10px;
+    background-color: #eceff1;
+    padding: 0px 0px !important;
+  }
 
   /* Component - DashboardLayout.vue */
   header {
@@ -259,6 +311,41 @@
   }
   .navigation_drawer_desktop {
     visibility: hidden;
+  }
+
+  // Component - ImageFileUploader.vue
+  .uploader {
+    width: 100%;
+    height: 195px;
+    background: #2196f3;
+    color: #fff;
+    padding: 20px 15px;
+    text-align: center;
+    border-radius: 10px;
+    border: 3px dashed #fff;
+    font-size: 20px;
+    position: relative;
+  }
+  .file-input {
+    width: 100%;
+    margin: auto;
+    height: 68px;
+    position: relative;
+  }
+  .i_label {
+    position: absolute;
+    left: 0;
+    top: 0;
+    padding-left: 30%;
+    border-radius: 4px;
+    margin-top: 7px;
+    cursor: pointer;
+  }
+  .i_c_Input {
+    background: #fff;
+    width: 50px;
+    opacity: 0;
+    z-index: -2;
   }
 }
 

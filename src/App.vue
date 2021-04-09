@@ -55,7 +55,7 @@
                   md="6"
                   sm="6"
                   cols="12"
-                  class="d-flex align-center justify-center"
+                  class="d-flex align-center justify-center flex-column"
                 >
                   <v-img
                     :src="screenShot_dataURL"
@@ -66,11 +66,18 @@
                   >
                   </v-img>
 
-                  <div class="v_icon_zoom_img">
+                  <div class="v_icon_zoom_img" @click="zoomImage">
                     <v-icon size="40" class="v_icon_zoom">
                       mdi-magnify-scan
                     </v-icon>
                   </div>
+                </v-col>
+
+                <v-col md="6" sm="6" cols="12" class="pl-6">
+                  <ImageFileUploader
+                    ref="imageUploader"
+                    @upload-success="uploadImageSuccess"
+                  />
                 </v-col>
               </v-row>
             </v-container>
@@ -82,7 +89,7 @@
               cancel
             </v-btn>
 
-            <v-btn color="green darken-1" text @click="bugCaptureClose">
+            <v-btn color="green darken-1" text @click="submitBugCapture">
               submit
             </v-btn>
           </v-card-actions>
@@ -125,20 +132,22 @@
 
 <script>
 import html2canvas from "html2canvas";
+import ImageFileUploader from "./components/ImageFileUploader";
 
 export default {
   name: "App",
 
-  components: {},
+  components: {
+    ImageFileUploader,
+  },
 
   data: () => ({
     //
     BugCaptureDialog: false,
     displayBug: false,
     ZoomImageDialog: false,
-
     screenShot_dataURL: "",
-
+    addedImages: [],
     priorityTypes: ["Critical", "High", "Medium", "Low"],
     BugType: [
       "Rendering Error",
@@ -150,6 +159,12 @@ export default {
     ],
   }),
   methods: {
+    uploadImageSuccess(ImageURL, index) {
+      console.log("data 1 ", ImageURL);
+      // console.log("data 2 ", index);
+
+      this.addedImages.push(ImageURL);
+    },
     bugCapture() {
       localStorage.removeItem("screenshot");
       this.screenShot_dataURL = "";
@@ -182,6 +197,22 @@ export default {
       console.log("zoom image");
       this.ZoomImageDialog = true;
     },
+
+    submitBugCapture() {
+      console.log("submit Triggered");
+      this.BugCaptureDialog = false;
+      // clearing state
+      localStorage.removeItem("screenshot");
+      this.screenShot_dataURL = "";
+
+      this.addedImages.forEach((element) => {
+        console.log(element);
+      });
+
+      this.$nextTick(function() {
+        this.$refs.imageUploader.removeAll();
+      });
+    },
   },
 };
 </script>
@@ -202,7 +233,7 @@ export default {
   z-index: 999;
   transition: 0.5s;
 }
-.pointer{
+.pointer {
   cursor: pointer;
 }
 .Bug_CaptureDialog {
@@ -213,7 +244,7 @@ export default {
 .v_icon_zoom_img {
   /* background-color: red !important; */
   font-size: 20px;
-  position: fixed;
+  position: absolute;
 }
 .v_icon_zoom:hover {
   /* background-color: green  !important; */

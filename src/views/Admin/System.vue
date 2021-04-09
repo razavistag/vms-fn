@@ -260,7 +260,7 @@ export default {
       ];
 
       if (this.systems.length <= 0) {
-        console.log(0);
+        // console.log(0);
         console.log("no data");
         this.existData = 1;
       } else {

@@ -422,7 +422,7 @@ export default {
   },
   methods: {
     tabLogin() {
-      console.log(0);
+      // console.log(0);
       this.tab_login = true;
     },
     Login() {

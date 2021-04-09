@@ -126,7 +126,7 @@ export default {
 
       console.log("full screen");
     } else {
-      console.log("normal screen");
+      // console.log("normal screen");
       this.fullscreen = false;
     }
   },
