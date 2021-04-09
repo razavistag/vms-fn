@@ -34,6 +34,30 @@
 
             <v-divider class="mx-4" inset vertical></v-divider>
 
+            <v-chip
+              dark
+              small
+              class="ma-1   d-none  d-sm-none d-md-flex"
+              color="orange"
+            >
+              on progress
+            </v-chip>
+            <v-chip
+              dark
+              small
+              class="ma-1  d-none  d-sm-none d-md-flex"
+              color="#039be5"
+            >
+              on testing
+            </v-chip>
+            <v-chip
+              dark
+              small
+              class="ma-1  d-none  d-sm-none d-md-flex"
+              color="green"
+            >
+              on complete
+            </v-chip>
             <v-spacer></v-spacer>
 
             <!-- SEARCH -->
@@ -203,7 +227,7 @@
                               :error-messages="errors"
                               ad
                               clearable
-                              dense 
+                              dense
                               counter="12"
                               hide-details=""
                             >

@@ -2,13 +2,13 @@
   <div id="ImageFileUploader">
     <!-- Image Upload -->
     <v-row justify="center" align="center" class="ma-0">
-      <v-row v-show="images.length">
+      <!-- <v-row v-show="images.length">
         <v-col md="12" cols="12" class="text-end">
           <label for="file">
             <v-icon>mdi-plus</v-icon>
           </label>
         </v-col>
-      </v-row>
+      </v-row> -->
       <!-- dragging div -->
       <div
         @dragenter="OnDragEnter"
@@ -45,8 +45,8 @@
             <v-img
               :src="image"
               :alt="`Image Uplaoder ${index}`"
-              max-width="350"
-              max-height="350"
+              max-width="340"
+              max-height="340"
               width="50"
               height="50"
               class="image_selected"
@@ -61,6 +61,15 @@
               >
                 mdi-delete
               </v-icon>
+            </div>
+          </v-col>
+          <v-col sm="1" md="1" cols="4" v-show="images.length < maxImage" v-if="images.length > 0">
+            <div class=" pl-1">
+              <label for="file">
+                <v-icon color="#2196f3" class="white add_image_icon">
+                  mdi-plus
+                </v-icon>
+              </label>
             </div>
           </v-col>
         </v-row>
@@ -231,5 +240,10 @@ export default {
 .image_selected:hover + .delete_image {
   display: block;
   cursor: pointer;
+}
+.add_image_icon {
+  cursor: pointer;
+  width: 50px;
+  height: 50px;
 }
 </style>

@@ -244,7 +244,7 @@
   /* View - Projects.vue */
   .v-toolbar__content {
     height: 56px;
-    padding-bottom: 10px;
+    padding-bottom: 24px;
   }
   .v_toolbar_search_text_field {
     width: 150px;
@@ -270,6 +270,13 @@
   .v_toolbar_add_project_text {
     display: none;
   }
+  .v-data-table-header-mobile__wrapper .v-select {
+    margin-bottom: 0px;
+    margin-top: 0px;
+    background-color: white;
+    padding-left: 16px;
+    padding-right: 16px;
+}
   .dt_footer {
     display: flex !important;
     // background-color: blue;

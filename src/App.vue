@@ -45,6 +45,7 @@
                 <v-col md="12" sm="12" cols="12" class=" pt-0 pl-2 pr-2 ma-0">
                   <v-textarea
                     label="Message"
+                    prefix="*"
                     auto-grow
                     rows="1"
                     row-height="15"
