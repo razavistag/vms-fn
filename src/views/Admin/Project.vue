@@ -3,7 +3,7 @@
     <!-- Layout -->
 
     <DashboardLayout />
-    <v-card color="yellow pa-0">
+    <v-card color="pa-0" tile flat>
       <v-data-table
         :headers="showHeaders"
         :items="projects"
@@ -11,9 +11,7 @@
         :loading="dataTableLoading"
         :footer-props="{
           'items-per-page-options': [pagination.total],
-
           prevIcon: '',
-
           nextIcon: '',
         }"
         id="dt_table"
@@ -76,7 +74,6 @@
             </v-chip>
             <v-spacer></v-spacer>
 
-        
             <!-- SEARCH -->
             <div v-shortkey="['alt', 's']" @shortkey="focusSearchKey">
               <v-text-field
@@ -421,33 +418,14 @@
                               <template v-slot:no-data>
                                 <v-list-item>
                                   <v-list-item-content>
-                                    <!-- <v-list-item-title>
-                                                    No results matching "<strong>{{
-                                                      search
-                                                    }}</strong
-                                                    >". Press <kbd>enter</kbd> to create a new
-                                                    one
-                                                  </v-list-item-title> -->
-                                    <!-- <v-list-item>No Recodes Found</v-list-item> -->
+                                    <v-list-item-title>
+                                      No results matching
+                                    </v-list-item-title>
                                   </v-list-item-content>
                                 </v-list-item>
                               </template>
                             </v-combobox>
                           </ValidationProvider>
-                          <!-- <ValidationProvider
-                          rules="required"
-                          name="Team Members"
-                          v-slot="{ errors }"
-                        >
-                          <v-text-field
-                            v-model="editedItem.teamMembers_id"
-                            :label="errors[0] ? errors[0] : 'Team Members'"
-                            :error-messages="errors"
-                            hide-details=""
-                            clearable
-                            dense
-                          ></v-text-field>
-                        </ValidationProvider> -->
                         </v-col>
 
                         <!-- project incharage -->
@@ -467,7 +445,7 @@
                               "
                               :error-messages="errors"
                               prefix="*"
-                              multiple
+                              single-line
                               persistent-hint
                               hide-details=""
                               small-chips
@@ -477,14 +455,9 @@
                               <template v-slot:no-data>
                                 <v-list-item>
                                   <v-list-item-content>
-                                    <!-- <v-list-item-title>
-                                                    No results matching "<strong>{{
-                                                      search
-                                                    }}</strong
-                                                    >". Press <kbd>enter</kbd> to create a new
-                                                    one
-                                                  </v-list-item-title> -->
-                                    <!-- <v-list-item>No Recodes Found</v-list-item> -->
+                                    <v-list-item-title>
+                                      No results matching
+                                    </v-list-item-title>
                                   </v-list-item-content>
                                 </v-list-item>
                               </template>
@@ -1377,13 +1350,6 @@ export default {
         align: "center",
         class: " ",
       },
-      // {
-      //   text: "status",
-      //   value: "status",
-      //   // width: "10%",
-      // align: "center",
-      //   class: " ",
-      // },
       {
         text: "version",
         value: "projectVersion",
@@ -1492,13 +1458,14 @@ export default {
     // this.initialize();
     this.paginateData();
     this.headers = Object.values(this.headersMap);
-    this.selectedHeaders = this.headers;
+    this.selectedHeaders = this.headers; 
   },
   mounted() {
     localStorage.setItem("paginateKey", 1);
     let helper = this.$helper.apiGet();
     // console.log("From Helper", helper);
-
+    let gl = this.$gl;
+    console.log(this.$gl.projectURL);
     // this.$refs.searchbar_ref.$refs.input.focus();
   },
 
