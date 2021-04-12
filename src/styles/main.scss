@@ -46,8 +46,16 @@
   color: rgb(235, 60, 60);
   font-size: 15px;
   position: absolute;
-  top: 72px;
-  left: 30px;
+  // top: 72px;
+  // left: 30px;
+  margin-top: 60px;
+  margin-left: 20px;
+}
+.mendatory {
+  position: absolute;
+  z-index: 20;
+  margin-top: 60px;
+  margin-left: 10px;
 }
 .editImage {
   position: absolute;
@@ -247,6 +255,7 @@
   }
 
   /* View - Projects.vue */
+
   .v-toolbar__content {
     height: 56px;
     padding-bottom: 24px;
