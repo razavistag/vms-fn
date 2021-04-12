@@ -33,56 +33,92 @@
 
           <v-card-text class="">
             <v-container>
-              <v-row class="m-0">
-                <v-col md="6" sm="6" cols="12" class=" pa-2 ma-0">
-                  <v-select
-                    :items="priorityTypes"
-                    label="priority"
-                    dense
-                  ></v-select>
-                </v-col>
-                <v-col md="6" sm="6" cols="12" class=" pa-2 ma-0">
-                  <v-select :items="BugType" label="Bug Type" dense></v-select>
-                </v-col>
-                <v-col md="12" sm="12" cols="12" class=" pt-0 pl-2 pr-2 ma-0">
-                  <v-textarea
-                    label="Message"
-                    prefix="*"
-                    auto-grow
-                    rows="1"
-                    row-height="15"
-                    counter
-                  ></v-textarea>
-                </v-col>
-                <v-col
-                  md="6"
-                  sm="6"
-                  cols="12"
-                  class="d-flex align-center justify-center flex-column"
-                >
-                  <v-img
-                    :src="screenShot_dataURL"
-                    max-width="350"
-                    max-height="350"
-                    @click="zoomImage"
-                    class="pointer"
+              <ValidationObserver ref="form">
+                <v-row class="m-0">
+                  <v-col md="6" sm="6" cols="12" class=" pa-2 ma-0">
+                    <ValidationProvider
+                      rules="required"
+                      name="Priority Type"
+                      v-slot="{ errors }"
+                    >
+                      <v-select
+                        v-model="form.PriorityType"
+                        prefix="*"
+                        :items="priorityTypes"
+                        :label="errors[0] ? errors[0] : 'Priority Type'"
+                        hide-details=""
+                        :error-messages="errors"
+                        dense
+                      ></v-select>
+                    </ValidationProvider>
+                  </v-col>
+                  <v-col md="6" sm="6" cols="12" class=" pa-2 ma-0">
+                    <ValidationProvider
+                      rules="required"
+                      name="Bug Type"
+                      v-slot="{ errors }"
+                    >
+                      <v-select
+                        prefix="*"
+                        v-model="form.BugType"
+                        :items="BugType"
+                        :label="errors[0] ? errors[0] : 'Bug Type'"
+                        hide-details=""
+                        :error-messages="errors"
+                        dense
+                      ></v-select>
+                    </ValidationProvider>
+                  </v-col>
+                  <v-col md="12" sm="12" cols="12" class=" pt-0 pl-2 pr-2 ma-0">
+                    <ValidationProvider
+                      rules="required"
+                      name="Message"
+                      v-slot="{ errors }"
+                    >
+                      <v-textarea
+                        v-model="form.Message"
+                        :items="BugType"
+                        :label="errors[0] ? errors[0] : 'Message'"
+                        hide-details=""
+                        :error-messages="errors"
+                        prefix="*"
+                        auto-grow
+                        rows="1"
+                        row-height="15"
+                        counter
+                      ></v-textarea>
+                    </ValidationProvider>
+                  </v-col>
+                  <v-col
+                    md="6"
+                    sm="6"
+                    cols="12"
+                    class="d-flex align-center justify-center flex-column"
                   >
-                  </v-img>
+                    <v-img
+                      :src="screenShot_dataURL"
+                      max-width="350"
+                      max-height="350"
+                      @click="zoomImage"
+                      class="pointer"
+                    >
+                    </v-img>
 
-                  <div class="v_icon_zoom_img" @click="zoomImage">
-                    <v-icon size="40" class="v_icon_zoom">
-                      mdi-magnify-scan
-                    </v-icon>
-                  </div>
-                </v-col>
+                    <div class="v_icon_zoom_img" @click="zoomImage">
+                      <v-icon size="40" class="v_icon_zoom">
+                        mdi-magnify-scan
+                      </v-icon>
+                    </div>
+                  </v-col>
 
-                <v-col md="6" sm="6" cols="12" class="pl-6">
-                  <ImageFileUploader
-                    ref="imageUploader"
-                    @upload-success="uploadImageSuccess"
-                  />
-                </v-col>
-              </v-row>
+                  <v-col md="6" sm="6" cols="12" class="pl-6">
+                    <ImageFileUploader
+                      ref="imageUploader"
+                      @upload-success="uploadImageSuccess"
+                    />
+                  </v-col>
+                </v-row>
+              </ValidationObserver>
             </v-container>
           </v-card-text>
 
@@ -136,12 +172,15 @@
 <script>
 import html2canvas from "html2canvas";
 import ImageFileUploader from "./components/ImageFileUploader";
+import { ValidationObserver, ValidationProvider } from "vee-validate";
 
 export default {
   name: "App",
 
   components: {
     ImageFileUploader,
+    ValidationObserver,
+    ValidationProvider,
   },
 
   data: () => ({
@@ -160,17 +199,27 @@ export default {
       "Suggestion",
       "Enhancement",
     ],
+    form: {
+      PriorityType: "",
+      BugType: "",
+      Message: "",
+    },
   }),
   methods: {
     uploadImageSuccess(ImageURL, index) {
-      console.log("data 1 ", ImageURL);
+      // console.log("data 1 ", ImageURL);
       // console.log("data 2 ", index);
 
       this.addedImages.push(ImageURL);
+      console.log("ADD_IMAGE", this.addedImages);
     },
     bugCapture() {
       localStorage.removeItem("screenshot");
       this.screenShot_dataURL = "";
+
+      this.form.PriorityType = "";
+      this.form.BugType = "";
+      this.form.Message = "";
 
       console.log("BugCapture Triggered");
       html2canvas(document.getElementById("app"), {
@@ -202,19 +251,66 @@ export default {
     },
 
     submitBugCapture() {
-      console.log("submit Triggered");
-      this.BugCaptureDialog = false;
-      // clearing state
-      localStorage.removeItem("screenshot");
-      this.screenShot_dataURL = "";
+      this.$refs.form.validate().then((success) => {
+        if (!success) {
+          return;
+        }
 
-      this.addedImages.forEach((element) => {
-        console.log(element);
-      });
+        // let img_arr = [];
+        // this.addedImages[0].forEach((element) => {
+        //   img_arr.push(element);
+        // });
 
-      this.$nextTick(function() {
-        this.$refs.imageUploader.removeAll();
+        console.log("store", this.addedImages[0]);
+
+        let store = {
+          priority: this.form.PriorityType,
+          type: this.form.BugType,
+          message: this.form.Message,
+          images: [
+            {
+              screenShot: this.screenShot_dataURL,
+              addedImages: this.addedImages[0],
+            },
+          ],
+        };
+        // console.log(store);
+        let url = "bug_capture";
+        this.$http
+          .post(url, store)
+          .then((response) => {
+            console.log(response);
+            this.BugCaptureDialog = false;
+            // clearing state
+            localStorage.removeItem("screenshot");
+            this.screenShot_dataURL = "";
+
+            this.$nextTick(function() {
+              this.$refs.imageUploader.removeAll();
+            });
+          })
+          .catch((response) => {
+            console.log("Error Fround. Bug Not Saved");
+          });
+
+        this.$nextTick(() => {
+          this.$refs.form.reset();
+          console.log("cleared");
+        });
       });
+      // console.log("submit Triggered");
+      // this.BugCaptureDialog = false;
+      // // clearing state
+      // localStorage.removeItem("screenshot");
+      // this.screenShot_dataURL = "";
+
+      // this.addedImages.forEach((element) => {
+      //   console.log(element);
+      // });
+
+      // this.$nextTick(function() {
+      //   this.$refs.imageUploader.removeAll();
+      // });
     },
   },
 };

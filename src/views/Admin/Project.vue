@@ -27,7 +27,22 @@
         <template v-slot:top>
           <v-toolbar flat id="toolbar">
             <v-toolbar-title class="h6" id="v_table_title">
-              <v-icon small left>mdi-image-filter-center-focus-strong</v-icon>
+              <v-icon
+                small
+                left
+                @click="expandTable"
+                v-if="!dataTableFullscreen"
+                title="Expand Data Table"
+              >
+                mdi-image-filter-center-focus-strong
+              </v-icon>
+              <v-icon
+                v-else
+                @click="exitFullScreenDataTable"
+                title="Minimize Data Table"
+              >
+                mdi-arrow-expand</v-icon
+              >
 
               PROJECTS
             </v-toolbar-title>
@@ -61,24 +76,22 @@
             </v-chip>
             <v-spacer></v-spacer>
 
+        
             <!-- SEARCH -->
-
-            <!-- <input type="text" class="red" v-shortkey.focus="['alt', 'i']" v-model="name" /> -->
-
-            <v-text-field
-              v-model="search"
-              append-icon="mdi-magnify"
-              @input="onSearch"
-              label="Search"
-              ref="searchbar_ref"
-              type="input"
-              hide-details
-              v-shortkey.focus="['alt', 'i']"
-              @focus="focusSearchKey"
-              dense
-              class="shrink mx-4 my-4  v_toolbar_search_text_field"
-            >
-            </v-text-field>
+            <div v-shortkey="['alt', 's']" @shortkey="focusSearchKey">
+              <v-text-field
+                v-model="search"
+                append-icon="mdi-magnify"
+                @input="onSearch"
+                label="Search"
+                ref="searchbar_ref"
+                type="input"
+                hide-details
+                dense
+                class="shrink mx-4 my-4  v_toolbar_search_text_field"
+              >
+              </v-text-field>
+            </div>
 
             <!-- REFRESH BUTTONS -->
 
@@ -219,6 +232,7 @@
                             <v-text-field
                               v-model="editedItem.title"
                               disabled
+                              prefix="*"
                               :label="errors[0] ? errors[0] : 'Project Name'"
                               :error-messages="errors"
                               hide-details=""
@@ -238,7 +252,7 @@
                               v-model="editedItem.title"
                               :label="errors[0] ? errors[0] : 'Project Name'"
                               :error-messages="errors"
-                              ad
+                              prefix="*"
                               clearable
                               dense
                               counter="12"
@@ -272,6 +286,7 @@
                                   :error-messages="errors"
                                   hide-details=""
                                   clearable
+                                  prefix="*"
                                   dense
                                   readonly
                                   v-bind="attrs"
@@ -318,6 +333,7 @@
                                   :error-messages="errors"
                                   hide-details=""
                                   clearable
+                                  prefix="*"
                                   dense
                                   readonly
                                   v-bind="attrs"
@@ -354,6 +370,7 @@
                               :label="errors[0] ? errors[0] : 'Project Status'"
                               :error-messages="errors"
                               hide-details=""
+                              prefix="*"
                               clearable
                               dense
                             ></v-select>
@@ -373,6 +390,7 @@
                               :error-messages="errors"
                               hide-details=""
                               clearable
+                              prefix="*"
                               dense
                             ></v-text-field>
                           </ValidationProvider>
@@ -395,6 +413,7 @@
                               multiple
                               dense
                               persistent-hint
+                              prefix="*"
                               hide-details=""
                               small-chips
                               clearable
@@ -447,6 +466,7 @@
                                 errors[0] ? errors[0] : 'Project Incharge'
                               "
                               :error-messages="errors"
+                              prefix="*"
                               multiple
                               persistent-hint
                               hide-details=""
@@ -486,6 +506,7 @@
                               "
                               :error-messages="errors"
                               hide-details=""
+                              prefix="*"
                               clearable
                               dense
                             ></v-text-field>
@@ -504,6 +525,7 @@
                               :label="errors[0] ? errors[0] : 'Cost'"
                               :error-messages="errors"
                               hide-details=""
+                              prefix="*"
                               clearable
                               dense
                             ></v-text-field>
@@ -561,7 +583,12 @@
                                   <p class="errorDes" v-if="errors[0]">
                                     {{ errors[0] }}
                                   </p>
-
+                                  <p
+                                    class="mendatory"
+                                    v-show="!editedItem.description"
+                                  >
+                                    *
+                                  </p>
                                   <vue-editor
                                     v-model="editedItem.description"
                                     :editorToolbar="editorToolBar"
@@ -665,19 +692,22 @@
             <div
               class="chip_bar_on_progress"
               v-if="item.status == 'on progress'"
+              :title="'project ' + item.status"
             ></div>
 
             <div
               class="chip_bar_on_complete"
               v-if="item.status == 'completed'"
+              :title="'project ' + item.status"
             ></div>
 
             <div
               class="chip_bar_on_test"
               v-if="item.status == 'on testing stage'"
+              :title="'project ' + item.status"
             ></div>
 
-            <span class="ma-1 pa-0">{{ index + 1 }}</span>
+            <span class="ma-0 pa-0 mt-2">{{ index + 1 }}</span>
           </div>
         </template>
 
@@ -772,7 +802,7 @@
             id="dt-view-action-button"
             small
             class="mr-2 blue darken-1  pa-1 shrink   white--text rounded"
-            title="asd"
+            title="View Projects"
             @click="viewForm(item)"
           >
             mdi-eye
@@ -781,6 +811,7 @@
           <v-icon
             id="dt-edit-action-button"
             small
+            title="Edit Projects"
             class="mr-2 orange darken-1 pa-1 white--text rounded"
             @click="editItem(item)"
           >
@@ -790,6 +821,7 @@
           <v-icon
             id="dt-trash-action-button"
             small
+            title="Delete Projects"
             class="red darken-1 pa-1 white--text rounded"
             @click="deleteItem(item)"
           >
@@ -1265,6 +1297,7 @@ export default {
     selectedIncharge: [],
     statusItems: ["on progress", "on testing stage", "completed"],
 
+    dataTableFullscreen: false,
     dataTableLoading: true,
     viewDialog: false,
     dialog: false,
@@ -1470,12 +1503,39 @@ export default {
   },
 
   methods: {
+    expandTable() {
+      var elem = document.getElementById("dt_table");
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+        this.dataTableFullscreen = true;
+      } else if (elem.webkitRequestFullscreen) {
+        /* Safari */
+        elem.webkitRequestFullscreen();
+        this.dataTableFullscreen = true;
+      } else if (elem.msRequestFullscreen) {
+        /* IE11 */
+        elem.msRequestFullscreen();
+        this.dataTableFullscreen = true;
+      }
+    },
+    exitFullScreenDataTable() {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+        this.dataTableFullscreen = false;
+      } else if (document.webkitExitFullscreen) {
+        /* Safari */
+        document.webkitExitFullscreen();
+        this.dataTableFullscreen = false;
+      } else if (document.msExitFullscreen) {
+        /* IE11 */
+        document.msExitFullscreen();
+        this.dataTableFullscreen = false;
+      }
+    },
     focusSearchKey() {
-      // this.$refs.searchbar_ref.$refs.input.focus();
-
-      // this.$nextTick(() => {
-      // });
       console.log("a");
+      this.$refs.searchbar_ref.$refs.input.focus();
+      console.log("b");
     },
     sumField(key) {
       // sum data in give key (property)

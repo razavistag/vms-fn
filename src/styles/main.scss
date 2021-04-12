@@ -46,8 +46,16 @@
   color: rgb(235, 60, 60);
   font-size: 15px;
   position: absolute;
-  top: 72px;
-  left: 30px;
+  // top: 72px;
+  // left: 30px;
+  margin-top: 60px;
+  margin-left: 20px;
+}
+.mendatory {
+  position: absolute;
+  z-index: 20;
+  margin-top: 60px;
+  margin-left: 10px;
 }
 .editImage {
   position: absolute;
@@ -181,7 +189,7 @@
   background-color: orange !important;
   width: 4px;
   height: 40px;
-
+  margin-left: -3px;
   border-radius: 0px;
   margin-right: 3px;
 }
@@ -189,6 +197,8 @@
   background-color: #039be5 !important;
   width: 4px;
   height: 40px;
+  margin-left: -3px;
+
   border-radius: 0px;
   margin-right: 3px;
 }
@@ -196,7 +206,7 @@
   background-color: green !important;
   width: 4px;
   height: 36px;
-
+  margin-left: -3px;
   border-radius: 0px;
   margin-right: 3px;
 }
@@ -245,6 +255,7 @@
   }
 
   /* View - Projects.vue */
+
   .v-toolbar__content {
     height: 56px;
     padding-bottom: 24px;
@@ -279,6 +290,10 @@
     background-color: white;
     padding-left: 16px;
     padding-right: 16px;
+  }
+  .v-application--is-ltr .v-btn__content .v-icon--left {
+    margin-left: -3px;
+    margin-right: -3px;
   }
   .dt_footer {
     display: flex !important;
