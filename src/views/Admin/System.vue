@@ -1,231 +1,162 @@
 <template>
   <div id="System">
-    <!-- Layout -->
     <DashboardLayout />
     <v-data-table
-      :headers="showHeaders"
-      :items="systems"
-      :fixed-header="true"
-      :itemsPerPage="20"
-      :footer-props="{
-        'items-per-page-options': [5, 20, 25, 30, 35, 40, 50, -1],
-      }"
-      :search="search"
-      height="755px"
+      :headers="headers"
+      :items="desserts"
       sort-by="calories"
-      class="elevation-0"
-      dense
+      class="elevation-1"
     >
       <template v-slot:top>
         <v-toolbar flat>
-          <v-toolbar-title class="h6">SYSTEMS</v-toolbar-title>
+          <v-toolbar-title>My CRUD</v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-spacer></v-spacer>
-
-          <!-- SEARCH -->
-          <v-text-field
-            v-model="search"
-            append-icon="mdi-magnify"
-            label="Search"
-            hide-details
-            dense
-            class="shrink mx-4 my-4"
-          >
-          </v-text-field>
-
-          <!-- REFRESH BUTTONS -->
-
-          <v-btn
-            color="white"
-            class="indigo lighten-1 ma-1"
-            text
-            tile
-            small
-            @click="initialize"
-          >
-            <v-icon small dark left> mdi-refresh </v-icon> REFRESH
-          </v-btn>
-
-          <!-- HIDE COLUMNS -->
-          <v-menu top :close-on-content-click="false">
+          <v-dialog v-model="dialog" max-width="500px">
             <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                color="white"
-                class="indigo lighten-1 ma-1"
-                text
-                tile
-                small
-                v-bind="attrs"
-                v-on="on"
-              >
-                <v-icon left small dark> mdi-eye </v-icon> DISPLAY COLUMNS
+              <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">
+                New Item
               </v-btn>
             </template>
+            <v-card>
+              <v-card-title>
+                <span class="headline">{{ formTitle }}</span>
+              </v-card-title>
 
-            <v-list flat>
-              <v-list-item class="fixed">
-                <v-select
-                  v-model="selectedHeaders"
-                  :items="headers"
-                  label="Display Columns"
-                  multiple
-                  return-object
-                  class=""
-                  hide-details=""
-                  dense
-                  :menu-props="{ maxHeight: '400', top: true, offsetY: true }"
+              <v-card-text>
+                <v-container>
+                  <v-row>
+                    <v-col cols="12" sm="6" md="4">
+                      <v-text-field
+                        v-model="editedItem.name"
+                        label="Dessert name"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="4">
+                      <v-text-field
+                        v-model="editedItem.calories"
+                        label="Calories"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="4">
+                      <v-text-field
+                        v-model="editedItem.fat"
+                        label="Fat (g)"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="4">
+                      <v-text-field
+                        v-model="editedItem.carbs"
+                        label="Carbs (g)"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="4">
+                      <v-text-field
+                        v-model="editedItem.protein"
+                        label="Protein (g)"
+                      ></v-text-field>
+                    </v-col>
+                  </v-row>
+                </v-container>
+              </v-card-text>
+
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="blue darken-1" text @click="close">
+                  Cancel
+                </v-btn>
+                <v-btn color="blue darken-1" text @click="save">
+                  Save
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+          <v-dialog v-model="dialogDelete" max-width="500px">
+            <v-card>
+              <v-card-title class="headline"
+                >Are you sure you want to delete this item?</v-card-title
+              >
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="blue darken-1" text @click="closeDelete"
+                  >Cancel</v-btn
                 >
-                  <template v-slot:selection="{ item, index }">
-                    <v-chip v-if="index < 2" x-small>
-                      <span>{{ item.text }}</span>
-                    </v-chip>
-                    <span v-if="index === 2" class="grey--text caption">
-                      (+{{ selectedHeaders.length - 2 }} others)
-                    </span>
-                  </template>
-                </v-select>
-              </v-list-item>
-            </v-list>
-          </v-menu>
-
-          <!-- ADD BUTTONS -->
-          <v-btn color="white" class="indigo lighten-1 ma-1" text tile small>
-            <v-icon small dark left> mdi-plus </v-icon> ADD PROJECTS
-          </v-btn>
+                <v-btn color="blue darken-1" text @click="deleteItemConfirm"
+                  >OK</v-btn
+                >
+                <v-spacer></v-spacer>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
         </v-toolbar>
       </template>
-
-      <!-- Table Action -->
-      <template v-slot:[`item.actions`]="{ item }">
-        <v-icon
-          small
-          class="mr-2 blue darken-1  pa-1 shrink   white--text rounded"
-          title="asd"
-        >
-          mdi-eye
-        </v-icon>
-        <v-icon small class="mr-2 orange darken-1 pa-1 white--text rounded">
+      <template v-slot:item.actions="{ item }">
+        <v-icon small class="mr-2" @click="editItem(item)">
           mdi-pencil
         </v-icon>
-        <v-icon small class="mr-2 red darken-1 pa-1 white--text rounded">
+        <v-icon small @click="deleteItem(item)">
           mdi-delete
         </v-icon>
       </template>
-      <!-- no data -->
       <template v-slot:no-data>
-        <v-progress-linear
-          v-if="existData == -1"
-          active
-          indeterminate
-          absolute
-          top
-          height="5px"
-          class="p-1"
-          color="blue darken-4"
-        ></v-progress-linear>
-
-        <div v-if="existData == 1">
-          <p class="pa-2">RECODES NOT FOUND</p>
-        </div>
+        <v-btn color="primary" @click="initialize">
+          Reset
+        </v-btn>
       </template>
     </v-data-table>
   </div>
 </template>
-
 <script>
 import DashboardLayout from "../../components/DashboardLayout";
 import { ValidationObserver, ValidationProvider } from "vee-validate";
+import { VueEditor } from "vue2-editor";
+import moment from "moment";
 export default {
-  name: "System",
+  name: "Projects",
   components: {
     DashboardLayout,
     ValidationObserver,
     ValidationProvider,
+    VueEditor,
   },
   data: () => ({
-    headers: [],
-    headersMap: [
+    moment: moment,
+    dialog: false,
+    dialogDelete: false,
+    headers: [
       {
-        text: "#",
+        text: "Dessert (100g serving)",
         align: "start",
-        sortable: true,
-        value: "id",
-        width: "4%",
-      },
-      {
-        text: "systems",
-        align: "start",
-        sortable: true,
-        value: "title",
-        width: "15%",
-      },
-      {
-        text: "Re-new Duration",
-        value: "renewDuration",
-        width: "10%",
-        align: "center",
-      },
-      {
-        text: "Activated Date",
-        value: "ActivatedDate",
-        width: "7%",
-        align: "center",
-      },
-      {
-        text: "Expired Date",
-        value: "ExpiredDate",
-        width: "7%",
-        align: "center",
-      },
-      {
-        text: "Project Name",
-        value: "projectTitle.name",
-        width: "15%",
-        align: "center",
-      },
-      { text: "Status", value: "status", width: "10%", align: "center" },
-
-      {
-        text: "Actions",
-        value: "actions",
         sortable: false,
-        width: "8%",
-        align: "center",
+        value: "name",
       },
+      { text: "Calories", value: "calories" },
+      { text: "Fat (g)", value: "fat" },
+      { text: "Carbs (g)", value: "carbs" },
+      { text: "Protein (g)", value: "protein" },
+      { text: "Actions", value: "actions", sortable: false },
     ],
-    systems: [],
+    desserts: [],
     editedIndex: -1,
-    // editedItem: {
-    //   id: "",
-    //   title: "",
-    //   duration: "",
-    //   collaborators: "",
-    //   status: "",
-    //   deadline: "",
-    //   startingdate: "",
-    // },
-    // defaultItem: {
-    //   id: "",
-    //   title: "",
-    //   duration: "",
-    //   collaborators: "",
-    //   status: "",
-    //   deadline: "",
-    //   startingdate: "",
-    // },
-    selectedHeaders: [],
-    search: "",
-    existData: -1,
-    // statusItems: ["on progress", "on testing stage", "completed"],
-    // picker1: false,
-    // picker2: false,
+    editedItem: {
+      name: "",
+      calories: 0,
+      fat: 0,
+      carbs: 0,
+      protein: 0,
+    },
+    defaultItem: {
+      name: "",
+      calories: 0,
+      fat: 0,
+      carbs: 0,
+      protein: 0,
+    },
   }),
+
   computed: {
     formTitle() {
       return this.editedIndex === -1 ? "New Item" : "Edit Item";
-    },
-    showHeaders() {
-      return this.headers.filter((s) => this.selectedHeaders.includes(s));
     },
   },
 
@@ -237,37 +168,127 @@ export default {
       val || this.closeDelete();
     },
   },
+
   created() {
     this.initialize();
-    this.headers = Object.values(this.headersMap);
-    this.selectedHeaders = this.headers;
   },
+
   methods: {
     initialize() {
-      this.systems = [
+      this.desserts = [
         {
-          id: 1,
-          title: "RMS SYSTEM",
-          projectTitle: {
-            id: 1,
-            name: "Rental Managment Systen",
-          },
-          status: "Live",
-          ActivatedDate: "Live",
-          ExpiredDate: "Live",
-          renewDuration: "3 months",
+          name: "Frozen Yogurt",
+          calories: 159,
+          fat: 6.0,
+          carbs: 24,
+          protein: 4.0,
+        },
+        {
+          name: "Ice cream sandwich",
+          calories: 237,
+          fat: 9.0,
+          carbs: 37,
+          protein: 4.3,
+        },
+        {
+          name: "Eclair",
+          calories: 262,
+          fat: 16.0,
+          carbs: 23,
+          protein: 6.0,
+        },
+        {
+          name: "Cupcake",
+          calories: 305,
+          fat: 3.7,
+          carbs: 67,
+          protein: 4.3,
+        },
+        {
+          name: "Gingerbread",
+          calories: 356,
+          fat: 16.0,
+          carbs: 49,
+          protein: 3.9,
+        },
+        {
+          name: "Jelly bean",
+          calories: 375,
+          fat: 0.0,
+          carbs: 94,
+          protein: 0.0,
+        },
+        {
+          name: "Lollipop",
+          calories: 392,
+          fat: 0.2,
+          carbs: 98,
+          protein: 0,
+        },
+        {
+          name: "Honeycomb",
+          calories: 408,
+          fat: 3.2,
+          carbs: 87,
+          protein: 6.5,
+        },
+        {
+          name: "Donut",
+          calories: 452,
+          fat: 25.0,
+          carbs: 51,
+          protein: 4.9,
+        },
+        {
+          name: "KitKat",
+          calories: 518,
+          fat: 26.0,
+          carbs: 65,
+          protein: 7,
         },
       ];
+    },
 
-      if (this.systems.length <= 0) {
-        // console.log(0);
-        console.log("no data");
-        this.existData = 1;
+    editItem(item) {
+      this.editedIndex = this.desserts.indexOf(item);
+      this.editedItem = Object.assign({}, item);
+      this.dialog = true;
+    },
+
+    deleteItem(item) {
+      this.editedIndex = this.desserts.indexOf(item);
+      this.editedItem = Object.assign({}, item);
+      this.dialogDelete = true;
+    },
+
+    deleteItemConfirm() {
+      this.desserts.splice(this.editedIndex, 1);
+      this.closeDelete();
+    },
+
+    close() {
+      this.dialog = false;
+      this.$nextTick(() => {
+        this.editedItem = Object.assign({}, this.defaultItem);
+        this.editedIndex = -1;
+      });
+    },
+
+    closeDelete() {
+      this.dialogDelete = false;
+      this.$nextTick(() => {
+        this.editedItem = Object.assign({}, this.defaultItem);
+        this.editedIndex = -1;
+      });
+    },
+
+    save() {
+      if (this.editedIndex > -1) {
+        Object.assign(this.desserts[this.editedIndex], this.editedItem);
       } else {
-        console.log("have data");
-        this.existData = -1;
-        console.log(1);
+        this.desserts.push(this.editedItem);
       }
+      this.close();
     },
   },
 };

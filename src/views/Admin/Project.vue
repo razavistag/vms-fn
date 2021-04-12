@@ -3,7 +3,7 @@
     <!-- Layout -->
 
     <DashboardLayout />
-    <v-card color="yellow pa-0">
+    <v-card color="pa-0">
       <v-data-table
         :headers="showHeaders"
         :items="projects"
@@ -16,7 +16,7 @@
 
           nextIcon: '',
         }"
-        id="dt_table"
+        id="project_table"
         class="elevation-0 "
         dense
         loading-text="Fetching Project Data"
@@ -76,7 +76,6 @@
             </v-chip>
             <v-spacer></v-spacer>
 
-        
             <!-- SEARCH -->
             <div v-shortkey="['alt', 's']" @shortkey="focusSearchKey">
               <v-text-field
@@ -1469,7 +1468,7 @@ export default {
 
   computed: {
     formTitle() {
-      return this.editedIndex === -1 ? "New Project" : "Edit ";
+      return this.editedIndex === -1 ? "New project" : "Edit ";
     },
     showHeaders() {
       return this.headers.filter((s) => this.selectedHeaders.includes(s));
@@ -1495,8 +1494,8 @@ export default {
     this.selectedHeaders = this.headers;
   },
   mounted() {
-    localStorage.setItem("paginateKey", 1);
-    let helper = this.$helper.apiGet();
+    localStorage.setItem("projectPaginateKey", 1);
+    //let helper = this.$helper.apiGet();
     // console.log("From Helper", helper);
 
     // this.$refs.searchbar_ref.$refs.input.focus();
@@ -1504,7 +1503,7 @@ export default {
 
   methods: {
     expandTable() {
-      var elem = document.getElementById("dt_table");
+      var elem = document.getElementById("project_table");
       if (elem.requestFullscreen) {
         elem.requestFullscreen();
         this.dataTableFullscreen = true;
