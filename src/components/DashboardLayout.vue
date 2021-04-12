@@ -17,7 +17,7 @@
         icon
         @click="getFullScreen"
         v-if="!fullscreen"
-        v-shortkey="['alt','+']"
+        v-shortkey="['alt', '+']"
         @shortkey="getFullScreen()"
       >
         <v-icon small>mdi-arrow-expand-all</v-icon>
@@ -28,7 +28,7 @@
         color="white"
         dark
         @click="exitFullScreen"
-        v-shortkey="['alt','-']"
+        v-shortkey="['alt', '-']"
         @shortkey="exitFullScreen()"
         v-else
       >
@@ -138,7 +138,7 @@ export default {
         {
           title: "TASKS",
           icon: "mdi-clipboard-list",
-          to: "",
+          to: "tasks",
         },
       ],
       fullscreen: false,

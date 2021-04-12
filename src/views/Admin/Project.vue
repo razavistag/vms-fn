@@ -76,6 +76,7 @@
             </v-chip>
             <v-spacer></v-spacer>
 
+        
             <!-- SEARCH -->
             <div v-shortkey="['alt', 's']" @shortkey="focusSearchKey">
               <v-text-field
@@ -1542,7 +1543,7 @@ export default {
     },
     viewForm(item) {
       console.log("aaa", item);
-      let url = "url_projects/view/" + item.id;
+      let url = "projects/view/" + item.id;
       // let url = "url_projects/view/" + 21;
       this.$http
         .get(url)
@@ -1597,7 +1598,7 @@ export default {
       this.dataTableLoading = true;
       this.$http
 
-        .get("url_projects?page=" + localStorage.getItem("paginateKey"))
+        .get("projects?page=" + localStorage.getItem("paginateKey"))
         .then((res) => {
           // console.log("ppp", res.data);
           this.projects.splice(0);
@@ -1661,7 +1662,7 @@ export default {
     },
     onSearch(e) {
       // console.log(e)
-      let url = "url_projects/find/" + e;
+      let url = "projects/find/" + e;
 
       if (this.search.length > 0) {
         console.log("find");
@@ -1725,7 +1726,7 @@ export default {
     },
     initialize() {
       this.projects.splice(0);
-      let url = "url_projects";
+      let url = "projects";
       this.$http
         .get(url)
         .then((response) => {
@@ -1793,8 +1794,7 @@ export default {
       this.editedIndex = this.projects.indexOf(item);
       this.selectedTeam.splice(0);
       this.selectedIncharge.splice(0);
-
-      let url = "url_projects/" + item.id;
+      let url = "projects/" + item.id;
       this.$http
         .get(url)
         .then((response) => {
@@ -1845,7 +1845,7 @@ export default {
 
     deleteItemConfirm() {
       this.projects.splice(this.editedIndex, 1);
-      let url = "url_projects/" + this.editedItem.id;
+      let url = "projects/" + this.editedItem.id;
       this.$http
         .delete(url)
         .then((response) => {
@@ -1915,7 +1915,7 @@ export default {
             specialNote: this.editedItem.specialNote,
           };
 
-          let url = "url_projects/" + this.editedItem.id;
+          let url = "projects/" + this.editedItem.id;
           console.log(url);
           this.$http
             .put(url, update)
@@ -1963,7 +1963,7 @@ export default {
 
           console.log(save);
 
-          let url = "url_projects";
+          let url = "projects";
           this.$http
             .post(url, save)
             .then((response) => {

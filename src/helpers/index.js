@@ -3,8 +3,7 @@ import Vue from "vue";
 export default {
   apiGet() {
     // console.log("log API GET");
-
-    let url = "url_projects?page=1";
+    let url = "projects?page=1";
     let config = {
       headers: { Authorization: "Bearer " + localStorage.getItem("token") },
     };
