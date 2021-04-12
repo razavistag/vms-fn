@@ -27,7 +27,17 @@
         <template v-slot:top>
           <v-toolbar flat id="toolbar">
             <v-toolbar-title class="h6" id="v_table_title">
-              <v-icon small left>mdi-image-filter-center-focus-strong</v-icon>
+              <v-icon
+                small
+                left
+                @click="expandTable"
+                v-if="!dataTableFullscreen"
+              >
+                mdi-image-filter-center-focus-strong
+              </v-icon>
+              <v-icon v-else @click="exitFullScreenDataTable"
+                >mdi-arrow-expand</v-icon
+              >
 
               PROJECTS
             </v-toolbar-title>
@@ -62,23 +72,20 @@
             <v-spacer></v-spacer>
 
             <!-- SEARCH -->
-
-            <!-- <input type="text" class="red" v-shortkey.focus="['alt', 'i']" v-model="name" /> -->
-
-            <v-text-field
-              v-model="search"
-              append-icon="mdi-magnify"
-              @input="onSearch"
-              label="Search"
-              ref="searchbar_ref"
-              type="input"
-              hide-details
-              v-shortkey.focus="['alt','i']"
-              @focus="focusSearchKey"
-              dense
-              class="shrink mx-4 my-4  v_toolbar_search_text_field"
-            >
-            </v-text-field>
+            <div v-shortkey="['alt', 's']" @shortkey="focusSearchKey">
+              <v-text-field
+                v-model="search"
+                append-icon="mdi-magnify"
+                @input="onSearch"
+                label="Search"
+                ref="searchbar_ref"
+                type="input"
+                hide-details
+                dense
+                class="shrink mx-4 my-4  v_toolbar_search_text_field"
+              >
+              </v-text-field>
+            </div>
 
             <!-- REFRESH BUTTONS -->
 
@@ -180,7 +187,7 @@
               @shortkey="newDialog()"
               @click="newDialog"
             >
-              <v-icon left  dark class=""> mdi-plus </v-icon>
+              <v-icon left dark class=""> mdi-plus </v-icon>
 
               <span class="v_toolbar_add_project_text">ADD PROJECTS</span>
             </v-btn>
@@ -1265,6 +1272,7 @@ export default {
     selectedIncharge: [],
     statusItems: ["on progress", "on testing stage", "completed"],
 
+    dataTableFullscreen: false,
     dataTableLoading: true,
     viewDialog: false,
     dialog: false,
@@ -1470,12 +1478,39 @@ export default {
   },
 
   methods: {
+    expandTable() {
+      var elem = document.getElementById("dt_table");
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+        this.dataTableFullscreen = true;
+      } else if (elem.webkitRequestFullscreen) {
+        /* Safari */
+        elem.webkitRequestFullscreen();
+        this.dataTableFullscreen = true;
+      } else if (elem.msRequestFullscreen) {
+        /* IE11 */
+        elem.msRequestFullscreen();
+        this.dataTableFullscreen = true;
+      }
+    },
+    exitFullScreenDataTable() {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+        this.dataTableFullscreen = false;
+      } else if (document.webkitExitFullscreen) {
+        /* Safari */
+        document.webkitExitFullscreen();
+        this.dataTableFullscreen = false;
+      } else if (document.msExitFullscreen) {
+        /* IE11 */
+        document.msExitFullscreen();
+        this.dataTableFullscreen = false;
+      }
+    },
     focusSearchKey() {
-      // this.$refs.searchbar_ref.$refs.input.focus();
-
-      // this.$nextTick(() => {
-      // });
       console.log("a");
+      this.$refs.searchbar_ref.$refs.input.focus();
+      console.log("b");
     },
     sumField(key) {
       // sum data in give key (property)
