@@ -17,7 +17,7 @@
         icon
         @click="getFullScreen"
         v-if="!fullscreen"
-        v-shortkey="['+']"
+        v-shortkey="['alt','+']"
         @shortkey="getFullScreen()"
       >
         <v-icon small>mdi-arrow-expand-all</v-icon>
@@ -28,7 +28,7 @@
         color="white"
         dark
         @click="exitFullScreen"
-        v-shortkey="['-']"
+        v-shortkey="['alt','-']"
         @shortkey="exitFullScreen()"
         v-else
       >

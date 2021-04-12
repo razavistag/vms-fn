@@ -140,8 +140,11 @@
   th:nth-child(6) {
     padding-left: 0px !important;
     padding-right: 0px !important;
-    width: 35px !important;
-    min-width: 107px !important;
+    width: 105px !important;
+    // min-width: 17px !important;
+    justify-content: center;
+    align-items: center;
+    // background: green;
   }
   th:nth-child(7) {
     padding-left: 0px !important;
@@ -276,7 +279,7 @@
     background-color: white;
     padding-left: 16px;
     padding-right: 16px;
-}
+  }
   .dt_footer {
     display: flex !important;
     // background-color: blue;
@@ -289,9 +292,8 @@
     // background: chartreuse;
     top: 94%;
   }
-  .theme--light.v-pagination .v-pagination__navigation{
+  .theme--light.v-pagination .v-pagination__navigation {
     background-color: #eceff1;
-
   }
   .v-data-footer {
     position: fixed;

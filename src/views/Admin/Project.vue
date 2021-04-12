@@ -34,6 +34,7 @@
 
             <v-divider class="mx-4" inset vertical></v-divider>
 
+            <!-- status chip -->
             <v-chip
               dark
               small
@@ -62,16 +63,18 @@
 
             <!-- SEARCH -->
 
+            <!-- <input type="text" class="red" v-shortkey.focus="['alt', 'i']" v-model="name" /> -->
+
             <v-text-field
               v-model="search"
               append-icon="mdi-magnify"
               @input="onSearch"
               label="Search"
-              v-shortkey.focus="['alt','v']"
-              @shortkey="focusSearchKey()"
               ref="searchbar_ref"
               type="input"
               hide-details
+              v-shortkey.focus="['alt','i']"
+              @focus="focusSearchKey"
               dense
               class="shrink mx-4 my-4  v_toolbar_search_text_field"
             >
@@ -89,7 +92,7 @@
               small
               @click="refresh"
             >
-              <v-icon small dark class="v_toolbar_refresh_icon">
+              <v-icon left dark class="v_toolbar_refresh_icon">
                 mdi-refresh
               </v-icon>
 
@@ -131,7 +134,7 @@
                   v-on="on"
                   v-shortkey="['alt', 'd']"
                 >
-                  <v-icon small dark> mdi-eye </v-icon>
+                  <v-icon left dark> mdi-eye </v-icon>
 
                   <span class="v_toolbar_display_column_text">
                     DISPLAY COLUMNS
@@ -177,7 +180,8 @@
               @shortkey="newDialog()"
               @click="newDialog"
             >
-              <v-icon small dark> mdi-plus </v-icon>
+              <v-icon left  dark class=""> mdi-plus </v-icon>
+
               <span class="v_toolbar_add_project_text">ADD PROJECTS</span>
             </v-btn>
 
@@ -741,7 +745,7 @@
         <!-- duration -->
         <template v-slot:[`item.duration`]="{ item }">
           <p
-            class="m-1 red--text"
+            class="ma-0  red--text"
             v-if="item.duration.toString().substring(0, 1) == '-'"
           >
             {{
@@ -752,7 +756,7 @@
             Days
           </p>
 
-          <p class="m-1" v-else>
+          <p class="ma-0" v-else>
             {{
               item.duration.toString().substring(0, 1) == "-"
                 ? null
@@ -1330,7 +1334,7 @@ export default {
         value: "duration",
         // width: "6%",
         align: "center",
-        class: " ",
+        class: "",
       },
 
       {
@@ -1462,15 +1466,15 @@ export default {
     let helper = this.$helper.apiGet();
     // console.log("From Helper", helper);
 
-        // this.$refs.searchbar_ref.$refs.input.focus();
-
+    // this.$refs.searchbar_ref.$refs.input.focus();
   },
 
   methods: {
     focusSearchKey() {
-      this.$nextTick(() => {
-        this.$refs.searchbar_ref.$refs.input.focus();
-      });
+      // this.$refs.searchbar_ref.$refs.input.focus();
+
+      // this.$nextTick(() => {
+      // });
       console.log("a");
     },
     sumField(key) {
