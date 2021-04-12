@@ -1483,7 +1483,7 @@ export default {
     },
     viewForm(item) {
       console.log("aaa", item);
-      let url = "url_projects/view/" + item.id;
+      let url = "projects/view/" + item.id;
       // let url = "url_projects/view/" + 21;
       this.$http
         .get(url)
@@ -1538,7 +1538,7 @@ export default {
       this.dataTableLoading = true;
       this.$http
 
-        .get("url_projects?page=" + localStorage.getItem("paginateKey"))
+        .get("projects?page=" + localStorage.getItem("paginateKey"))
         .then((res) => {
           // console.log("ppp", res.data);
           this.projects.splice(0);
