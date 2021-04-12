@@ -282,6 +282,10 @@
     padding-left: 16px;
     padding-right: 16px;
   }
+  .v-application--is-ltr .v-btn__content .v-icon--left {
+    margin-left: -3px;
+    margin-right: -3px;
+  }
   .dt_footer {
     display: flex !important;
     // background-color: blue;
