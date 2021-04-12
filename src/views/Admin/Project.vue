@@ -677,7 +677,7 @@
               v-if="item.status == 'on testing stage'"
             ></div>
 
-            <span class="ma-1 pa-0">{{ index + 1 }}</span>
+            <span class="ma-0 pa-0 mt-2">{{ index + 1 }}</span>
           </div>
         </template>
 
