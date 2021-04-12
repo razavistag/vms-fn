@@ -73,7 +73,7 @@
               ref="searchbar_ref"
               type="input"
               hide-details
-              v-shortkey.focus="['alt','i']"
+              v-shortkey.focus="['alt', 'i']"
               @focus="focusSearchKey"
               dense
               class="shrink mx-4 my-4  v_toolbar_search_text_field"
@@ -180,7 +180,7 @@
               @shortkey="newDialog()"
               @click="newDialog"
             >
-              <v-icon left  dark class=""> mdi-plus </v-icon>
+              <v-icon left dark class=""> mdi-plus </v-icon>
 
               <span class="v_toolbar_add_project_text">ADD PROJECTS</span>
             </v-btn>
@@ -1602,7 +1602,7 @@ export default {
     },
     onSearch(e) {
       // console.log(e)
-      let url = "url_projects/find/" + e;
+      let url = "projects/find/" + e;
 
       if (this.search.length > 0) {
         console.log("find");
@@ -1666,7 +1666,7 @@ export default {
     },
     initialize() {
       this.projects.splice(0);
-      let url = "url_projects";
+      let url = "projects";
       this.$http
         .get(url)
         .then((response) => {
@@ -1734,8 +1734,7 @@ export default {
       this.editedIndex = this.projects.indexOf(item);
       this.selectedTeam.splice(0);
       this.selectedIncharge.splice(0);
-
-      let url = "url_projects/" + item.id;
+      let url = "projects/" + item.id;
       this.$http
         .get(url)
         .then((response) => {
@@ -1786,7 +1785,7 @@ export default {
 
     deleteItemConfirm() {
       this.projects.splice(this.editedIndex, 1);
-      let url = "url_projects/" + this.editedItem.id;
+      let url = "projects/" + this.editedItem.id;
       this.$http
         .delete(url)
         .then((response) => {
@@ -1856,7 +1855,7 @@ export default {
             specialNote: this.editedItem.specialNote,
           };
 
-          let url = "url_projects/" + this.editedItem.id;
+          let url = "projects/" + this.editedItem.id;
           console.log(url);
           this.$http
             .put(url, update)
@@ -1904,7 +1903,7 @@ export default {
 
           console.log(save);
 
-          let url = "url_projects";
+          let url = "projects";
           this.$http
             .post(url, save)
             .then((response) => {

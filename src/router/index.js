@@ -6,6 +6,7 @@ import Login from "../views/Login";
 import AdminDashboard from "../views/Admin/Dashboard";
 import Project from "../views/Admin/Project";
 import System from "../views/Admin/System";
+import Task from "../views/Admin/Task";
 
 Vue.use(VueRouter);
 
@@ -34,7 +35,6 @@ const routes = [
       }
     },
   },
-
   {
     path: "/dashboard",
     name: "AdminDashboard",
@@ -77,6 +77,25 @@ const routes = [
     path: "/systems",
     name: "System",
     component: System,
+    beforeEnter: (to, from, next) => {
+      if (!localStorage.getItem("token")) {
+        console.log("token not exsist");
+        return next({
+          path: "/login",
+          name: "Login",
+          component: Login,
+        });
+      } else {
+        console.log("token exsist");
+
+        next();
+      }
+    },
+  },
+  {
+    path: "/tasks",
+    name: "Task",
+    component: Task,
     beforeEnter: (to, from, next) => {
       if (!localStorage.getItem("token")) {
         console.log("token not exsist");
