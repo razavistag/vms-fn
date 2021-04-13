@@ -61,9 +61,6 @@
   margin-top: -40px;
 }
 
-
-
-
 #dt_table table thead tr {
   th:nth-child(1) {
     min-width: 1px !important;
@@ -92,12 +89,16 @@
   th:nth-child(5) {
     padding-left: 0px !important;
     padding-right: 0px !important;
-    width: 5px !important;
+    width: 15px !important;
+    // background-color: red !important;
+    min-width: 120px !important;
   }
   th:nth-child(6) {
     padding-left: 0px !important;
     padding-right: 0px !important;
     width: 105px !important;
+    min-width: 120px !important;
+
     // min-width: 17px !important;
     justify-content: center;
     align-items: center;
@@ -108,6 +109,8 @@
     padding-right: 0px !important;
     width: 35px !important;
     min-width: 140px !important;
+    min-width: 120px !important;
+
   }
   th:nth-child(8) {
     padding-left: 0px !important;
@@ -115,6 +118,8 @@
     width: 35px !important;
     min-width: 90px !important;
     text-align: center !important;
+    min-width: 120px !important;
+
   }
   th:nth-child(9) {
     padding-left: 0px !important;
@@ -126,7 +131,7 @@
   th:nth-child(10) {
     padding-left: 0px !important;
     padding-right: 0px !important;
-    width: 35px !important;
+    width: 5px !important;
     min-width: 120px !important;
     text-align: center !important;
   }
@@ -177,8 +182,19 @@
 .task-dialog {
   align-self: flex-start;
   position: relative;
-  top: 90px;
+  top: 30px;
 }
+.vue_edeitor_height{
+  height: 90px;
+  margin-bottom: 35px;
+}
+
+// .v-dialog:not(.v-dialog--fullscreen) {
+//    max-height: 90% !important;
+// }
+// .v-dialog--scrollable, .v-dialog--scrollable > form {
+//    display: block !important; 
+// }
 
 
 

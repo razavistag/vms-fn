@@ -445,7 +445,7 @@
                               "
                               :error-messages="errors"
                               prefix="*"
-                              single-line
+                             
                               persistent-hint
                               hide-details=""
                               small-chips
