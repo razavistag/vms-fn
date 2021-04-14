@@ -6,6 +6,11 @@
         :headers="showHeaders"
         :items="Tasks"
         :fixed-header="true"
+        :footer-props="{
+          'items-per-page-options': [pagination.total],
+          prevIcon: '',
+          nextIcon: '',
+        }"
         disable-pagination
         id="dt_table_task"
         class="elevation-0"
@@ -162,7 +167,13 @@
                           TASK {{ k + 1 }}
 
                           <v-spacer></v-spacer>
+                          <!-- <div v-show="AxiosProgressCount != 0">
+                            {{ AxiosProgressCount }}
+                          </div> -->
 
+                          <v-progress-linear v-model="AxiosProgressCount" height="15" class="w-50" v-show="AxiosProgressCount != 0">
+                            <span>{{ AxiosProgressCount }}</span>
+                          </v-progress-linear>
                           <!-- REMOVE ROW BUTTON -->
                           <v-btn
                             v-if="FormTask.length > 1"
@@ -402,7 +413,7 @@
                           >
                             <v-file-input
                               :label="errors[0] ? errors[0] : 'Attechments'"
-                              @change="fileOnchage($event)"
+                              @change="fileOnchage($event, k)"
                               :error-messages="errors"
                               dense
                               hide-details=""
@@ -466,7 +477,10 @@
                                   <p class="errorDes" v-if="errors[0]">
                                     {{ errors[0] }}
                                   </p>
-                                  <p class="mendatory" v-show="!i.description">
+                                  <p
+                                    class="mendatory_task_description"
+                                    v-show="!i.description"
+                                  >
                                     *
                                   </p>
                                   <vue-editor
@@ -484,9 +498,9 @@
                       </v-row>
                     </ValidationObserver>
 
-                    <!-- <v-row>
+                    <v-row>
                       <pre>{{ FormTask }}</pre>
-                    </v-row> -->
+                    </v-row>
                   </v-container>
                 </v-card-text>
 
@@ -551,6 +565,25 @@
           </v-icon>
         </template>
 
+        <!-- Footer Page Text -->
+        <template v-slot:[`footer.page-text`]>
+          <div class="d-flex align-center dt_footer  ">
+            <p class="pt-5">Projects Per Page: {{ dtPagination.per_page }}</p>
+
+            <p class="pt-5 ml-4">
+              Projects: {{ dtPagination.from }} - {{ dtPagination.total }}
+            </p>
+
+            <v-pagination
+              class="text-right"
+              v-model="pagination.localCurrentPage"
+              :length="pagination.total"
+              @input="onPageChange"
+              total-visible="0"
+            ></v-pagination>
+          </div>
+        </template>
+
         <template v-slot:no-data>
           <v-btn color="primary" @click="initialize">
             Reset
@@ -565,7 +598,6 @@
 import DashboardLayout from "../../components/DashboardLayout";
 import { ValidationObserver, ValidationProvider } from "vee-validate";
 import { VueEditor } from "vue2-editor";
-
 export default {
   name: "System",
   components: {
@@ -580,12 +612,13 @@ export default {
     dataTableFullscreen: false,
 
     search: "",
+    AxiosProgressCount: 0,
+    uploaded: 0,
 
     selectedHeaders: [],
     headers: [],
     Tasks: [],
-    // testers: [{ name: "" }],
-    // selectedTester: [{ name: "" }],
+    filesUpload: [],
 
     AvailbaleProjects: ["Clark Rice", "Andrew Oconnor"],
     AvailbaleSystems: [
@@ -640,6 +673,24 @@ export default {
       [{ header: [false, 1, 2, 3, 4, 5, 6] }],
       ["clean"],
     ],
+    pagination: {
+      current: 1,
+      localCurrentPage: parseInt(localStorage.getItem("paginateKey")),
+      total: 1,
+    },
+    dtPagination: {
+      first_page_url: "",
+      from: "",
+      last_page: "",
+      last_page_url: "",
+      next_page_url: "",
+      path: "",
+      per_page: "",
+      prev_page_url: "",
+      to: "",
+      total: "",
+      links: [],
+    },
     headersMap: [
       {
         text: "#",
@@ -715,11 +766,13 @@ export default {
     this.initialize();
     this.headers = Object.values(this.headersMap);
     this.selectedHeaders = this.headers;
-    const os = require("os");
-    var mac_ip = os.networkInterfaces();
-    console.log("ip_test: ", mac_ip);
   },
   methods: {
+    onPageChange(e) {
+      // console.log(e)
+      localStorage.setItem("paginateKey", e);
+      this.paginateData();
+    },
     expandTable() {
       var elem = document.getElementById("dt_table_task");
       if (elem.requestFullscreen) {
@@ -788,8 +841,31 @@ export default {
     removeTask(i) {
       this.FormTask.splice(i, 1);
     },
-    fileOnchage(e) {
+    fileOnchage(e, k) {
       console.log(e);
+      this.filesUpload.splice(0);
+
+      this.filesUpload.push(e);
+      this.FormTask.files[k].push(e);
+
+      console.log("file On change >>" + this.filesUpload);
+
+      // MULTI UPLOAD
+      // const fd = new FormData();
+      // e.forEach((element) => {
+      //   fd.append("file[]", element, element.name);
+      // });
+
+      // this.$http.post("task", fd).then((res) => {
+      //   console.log(res);
+      // });
+
+      // SINGLE UPLOAD
+      // const fd = new FormData();
+      // fd.append("file", e[0], e[0].name);
+      // this.$http.post("task", fd).then((res) => {
+      //   console.log(res);
+      // });
     },
     initialize() {
       this.Tasks = [
@@ -821,7 +897,7 @@ export default {
 
       this.$http.get("task").then((response) => {
         // console.log(response.data);
-        response.data.obj_tasks.forEach((element) => {
+        response.data.obj_tasks_members.forEach((element) => {
           console.log(element);
         });
       });
@@ -855,12 +931,57 @@ export default {
       });
     },
     save() {
+      this.AxiosProgressCount = null;
       if (this.editedIndex > -1) {
-        Object.assign(this.Tasks[this.editedIndex], this.editedItem);
+        // update
+        Object.assign(this.Tasks[this.editedIndex], this.FormTask);
       } else {
+        console.log("save"); // save
+
+        this.FormTask.forEach((element) => {
+          console.log("FormTask on save", element);
+
+          const fd = new FormData();
+
+          // if (!this.filesUpload.length < 1) {
+          //   this.filesUpload[0].forEach((element) => {
+          //     fd.append("file[]", element, element.name);
+          //   });
+          // }
+
+          if (!element.files.length < 1) {
+            element.files.forEach((element) => {
+              fd.append("file[]", element, element.name);
+            });
+          }
+          fd.append("FormTask", element.task);
+          fd.append("FormProject", element.project);
+          fd.append("FormSystem", element.system);
+          fd.append("FormTester", element.tester);
+          fd.append("FormDescription", element.description);
+          fd.append("FormPriority", element.priority);
+          fd.append("FormAssigned_to", element.Assigned_to);
+
+          console.log("append >> ", fd);
+          this.$http
+            .post("task", fd, {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+              onUploadProgress: (progressEvent) =>
+                (this.AxiosProgressCount =
+                  Math.round(
+                    (progressEvent.loaded / progressEvent.total) * 100
+                  ) + " % Uploaded"),
+            })
+            .then((res) => {
+              console.log(res);
+            });
+        });
+
         this.Tasks.push(this.editedItem);
       }
-      this.close();
+      // this.close();
     },
   },
 };
