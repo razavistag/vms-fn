@@ -435,8 +435,9 @@
                             name="Project Incharge"
                             v-slot="{ errors }"
                           >
+                            <!-- <pre>{{selectedIncharge}}</pre> -->
                             <v-combobox
-                              v-model="selectedIncharge"
+                              v-model="selectedIncharge[0]"
                               :items="teamMembers"
                               item-text="members_name"
                               hide-selected
@@ -445,7 +446,6 @@
                               "
                               :error-messages="errors"
                               prefix="*"
-                             
                               persistent-hint
                               hide-details=""
                               small-chips
@@ -1458,7 +1458,7 @@ export default {
     // this.initialize();
     this.paginateData();
     this.headers = Object.values(this.headersMap);
-    this.selectedHeaders = this.headers; 
+    this.selectedHeaders = this.headers;
   },
   mounted() {
     localStorage.setItem("paginateKey", 1);
@@ -1567,7 +1567,12 @@ export default {
 
         .get("projects?page=" + localStorage.getItem("paginateKey"))
         .then((res) => {
-          // console.log("ppp", res.data);
+          console.log("ppp", res.data.projects.data);
+          // if ( res.data.projects.data.length < 1) {
+          //   this.existData = 1;
+          // } else {
+            
+          // }
           this.projects.splice(0);
           this.dtPagination = {
             first_page_url: res.data.projects.first_page_url,
@@ -1765,13 +1770,13 @@ export default {
       this.$http
         .get(url)
         .then((response) => {
-          console.log(response.data);
+          console.log("get", response.data.data[0].incharge_name);
           this.selectedIncharge.push({
             member_id: response.data.data[0].incharge_id,
             members_name: response.data.data[0].incharge_name,
           });
           response.data.data.forEach((element) => {
-            console.log(element);
+            // console.log(element);
             this.selectedTeam.push(element);
             this.editedItem = {
               id: element.project_id,
@@ -1883,7 +1888,7 @@ export default {
           };
 
           let url = "projects/" + this.editedItem.id;
-          console.log(url);
+          console.log("update", update);
           this.$http
             .put(url, update)
             .then((response) => {
@@ -1972,9 +1977,5 @@ export default {
   border-top: 2px solid red;
   border-bottom: double red;
 }
-.v-data-footer {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-}
+
 </style>
