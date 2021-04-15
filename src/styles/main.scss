@@ -61,8 +61,11 @@
   margin-top: -40px;
 }
 
-
-
+ 
+#toolbar {
+  //  background-color: red; 
+  height: 40px !important ;
+}
 
 #dt_table table thead tr {
   th:nth-child(1) {

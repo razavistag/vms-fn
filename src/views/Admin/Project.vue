@@ -23,7 +23,7 @@
         <!-- DataTable Header -->
 
         <template v-slot:top>
-          <v-toolbar flat id="toolbar">
+          <v-toolbar flat id="toolbar" class="">
             <v-toolbar-title class="h6" id="v_table_title">
               <v-icon
                 small
@@ -39,10 +39,10 @@
                 @click="exitFullScreenDataTable"
                 title="Minimize Data Table"
               >
-                mdi-arrow-expand</v-icon
-              >
+                mdi-arrow-expand
+              </v-icon>
 
-              PROJECTS
+              <span v-animate-css="'fadeIn'">PROJECTS</span>
             </v-toolbar-title>
 
             <v-divider class="mx-4" inset vertical></v-divider>
