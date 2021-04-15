@@ -11,9 +11,7 @@
         :loading="dataTableLoading"
         :footer-props="{
           'items-per-page-options': [pagination.total],
-
           prevIcon: '',
-
           nextIcon: '',
         }"
         id="project_table"
@@ -1264,7 +1262,6 @@
     </v-dialog>
   </div>
 </template>
-
 <script>
 import DashboardLayout from "../../components/DashboardLayout";
 import { ValidationObserver, ValidationProvider } from "vee-validate";
@@ -1282,11 +1279,9 @@ export default {
     moment: moment,
     search: "",
     test: 0,
-
     page: {},
     avatar: {},
     viewData: {},
-
     headers: [],
     projects: [],
     selectedHeaders: [],
@@ -1295,7 +1290,6 @@ export default {
     selectedTeam: [],
     selectedIncharge: [],
     statusItems: ["on progress", "on testing stage", "completed"],
-
     dataTableFullscreen: false,
     dataTableLoading: true,
     viewDialog: false,
@@ -1303,10 +1297,8 @@ export default {
     dialogDelete: false,
     picker1: false,
     picker2: false,
-
     editedIndex: -1,
     existData: -1,
-
     editorToolBar: [
       ["bold", "italic", "underline"],
       [{ list: "ordered" }, { list: "bullet" }],
