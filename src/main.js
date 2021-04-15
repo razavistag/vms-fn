@@ -12,6 +12,7 @@ import moment from "moment";
 import Helper from "./helpers/index";
 import global from "./helpers/global";
 import vueShortkey from "vue-shortkey";
+import VAnimateCss from 'v-animate-css';
 
 // Import  CSS
 import "./styles/main.scss"; //  component styling
@@ -28,6 +29,7 @@ Vue.use(VeeValidate);
 Vue.use(moment);
 Vue.use(require("vue-shortkey"));
 Vue.use(Croppa, { componentName: "image-cropper" });
+Vue.use(VAnimateCss);
 
 localStorage.setItem("fullScreen", 0);
 const base = axios.create({
