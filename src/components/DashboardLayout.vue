@@ -50,7 +50,7 @@
       elevation
       app
       :color="sideBar"
-      :expand-on-hover="true"
+      expand-on-hover
       permanent
       mini-variant-width="40"
       class="navigation_drawer_desktop"
@@ -119,30 +119,79 @@ export default {
       sideBar: "indigo lighten-4",
       expand_on_hover: true,
       mobileDrawer: false,
+      access_permission: false,
       items: [
-        {
-          title: "DASHBOARD",
-          icon: "mdi-home",
-          to: "/dashboard",
-        },
-        {
-          title: "PROJECTS",
-          icon: "mdi-image-filter-center-focus-strong",
-          to: "/projects",
-        },
-        {
-          title: "SYSTEMS",
-          icon: "mdi-server",
-          to: "systems",
-        },
-        {
-          title: "TASKS",
-          icon: "mdi-clipboard-list",
-          to: "tasks",
-        },
+        // {
+        //   id: 0,
+        //   title: "DASHBOARD",
+        //   icon: "mdi-home",
+        //   to: "/dashboard",
+        // },
+        // {
+        //   id: 1,
+        //   title: "PROJECTS",
+        //   icon: "mdi-image-filter-center-focus-strong",
+        //   to: "/projects",
+        // },
+        // {
+        //   id: 2,
+        //   title: "SYSTEMS",
+        //   icon: "mdi-server",
+        //   to: "systems",
+        // },
+        // {
+        //   id: 3,
+        //   title: "TASKS",
+        //   icon: "mdi-clipboard-list",
+        //   to: "tasks",
+        // },
       ],
       fullscreen: false,
     };
+  },
+  beforeMount() {
+    let permission = JSON.parse(localStorage.getItem("token_access"));
+
+    permission.forEach((element) => {
+      console.log("%cACCESS_INDEX >>", "color:green", element);
+    });
+
+    let permission_url = JSON.parse(localStorage.getItem("token_access_url"));
+    permission_url.forEach((element) => {
+      console.log("%cLayout_INDEX >>", "color:blue", element);
+      if (element == 0) {
+        this.items.push({
+          id: 0,
+          title: "DASHBOARD",
+          icon: "mdi-home",
+          to: "/dashboard",
+        });
+      }
+      if (element == 1) {
+        this.items.push({
+          id: 1,
+          title: "PROJECTS",
+          icon: "mdi-image-filter-center-focus-strong",
+          to: "/projects",
+        });
+      }
+      if (element == 2) {
+        this.items.push({
+          id: 2,
+          title: "SYSTEMS",
+          icon: "mdi-server",
+          to: "systems",
+        });
+      }
+      if (element == 3) {
+        this.items.push({
+          id: 3,
+          title: "TASKS",
+          icon: "mdi-clipboard-list",
+          to: "tasks",
+        });
+      }
+    });
   },
   mounted() {
     console.log(localStorage.getItem("fullScreen"));

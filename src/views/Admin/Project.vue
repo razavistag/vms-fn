@@ -22,9 +22,8 @@
       >
         <!-- DataTable Header -->
 
-        <template v-slot:top >
-          <v-toolbar flat id="toolbar" >
-
+        <template v-slot:top>
+          <v-toolbar flat id="toolbar">
             <v-toolbar-title class="h6" id="v_table_title">
               <v-icon
                 small
@@ -189,7 +188,9 @@
               v-shortkey="['alt', 'n']"
               @shortkey="newDialog()"
               @click="newDialog"
+              v-show="ap_add"
             >
+              <!-- v-if="access_role != 1 && access_role != 0" -->
               <v-icon left dark class=""> mdi-plus </v-icon>
 
               <span class="v_toolbar_add_project_text">ADD PROJECTS</span>
@@ -787,11 +788,14 @@
             title="Edit Projects"
             class="mr-2 orange darken-1 pa-1 white--text rounded"
             @click="editItem(item)"
+            v-show="ap_edit"
           >
             mdi-pencil
           </v-icon>
+          <!-- <div class="pa-0 ma-0"  > -->
 
           <v-icon
+            v-show="ap_delete"
             id="dt-trash-action-button"
             small
             title="Delete Projects"
@@ -800,6 +804,7 @@
           >
             mdi-delete
           </v-icon>
+          <!-- </div> -->
         </template>
 
         <!-- body append -->
@@ -1246,7 +1251,7 @@ export default {
   data: () => ({
     moment: moment,
     search: "",
-    test: 0,
+    permissions: [],
 
     page: {},
     avatar: {},
@@ -1268,6 +1273,10 @@ export default {
     dialogDelete: false,
     picker1: false,
     picker2: false,
+
+    ap_add: false,
+    ap_delete: false,
+    ap_edit: false,
 
     editedIndex: -1,
     existData: -1,
@@ -1450,6 +1459,44 @@ export default {
     this.paginateData();
     this.headers = Object.values(this.headersMap);
     this.selectedHeaders = this.headers;
+  },
+  beforeMount() {
+    console.log(
+      "access role >>",
+      JSON.parse(localStorage.getItem("token_access"))
+    );
+    let permission = JSON.parse(localStorage.getItem("token_access"));
+
+    permission.forEach((element) => {
+      this.permissions.push(element);
+      if (element == 0) {
+        this.ap_add = false;
+        this.ap_edit = false;
+      }
+      if (element == 1) {
+        this.ap_delete = false;
+        this.ap_add = false;
+        this.ap_edit = false;
+      }
+      if (element == 2) {
+        this.ap_delete = false;
+        this.ap_add = true;
+        this.ap_edit = false;
+      }
+      if (element == 3) {
+        this.ap_delete = false;
+        this.ap_add = true;
+        this.ap_edit = true;
+      }
+      if (element == 4) {
+        this.ap_add = true;
+        this.ap_edit = true;
+        this.ap_delete = true;
+
+      }
+    });
+
+    console.log("dd", this.permissions);
   },
   mounted() {
     localStorage.setItem("paginateKey", 1);
