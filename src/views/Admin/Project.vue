@@ -893,16 +893,7 @@
         </template>
 
         <!-- Footer Page Text -->
-        <template
-          v-slot:footer.page-text="{
-            pageStart,
-            pageStop,
-            page,
-            itemsPerPage,
-            pageCount,
-            itemsLength,
-          }"
-        >
+        <template v-slot:[`footer.page-text`]>
           <div class="d-flex align-center dt_footer  ">
             <p class="pt-5">Projects Per Page: {{ dtPagination.per_page }}</p>
 
@@ -1571,7 +1562,7 @@ export default {
           // if ( res.data.projects.data.length < 1) {
           //   this.existData = 1;
           // } else {
-            
+
           // }
           this.projects.splice(0);
           this.dtPagination = {
@@ -1977,5 +1968,4 @@ export default {
   border-top: 2px solid red;
   border-bottom: double red;
 }
-
 </style>
