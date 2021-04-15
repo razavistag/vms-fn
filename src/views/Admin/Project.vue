@@ -22,8 +22,9 @@
       >
         <!-- DataTable Header -->
 
-        <template v-slot:top>
-          <v-toolbar flat id="toolbar" class="">
+        <template v-slot:top >
+          <v-toolbar flat id="toolbar" >
+
             <v-toolbar-title class="h6" id="v_table_title">
               <v-icon
                 small
@@ -41,7 +42,6 @@
               >
                 mdi-arrow-expand
               </v-icon>
-
               <span v-animate-css="'fadeIn'">PROJECTS</span>
             </v-toolbar-title>
 
