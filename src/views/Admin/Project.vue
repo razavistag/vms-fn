@@ -2,7 +2,7 @@
   <div id="Projects">
     <!-- Layout -->
 
-    <DashboardLayout />
+    <DashboardLayout /> 
     <v-card color="pa-0" tile flat>
       <v-data-table
         :headers="showHeaders"
@@ -15,10 +15,12 @@
           nextIcon: '',
         }"
         id="dt_table"
-        class="elevation-0 "
+       height="85vh"
+        class="elevation-0"
         dense
         loading-text="Fetching Project Data"
         disable-pagination
+        style="z-index:1000;"
       >
         <!-- DataTable Header -->
 
@@ -41,7 +43,10 @@
               >
                 mdi-arrow-expand
               </v-icon>
-              <span v-animate-css="'fadeIn'">PROJECTS</span>
+              <span v-animate-css="'fadeIn'">
+                <!-- PROJECTS  -->
+                {{ $t("projects.title") }}
+              </span>
             </v-toolbar-title>
 
             <v-divider class="mx-4" inset vertical></v-divider>
@@ -53,7 +58,8 @@
               class="ma-1   d-none  d-sm-none d-md-flex"
               color="orange"
             >
-              on progress
+              <!-- on progress -->
+              {{ $t("status.onProgress") }}
             </v-chip>
             <v-chip
               dark
@@ -61,7 +67,8 @@
               class="ma-1  d-none  d-sm-none d-md-flex"
               color="#039be5"
             >
-              on testing
+              <!-- on testing -->
+              {{ $t("status.onTesting") }}
             </v-chip>
             <v-chip
               dark
@@ -69,7 +76,8 @@
               class="ma-1  d-none  d-sm-none d-md-flex"
               color="green"
             >
-              on complete
+              <!-- on complete -->
+              {{ $t("status.onComplete") }}
             </v-chip>
             <v-spacer></v-spacer>
 
@@ -105,7 +113,10 @@
                 mdi-refresh
               </v-icon>
 
-              <span class="v_toolbar_refresh_text">REFRESH</span>
+              <span class="v_toolbar_refresh_text">
+                <!-- REFRESH -->
+                {{ $t("button.refresh") }}
+              </span>
             </v-btn>
 
             <!-- -------------------------------- -->
@@ -146,7 +157,8 @@
                   <v-icon left dark> mdi-eye </v-icon>
 
                   <span class="v_toolbar_display_column_text">
-                    DISPLAY COLUMNS
+                    <!-- DISPLAY COLUMNS -->
+                    {{ $t("button.displayColumns") }}
                   </span>
                 </v-btn>
               </template>
@@ -193,7 +205,10 @@
               <!-- v-if="access_role != 1 && access_role != 0" -->
               <v-icon left dark class=""> mdi-plus </v-icon>
 
-              <span class="v_toolbar_add_project_text">ADD PROJECTS</span>
+              <span class="v_toolbar_add_project_text">
+                <!-- ADD PROJECTS -->
+                {{ $t("button.addProjects") }}
+              </span>
             </v-btn>
 
             <!-- FORM DIALOG -->
@@ -1306,7 +1321,7 @@ export default {
         // class: "bg-danger",
       },
       {
-        text: "logo",
+        text: 'logo',
         align: "center",
         sortable: false,
         value: "logo",
@@ -1492,7 +1507,6 @@ export default {
         this.ap_add = true;
         this.ap_edit = true;
         this.ap_delete = true;
-
       }
     });
 

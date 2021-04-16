@@ -2,6 +2,7 @@
   <div id="System">
     <!-- Layout -->
     <DashboardLayout />
+    {{$t('projects.dtHeader.project')}}
     <v-data-table
       :headers="showHeaders"
       :items="systems"
@@ -153,7 +154,8 @@ export default {
         width: "4%",
       },
       {
-        text: "systems",
+        // text: this.$t('projects.dtHeader.project'),
+        // text: "systems",
         align: "start",
         sortable: true,
         value: "title",
