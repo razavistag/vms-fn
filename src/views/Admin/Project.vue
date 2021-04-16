@@ -2,7 +2,7 @@
   <div id="Projects">
     <!-- Layout -->
 
-    <DashboardLayout />
+    <DashboardLayout /> 
     <v-card color="pa-0" tile flat>
       <v-data-table
         :headers="showHeaders"
@@ -15,16 +15,17 @@
           nextIcon: '',
         }"
         id="dt_table"
-        class="elevation-0 "
+       height="85vh"
+        class="elevation-0"
         dense
         loading-text="Fetching Project Data"
         disable-pagination
+        style="z-index:1000;"
       >
         <!-- DataTable Header -->
 
-        <template v-slot:top >
-          <v-toolbar flat id="toolbar" >
-
+        <template v-slot:top>
+          <v-toolbar flat id="toolbar">
             <v-toolbar-title class="h6" id="v_table_title">
               <v-icon
                 small
@@ -42,7 +43,10 @@
               >
                 mdi-arrow-expand
               </v-icon>
-              <span v-animate-css="'fadeIn'">PROJECTS</span>
+              <span v-animate-css="'fadeIn'">
+                <!-- PROJECTS  -->
+                {{ $t("projects.title") }}
+              </span>
             </v-toolbar-title>
 
             <v-divider class="mx-4" inset vertical></v-divider>
@@ -54,7 +58,8 @@
               class="ma-1   d-none  d-sm-none d-md-flex"
               color="orange"
             >
-              on progress
+              <!-- on progress -->
+              {{ $t("status.onProgress") }}
             </v-chip>
             <v-chip
               dark
@@ -62,7 +67,8 @@
               class="ma-1  d-none  d-sm-none d-md-flex"
               color="#039be5"
             >
-              on testing
+              <!-- on testing -->
+              {{ $t("status.onTesting") }}
             </v-chip>
             <v-chip
               dark
@@ -70,7 +76,8 @@
               class="ma-1  d-none  d-sm-none d-md-flex"
               color="green"
             >
-              on complete
+              <!-- on complete -->
+              {{ $t("status.onComplete") }}
             </v-chip>
             <v-spacer></v-spacer>
 
@@ -106,7 +113,10 @@
                 mdi-refresh
               </v-icon>
 
-              <span class="v_toolbar_refresh_text">REFRESH</span>
+              <span class="v_toolbar_refresh_text">
+                <!-- REFRESH -->
+                {{ $t("button.refresh") }}
+              </span>
             </v-btn>
 
             <!-- -------------------------------- -->
@@ -147,7 +157,8 @@
                   <v-icon left dark> mdi-eye </v-icon>
 
                   <span class="v_toolbar_display_column_text">
-                    DISPLAY COLUMNS
+                    <!-- DISPLAY COLUMNS -->
+                    {{ $t("button.displayColumns") }}
                   </span>
                 </v-btn>
               </template>
@@ -189,10 +200,15 @@
               v-shortkey="['alt', 'n']"
               @shortkey="newDialog()"
               @click="newDialog"
+              v-show="ap_add"
             >
+              <!-- v-if="access_role != 1 && access_role != 0" -->
               <v-icon left dark class=""> mdi-plus </v-icon>
 
-              <span class="v_toolbar_add_project_text">ADD PROJECTS</span>
+              <span class="v_toolbar_add_project_text">
+                <!-- ADD PROJECTS -->
+                {{ $t("button.addProjects") }}
+              </span>
             </v-btn>
 
             <!-- FORM DIALOG -->
@@ -787,11 +803,14 @@
             title="Edit Projects"
             class="mr-2 orange darken-1 pa-1 white--text rounded"
             @click="editItem(item)"
+            v-show="ap_edit"
           >
             mdi-pencil
           </v-icon>
+          <!-- <div class="pa-0 ma-0"  > -->
 
           <v-icon
+            v-show="ap_delete"
             id="dt-trash-action-button"
             small
             title="Delete Projects"
@@ -800,6 +819,7 @@
           >
             mdi-delete
           </v-icon>
+          <!-- </div> -->
         </template>
 
         <!-- body append -->
@@ -1246,7 +1266,7 @@ export default {
   data: () => ({
     moment: moment,
     search: "",
-    test: 0,
+    permissions: [],
 
     page: {},
     avatar: {},
@@ -1268,6 +1288,10 @@ export default {
     dialogDelete: false,
     picker1: false,
     picker2: false,
+
+    ap_add: false,
+    ap_delete: false,
+    ap_edit: false,
 
     editedIndex: -1,
     existData: -1,
@@ -1297,7 +1321,7 @@ export default {
         // class: "bg-danger",
       },
       {
-        text: "logo",
+        text: 'logo',
         align: "center",
         sortable: false,
         value: "logo",
@@ -1450,6 +1474,43 @@ export default {
     this.paginateData();
     this.headers = Object.values(this.headersMap);
     this.selectedHeaders = this.headers;
+  },
+  beforeMount() {
+    console.log(
+      "access role >>",
+      JSON.parse(localStorage.getItem("token_access"))
+    );
+    let permission = JSON.parse(localStorage.getItem("token_access"));
+
+    permission.forEach((element) => {
+      this.permissions.push(element);
+      if (element == 0) {
+        this.ap_add = false;
+        this.ap_edit = false;
+      }
+      if (element == 1) {
+        this.ap_delete = false;
+        this.ap_add = false;
+        this.ap_edit = false;
+      }
+      if (element == 2) {
+        this.ap_delete = false;
+        this.ap_add = true;
+        this.ap_edit = false;
+      }
+      if (element == 3) {
+        this.ap_delete = false;
+        this.ap_add = true;
+        this.ap_edit = true;
+      }
+      if (element == 4) {
+        this.ap_add = true;
+        this.ap_edit = true;
+        this.ap_delete = true;
+      }
+    });
+
+    console.log("dd", this.permissions);
   },
   mounted() {
     localStorage.setItem("paginateKey", 1);

@@ -1,5 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
+import global from "../helpers/global";
+
 import Home from "../views/Home.vue";
 import Login from "../views/Login";
 
@@ -21,94 +23,43 @@ const routes = [
     name: "Login",
     component: Login,
     beforeEnter: (to, from, next) => {
-      if (localStorage.getItem("Remember") == 'true') {
-        console.log("remember true");
-        return next({
-          path: "/dashboard",
-          name: "AdminDashboard",
-          component: AdminDashboard,
-        });
-      } else {
-        console.log("remember false");
-
-        next();
-      }
+      global.routerService(next, "dashboard");
     },
   },
   {
     path: "/dashboard",
     name: "AdminDashboard",
     component: AdminDashboard,
-    beforeEnter: (to, from, next) => {
-      if (!localStorage.getItem("token")) {
-        console.log("token not exsist");
-        return next({
-          path: "/login",
-          name: "Login",
-          component: Login,
-        });
-      } else {
-        console.log("token exsist");
-
-        next();
-      }
+    //id: 0,
+    reEnter: (to, from, next) => {
+      global.routerService(next, "login", 0);
     },
-  }, 
+  },
   {
     path: "/projects",
     name: "Project",
     component: Project,
-    beforeEnter: (to, from, next) => {
-      if (!localStorage.getItem("token")) {
-        console.log("token not exsist");
-        return next({
-          path: "/login",
-          name: "Login",
-          component: Login,
-        });
-      } else {
-        console.log("token exsist");
-
-        next();
-      }
+    //id: 1,
+    beforeEnter: (to, from, next ) => {
+      global.routerService(next, "login", 1);
     },
   },
   {
     path: "/systems",
     name: "System",
     component: System,
+    //id: 2,
     beforeEnter: (to, from, next) => {
-      if (!localStorage.getItem("token")) {
-        console.log("token not exsist");
-        return next({
-          path: "/login",
-          name: "Login",
-          component: Login,
-        });
-      } else {
-        console.log("token exsist");
-
-        next();
-      }
+      global.routerService(next, "login", 2);
     },
   },
   {
     path: "/tasks",
     name: "Task",
     component: Task,
+    //id: 3,
     beforeEnter: (to, from, next) => {
-      if (!localStorage.getItem("token")) {
-        console.log("token not exsist");
-        return next({
-          path: "/login",
-          name: "Login",
-          component: Login,
-        });
-      } else {
-        console.log("token exsist");
-
-        next();
-      }
+      global.routerService(next, "login", 3);
     },
   },
 ];

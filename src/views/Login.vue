@@ -402,7 +402,7 @@ export default {
     return {
       tab_login: false,
       tab_register: false,
-      email: "vcrooks@example.org",
+      email: "dejon95@example.com",
       password: "password",
       rememberMe: false,
       Activate_Signin: true,
@@ -454,11 +454,18 @@ export default {
             } else {
               this.email = "";
               this.password = "";
+
               this.$nextTick(() => {
                 this.$refs.form.reset();
                 console.log("cleared");
               });
+
               localStorage.setItem("token", response.data.access_token);
+              localStorage.setItem("token_access", response.data.user_access);
+              localStorage.setItem(
+                "token_access_url",
+                response.data.user_access_url
+              );
               this.$router.push({
                 name: "AdminDashboard",
               });
