@@ -9,6 +9,7 @@ import AdminDashboard from "../views/Admin/Dashboard";
 import Project from "../views/Admin/Project";
 import System from "../views/Admin/System";
 import Task from "../views/Admin/Task";
+import User from "../views/Admin/User";
 
 Vue.use(VueRouter);
 
@@ -60,6 +61,15 @@ const routes = [
     //id: 3,
     beforeEnter: (to, from, next) => {
       global.routerService(next, "login", 3);
+    },
+  },
+   {
+    path: "/users",
+    name: "User",
+    component: User,
+    //id: 4,
+    beforeEnter: (to, from, next) => {
+      global.routerService(next, "login", 4);
     },
   },
 ];

@@ -25,6 +25,7 @@ export default new VueI18n({
         projects: "Projects",
         systems: "Systems",
         tasks: "Tasks",
+        users: "Users",
       },
 
       // DASHBOARD PAGE
@@ -46,6 +47,11 @@ export default new VueI18n({
           cost: "cost",
           action: "action",
         },
+      },
+
+      // USERS PAGE
+      users: {
+        title: "Users",
       },
     },
     spanish: {
@@ -69,6 +75,7 @@ export default new VueI18n({
         projects: "Proyectos",
         systems: "Sistemas",
         tasks: "Tareas",
+        users: "Usuarios",
       },
 
       // DASHBOARD PAGE
@@ -90,6 +97,11 @@ export default new VueI18n({
           cost: "costo",
           action: "acción",
         },
+      },
+
+      // USERS PAGE
+      users: {
+        title: "Usuarios",
       },
     },
   },

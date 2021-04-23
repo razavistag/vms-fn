@@ -98,7 +98,6 @@
             </div>
 
             <!-- REFRESH BUTTONS -->
-
             <v-btn
               color="indigo lighten-1"
               class=" ma-1 text-center"

@@ -67,7 +67,7 @@
       permanent
       mini-variant-width="40"
       class="navigation_drawer_desktop"
-      expand-on-hover 
+      expand-on-hover
     >
       <!-- expand-on-hover -->
       <v-list dense nav class="pa-0">
@@ -206,6 +206,14 @@ export default {
           title: this.$t("menu.tasks"),
           icon: "mdi-clipboard-list",
           to: "tasks",
+        });
+      }
+      if (element == 4) {
+        this.items.push({
+          id: 3,
+          title: this.$t("menu.users"),
+          icon: "mdi-account-cog",
+          to: "users",
         });
       }
     });
