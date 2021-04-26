@@ -402,7 +402,7 @@ export default {
     return {
       tab_login: false,
       tab_register: false,
-      email: "umuller@example.net",
+      email: "admin@gmail.com",
       password: "password",
       rememberMe: false,
       Activate_Signin: true,
