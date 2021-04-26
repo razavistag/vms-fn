@@ -12,6 +12,8 @@ import moment from "moment";
 import Helper from "./helpers/index";
 import global from "./helpers/global";
 import vueShortkey from "vue-shortkey";
+import VAnimateCss from "v-animate-css";
+import i18n from "./i18n";
 // Import  CSS
 import "./styles/main.scss"; //  component styling
 import "./styles/custom.scss"; // overing styles
@@ -60,8 +62,7 @@ Vue.config.productionTip = false;
 
 new Vue({
   i18n,
-  router,
-   i18,
+  router, 
   store,
   vuetify,
   render: (h) => h(App),

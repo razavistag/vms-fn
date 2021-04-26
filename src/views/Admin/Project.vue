@@ -1,7 +1,7 @@
 <template>
   <div id="Projects">
     <!-- Layout -->
- 
+ <DashboardLayout/>
     <v-card color="pa-0" tile flat>
       <v-data-table
         :headers="showHeaders"
