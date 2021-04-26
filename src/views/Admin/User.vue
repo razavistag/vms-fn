@@ -741,7 +741,7 @@ export default {
           nic: "15416886V",
           gender: "MALE",
           access: [1, 2, 3],
-          attempts: 5,
+          attempts: 7,
           access_url: [0, 1, 2],
           role: 6,
           status: 1,

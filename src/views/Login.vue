@@ -216,7 +216,7 @@
                     <!-- nic -->
                     <v-col md="12" cols="12" class="  pa-0 mt-4 pl-4 pr-8">
                       <ValidationProvider
-                        rules="required|numeric"
+                        rules="required"
                         name="NIC"
                         v-slot="{ errors }"
                       >
@@ -408,17 +408,17 @@ export default {
       Activate_Signin: true,
       Activate_Register: true,
       RegisterForm: {
-        name: "",
-        companyName: "",
-        email: "",
-        phone: "",
-        nic: "",
-        gender: "",
-        address: "",
-        password: "",
-        passwordConfirm: "",
+        name: "althaf",
+        companyName: "vista",
+        email: "althaf@gmail.com",
+        phone: "777123456",
+        nic: "5897486521V",
+        gender: "MALE",
+        address: "200, Akurana, Kandy",
+        password: "password",
+        passwordConfirm: "password",
       },
-      genderItems: ["Male", "Female", "Other"],
+      genderItems: ["MALE", "FEMALE", "OTHERS"],
       message: "",
     };
   },
