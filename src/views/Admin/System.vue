@@ -1,6 +1,7 @@
 <template>
   <div id="Systems">
     <DashboardLayout />
+    {{$t('projects.dtHeader.project')}}
     <v-data-table
       :items="data_arr"
       :headers="headers"
@@ -718,6 +719,7 @@ export default {
     dataTableFullscreen: false,
     dataTableLoading: true,
     expanded: [],
+
   }),
   computed: {
     headers() {

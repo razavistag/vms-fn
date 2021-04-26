@@ -9,9 +9,23 @@
       >
         <v-icon small>mdi-menu</v-icon>
       </v-btn>
-      Dashboard
+      <!-- Dashboard -->
+      {{ $t("dashboard.title") }}
       <v-spacer></v-spacer>
 
+      <v-menu top close-on-click>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn color="white" dark v-bind="attrs" v-on="on" icon>
+            <v-icon small>mdi-translate</v-icon>
+          </v-btn>
+        </template>
+
+        <v-list>
+          <v-list-item v-for="(item, index) in Languages" :key="index">
+            <v-btn text @click="languageChange(item.lan)">{{ item.lan }}</v-btn>
+          </v-list-item>
+        </v-list>
+      </v-menu>
       <v-btn
         small
         icon
@@ -50,11 +64,12 @@
       elevation
       app
       :color="sideBar"
-      :expand-on-hover="true"
       permanent
       mini-variant-width="40"
       class="navigation_drawer_desktop"
+      expand-on-hover 
     >
+      <!-- expand-on-hover -->
       <v-list dense nav class="pa-0">
         <v-list-item
           v-for="item in items"
@@ -119,30 +134,81 @@ export default {
       sideBar: "indigo lighten-4",
       expand_on_hover: true,
       mobileDrawer: false,
+      access_permission: false,
+      Languages: [{ lan: "English" }, { lan: "spanish" }],
       items: [
-        {
-          title: "DASHBOARD",
-          icon: "mdi-home",
-          to: "/dashboard",
-        },
-        {
-          title: "PROJECTS",
-          icon: "mdi-image-filter-center-focus-strong",
-          to: "/projects",
-        },
-        {
-          title: "SYSTEMS",
-          icon: "mdi-server",
-          to: "systems",
-        },
-        {
-          title: "TASKS",
-          icon: "mdi-clipboard-list",
-          to: "tasks",
-        },
+        // {
+        //   id: 0,
+        //   title: "DASHBOARD",
+        //   icon: "mdi-home",
+        //   to: "/dashboard",
+        // },
+        // {
+        //   id: 1,
+        //   title: "PROJECTS",
+        //   icon: "mdi-image-filter-center-focus-strong",
+        //   to: "/projects",
+        // },
+        // {
+        //   id: 2,
+        //   title: "SYSTEMS",
+        //   icon: "mdi-server",
+        //   to: "systems",
+        // },
+        // {
+        //   id: 3,
+        //   title: "TASKS",
+        //   icon: "mdi-clipboard-list",
+        //   to: "tasks",
+        // },
       ],
       fullscreen: false,
     };
+  },
+  beforeMount() {
+    let permission = JSON.parse(localStorage.getItem("token_access"));
+
+    permission.forEach((element) => {
+      console.log("%cACCESS_INDEX >>", "color:green", element);
+    });
+
+    let permission_url = JSON.parse(localStorage.getItem("token_access_url"));
+    permission_url.forEach((element) => {
+      console.log("%cLayout_INDEX >>", "color:blue", element);
+      if (element == 0) {
+        this.items.push({
+          id: 0,
+          // title: "DASHBOARD",
+          title: this.$t("menu.dashboard"),
+          icon: "mdi-home",
+          to: "/dashboard",
+        });
+      }
+      if (element == 1) {
+        this.items.push({
+          id: 1,
+          title: this.$t("menu.projects"),
+          icon: "mdi-image-filter-center-focus-strong",
+          to: "/projects",
+        });
+      }
+      if (element == 2) {
+        this.items.push({
+          id: 2,
+          title: this.$t("menu.systems"),
+          icon: "mdi-server",
+          to: "systems",
+        });
+      }
+      if (element == 3) {
+        this.items.push({
+          id: 3,
+          title: this.$t("menu.tasks"),
+          icon: "mdi-clipboard-list",
+          to: "tasks",
+        });
+      }
+    });
   },
   mounted() {
     console.log(localStorage.getItem("fullScreen"));
@@ -156,6 +222,11 @@ export default {
     }
   },
   methods: {
+    languageChange(e) {
+      console.log(e);
+      localStorage.setItem("Lang", e);
+      window.location.reload();
+    },
     logout() {
       console.log("loggedout");
       let url = "/logout";

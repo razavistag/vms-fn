@@ -83,6 +83,7 @@
                       cols="12"
                       class="  pt-0 pb-0  ma-0  mt-3 pl-8 pr-8 "
                     >
+                      <P class="red--text"> {{ message }}</P>
                       <v-btn block color="success" @click="Login">Login</v-btn>
                     </v-col>
                   </v-row>
@@ -105,7 +106,7 @@
                     </v-col>
                   </v-row>
                   <v-row class="justify-center">
-                    <v-cal><Footer /></v-cal>
+                    <v-col><Footer /></v-col>
                   </v-row>
                 </ValidationObserver>
               </v-card-text>
@@ -195,7 +196,8 @@
                         rules="required|numeric|min:9|max:9"
                         name="Phone"
                         v-slot="{ errors }"
-                      > <v-text-field
+                      >
+                        <v-text-field
                           outlined
                           dense
                           prefix="+94"
@@ -239,7 +241,6 @@
                         name="Phone"
                         v-slot="{ errors }"
                       >
-
                         <v-text-field
                           outlined
                           dense
@@ -401,8 +402,8 @@ export default {
     return {
       tab_login: false,
       tab_register: false,
-      email: "admin@gmail.com",
-      password: "Password123",
+      email: "dejon95@example.com",
+      password: "password",
       rememberMe: false,
       Activate_Signin: true,
       Activate_Register: true,
@@ -418,6 +419,7 @@ export default {
         passwordConfirm: "",
       },
       genderItems: ["Male", "Female", "Other"],
+      message: "",
     };
   },
   methods: {
@@ -439,23 +441,40 @@ export default {
         this.$http
           .post(uri, login)
           .then((response) => {
-            console.log(response.data);
-            this.$nextTick(() => {
-              this.$refs.form.reset();
-              console.log("cleared");
-            });
-            this.email = "";
-            this.password = "";
+            console.log(response.data.message);
+            this.message = response.data.message;
+
             if (this.rememberMe == true) {
               console.log("remember true");
               localStorage.setItem("Remember", true);
             }
-            localStorage.setItem("token", response.data.access_token);
-            this.$router.push({
-              name: "AdminDashboard",
-            });
+
+            if (response.data.message === "Pending Account Registeration") {
+              this.message = "Pending Account Registeration";
+            } else {
+              this.email = "";
+              this.password = "";
+
+              this.$nextTick(() => {
+                this.$refs.form.reset();
+                console.log("cleared");
+              });
+
+              localStorage.setItem("token", response.data.access_token);
+              localStorage.setItem("token_access", response.data.user_access);
+              localStorage.setItem(
+                "token_access_url",
+                response.data.user_access_url
+              );
+              this.$router.push({
+                name: "AdminDashboard",
+              });
+            }
           })
           .catch((response) => {
+            console.log(response);
+            this.message = "ACCOUNT NOT FOUND";
+
             console.log("access denied");
           });
 
@@ -542,5 +561,4 @@ export default {
   padding-top: 80px;
   background-image: url("../assets/login_bg.jpg");
 }
-
 </style>

@@ -1,8 +1,7 @@
 <template>
   <div id="Projects">
     <!-- Layout -->
-
-    <DashboardLayout />
+ 
     <v-card color="pa-0" tile flat>
       <v-data-table
         :headers="showHeaders"
@@ -15,7 +14,9 @@
           nextIcon: '',
         }"
         id="dt_table"
+ 
         height="85vh"
+ 
         class="elevation-0"
         dense
         loading-text="Fetching Project Data"
@@ -1321,7 +1322,7 @@ export default {
         // class: "bg-danger",
       },
       {
-        text: "logo",
+        text: 'logo',
         align: "center",
         sortable: false,
         value: "logo",
