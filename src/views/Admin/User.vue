@@ -98,15 +98,22 @@
               @click="onNewDialog"
               v-show="ap_add"
             >
-              <!-- v-if="access_role != 1 && access_role != 0" -->
               <v-icon left dark class=""> mdi-plus </v-icon>
-
               <span class="v_toolbar_add_project_text">
                 <!-- ADD PROJECTS -->
-                {{ $t("button.addProjects") }}
+                {{ $t("button.addUsers") }}
               </span>
             </v-btn>
           </v-toolbar>
+        </template>
+
+        <!--COLUMN ID -->
+        <template v-slot:[`item.id`]="{ item, index }">
+          <div class="d-flex  index_id_column">
+            <div class="chip_bar_on_complete" v-if="item.status == 1"></div>
+            <div class="chip_bar_on_progress" v-if="item.status == 0"></div>
+            {{ index + 1 }}
+          </div>
         </template>
 
         <!-- TABLE ACTIONS -->
@@ -396,6 +403,7 @@
                       :label="errors[0] ? errors[0] : 'Accessible Modules'"
                       :error-messages="errors"
                       allow-overflow
+                      hide-details=""
                       @change="onAccessModuleChange"
                       item-text="option"
                       item-value="index"
@@ -452,7 +460,7 @@
                 <!-- USER PROFILE -->
                 <v-col cols="12" sm="6" md="3">
                   <ValidationProvider
-                    rules="image"
+                    rules=""
                     name="Profile Pic"
                     v-slot="{ errors }"
                   >
@@ -470,7 +478,14 @@
                   </ValidationProvider>
                 </v-col>
 
-                <v-col cols="12" sm="6" md="3" v-if="profileImg">
+                <!-- PROFILE IMAGE VIEW -->
+                <v-col
+                  cols="12"
+                  sm="6"
+                  md="3"
+                  v-if="profileImg"
+                  class="text-center pa-0"
+                >
                   <v-menu open-on-hover top offset-y>
                     <template v-slot:activator="{ on, attrs }">
                       <v-avatar>
@@ -528,8 +543,24 @@ export default {
       search: "",
       moment: moment,
       profileImg: "",
+      profilePic: "",
 
-      editedItem: {},
+      editedItem: {
+        name: "",
+        email: "",
+        phone: "",
+        address: "",
+        nic: "",
+        gender: "",
+        company: "",
+        attempts: "5",
+        access: "",
+        accessUrl: "",
+        userrole: "",
+        userStatus: "",
+        profilePic: [],
+        profileImg: "",
+      },
       defaultItem: {},
 
       dtPagination: {
@@ -625,13 +656,6 @@ export default {
           align: "start",
         },
         {
-          text: "Status",
-          align: "center",
-          sortable: true,
-          value: "status",
-          align: "start",
-        },
-        {
           text: "Role",
           align: "center",
           sortable: true,
@@ -663,7 +687,7 @@ export default {
   beforeMount() {
     this.onAccessPermission();
     this.onInitialize();
-    this.ddTest();
+    // this.ddTest();
   },
   mounted() {
     console.log("USER COUNT - MOUNTED", this.Users.length);
@@ -682,29 +706,68 @@ export default {
       console.log("selected Role", e);
     },
     save() {
-      console.log("triggered save function");
+      if (this.editedIndex > -1) {
+        console.log("triggered update function");
+      } else {
+        // this.$refs.form.validate().then((success) => {
+        //   if (!success) {
+        //     return;
+        //   }
+        console.log("triggered store function");
+        // const store = {
+        //   name: this.editedItem.name,
+        //   email: this.editedItem.email,
+        //   password: "password",
+        //   address: this.editedItem.address,
+        //   phone: this.editedItem.phone,
+        //   company: this.editedItem.company,
+        //   nic: this.editedItem.nic,
+        //   gender: this.editedItem.gender,
+        //   access: this.editedItem.access,
+        //   attempts: this.editedItem.attempts,
+        //   access_url: this.editedItem.accessUrl,
+        //   role: this.editedItem.userrole,
+        //   status: this.editedItem.userStatus,
+        //   profilePic: this.editedItem.profileImg,
+        // };
+
+        const store = {
+          name: "Ikram",
+          email: "ikram@gmail.com",
+          password: "password",
+          address: "12, Norhtshore Street, Francisco",
+          phone: "10236547778",
+          company: "Vistag",
+          nic: "15416886V",
+          gender: "MALE",
+          access: [1, 2, 3],
+          attempts: 7,
+          access_url: [0, 1, 2],
+          role: 6,
+          status: 1,
+          profilePic: "",
+        };
+
+        console.log("STORING DATA >>", store);
+
+        this.$http
+          .post("register", store)
+          .then((result) => {
+            console.log(result);
+          })
+          .catch((err) => {});
+        // });
+      }
     },
     onInitialize() {
       this.Users.splice(0);
-      this.Users.push({
-        id: "1",
-        name: "Tevin Franecki",
-        company: "Von, Fay and Wyman",
-        email: "umuller@example.net",
-        phone: "1-829-787-1226",
-        address: "67832 Cole SpursPort Jo, MS 02342",
-        gender: "MALE",
-        status: "1",
-        role: "0",
-        nic: "952874691V",
-        attempts: 0,
-      });
 
       this.$http
         .get("users")
         .then((response) => {
           response.data.users.forEach((element) => {
             // console.log(element);
+            this.Users.push(element);
           });
         })
         .catch((err) => {});
