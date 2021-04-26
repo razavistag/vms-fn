@@ -8,12 +8,12 @@ export default {
       headers: { Authorization: "Bearer " + localStorage.getItem("token") },
     };
 
-    let responseData=[];
+    let responseData = [];
     Vue.prototype.$http
       .get(url, config)
       .then((res) => {
         // console.log("From Helper", res);
-         responseData.push(res.data);
+        responseData.push(res.data);
       })
       .catch((e) => {
         console.log(e);

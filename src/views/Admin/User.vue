@@ -174,7 +174,7 @@
       v-model="formAdd"
       max-width="1200px"
       persistent
-      content-class="form-dialog"
+      content-class="user-form-dialog"
       scrollable
     >
       <v-card>
@@ -189,7 +189,7 @@
           <v-icon @click="closeForm">mdi-close</v-icon>
         </v-card-title>
 
-        <v-card-text style="height: 800px;">
+        <v-card-text style="height: 300px;">
           <v-container>
             <ValidationObserver ref="form">
               <v-row>
@@ -362,17 +362,20 @@
                     name="Accessible Operation"
                     v-slot="{ errors }"
                   >
-                    <v-select
+                    <v-autocomplete
                       :items="accessOptions"
                       multiple
                       v-model="editedItem.access"
                       :label="errors[0] ? errors[0] : 'Access'"
                       :error-messages="errors"
                       hide-details=""
+                      @change="onAccessOptionChange"
                       prefix="*"
                       clearable
                       dense
-                    ></v-select>
+                      item-text="option"
+                      item-value="index"
+                    />
                   </ValidationProvider>
                 </v-col>
 
@@ -383,17 +386,20 @@
                     name="Accessible Modules"
                     v-slot="{ errors }"
                   >
-                    <v-select
+                    <v-autocomplete
                       :items="accessUrlOptions"
                       multiple
-                      v-model="editedItem.accessUrl"
-                      :label="errors[0] ? errors[0] : 'Accessible Modules'"
-                      :error-messages="errors"
-                      hide-details=""
                       prefix="*"
                       clearable
                       dense
-                    ></v-select>
+                      v-model="editedItem.accessUrl"
+                      :label="errors[0] ? errors[0] : 'Accessible Modules'"
+                      :error-messages="errors"
+                      allow-overflow
+                      @change="onAccessModuleChange"
+                      item-text="option"
+                      item-value="index"
+                    />
                   </ValidationProvider>
                 </v-col>
 
@@ -404,27 +410,19 @@
                     name="User Role"
                     v-slot="{ errors }"
                   >
-                    <v-select
+                    <v-autocomplete
                       :items="userRoleOptions"
                       v-model="editedItem.userrole"
                       :label="errors[0] ? errors[0] : 'User Role'"
                       :error-messages="errors"
-                      @change="ddTest"
+                      @change="onUserRoleChange"
                       hide-details=""
                       prefix="*"
                       clearable
                       dense
-                    >
-                      <template v-slot:prepend-item>
-                        <v-list-item ripple>
-                          <v-list-item-content>
-                            <v-list-item-title>
-                              Select All
-                            </v-list-item-title>
-                          </v-list-item-content>
-                        </v-list-item>
-                      </template>
-                    </v-select>
+                      item-text="option"
+                      item-value="index"
+                    />
                   </ValidationProvider>
                 </v-col>
 
@@ -435,22 +433,75 @@
                     name="User Status"
                     v-slot="{ errors }"
                   >
-                    <v-select
+                    <v-autocomplete
                       :items="userStatusOptions"
                       v-model="editedItem.userStatus"
                       :label="errors[0] ? errors[0] : 'User Status'"
                       :error-messages="errors"
                       hide-details=""
                       prefix="*"
+                      @change="onUserStatus"
                       clearable
                       dense
-                    ></v-select>
+                      item-text="option"
+                      item-value="index"
+                    />
                   </ValidationProvider>
+                </v-col>
+
+                <!-- USER PROFILE -->
+                <v-col cols="12" sm="6" md="3">
+                  <ValidationProvider
+                    rules="image"
+                    name="Profile Pic"
+                    v-slot="{ errors }"
+                  >
+                    <v-file-input
+                      :label="errors[0] ? errors[0] : 'Profile Pic'"
+                      :error-messages="errors"
+                      v-model="editedItem.profilePic"
+                      hide-details=""
+                      prepend-icon=""
+                      truncate-length="10"
+                      dense
+                      show-size
+                      @change="onProfileChange($event)"
+                    ></v-file-input>
+                  </ValidationProvider>
+                </v-col>
+
+                <v-col cols="12" sm="6" md="3" v-if="profileImg">
+                  <v-menu open-on-hover top offset-y>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-avatar>
+                        <v-img
+                          :src="profileImg"
+                          width="50"
+                          v-bind="attrs"
+                          v-on="on"
+                        />
+                      </v-avatar>
+                    </template>
+
+                    <v-card>
+                      <v-img :src="profileImg" width="150" height="150" />
+                    </v-card>
+                  </v-menu>
                 </v-col>
               </v-row>
             </ValidationObserver>
           </v-container>
         </v-card-text>
+
+        <v-card-actions class="fixed-bottom">
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="closeForm">
+            Cancel
+          </v-btn>
+          <v-btn color="blue darken-1" text @click="save">
+            Save
+          </v-btn>
+        </v-card-actions>
       </v-card>
     </v-dialog>
   </div>
@@ -476,6 +527,7 @@ export default {
       editedIndex: -1,
       search: "",
       moment: moment,
+      profileImg: "",
 
       editedItem: {},
       defaultItem: {},
@@ -498,31 +550,34 @@ export default {
         localCurrentPage: parseInt(localStorage.getItem("paginateKey")),
         total: 1,
       },
-      //   userRoleOptions: [
-      //     "DEVELOPER",
-      //     "ASSISTANT DEVELOPER",
-      //     "SHIPPING SUPERVISOR",
-      //     "ORDERING SUPERVISOR",
-      //     "DELIVERY SUPERVISOR",
-      //     "SHIPPING ASSISTANT",
-      //     "ORDERING ASSISTANT",
-      //     "DELIVERY ASSISTANT",
-      //     "DATA ENTRY OPERATOR",
-      //     "TESTER",
-      //     "ACCOUNTANT",
-      //   ],
       userRoleOptions: [
-        {
-          pos: "DEVELOPER",
-        },
-        {
-          pos: "ASSISTANT",
-        },
+        { option: "SUPER ADMIN", index: 1 },
+        { option: "ADMIN", index: 2 },
+        { option: "MANAGER", index: 3 },
+        { option: "CASHIER", index: 4 },
+        { option: "SALES REP", index: 5 },
+        { option: "EMPLOYEE", index: 6 },
+        { option: "MARKETING TEAM", index: 7 },
       ],
 
-      userStatusOptions: ["ACTIVE", "INACTIVE"],
-      accessUrlOptions: ["DASHBOARD", "PROJECTS", "SYSTEMS", "TASKS", "USERS"],
-      accessOptions: ["ADD", "EDIT", "DELETE"],
+      userStatusOptions: [
+        { option: "INACTIVE", index: 0 },
+        { option: "ACTIVE", index: 1 },
+      ],
+      accessUrlOptions: [
+        { option: "Dashboard", index: 0 },
+        { option: "PROJECTS", index: 1 },
+        { option: "SYSTEMS", index: 2 },
+        { option: "TASKS", index: 3 },
+        { option: "USERS", index: 4 },
+      ],
+
+      accessOptions: [
+        { option: "VIEW", index: 1 },
+        { option: "ADD", index: 2 },
+        { option: "EDIT", index: 3 },
+        { option: "DELETE", index: 4 },
+      ],
       genderOptions: ["MALE", "FEMALE", "OTHERS"],
       Users: [],
       headersMap: [
@@ -611,7 +666,7 @@ export default {
     this.ddTest();
   },
   mounted() {
-    console.log("users count", this.Users.length);
+    console.log("USER COUNT - MOUNTED", this.Users.length);
     if (this.Users.length >= 0) {
       this.existData = 1;
     }
@@ -624,7 +679,10 @@ export default {
     ddTest(e) {
       console.log("%cDD LOG", "color:red", this.Users[0]);
       this.formAdd = true;
-      console.log(e);
+      console.log("selected Role", e);
+    },
+    save() {
+      console.log("triggered save function");
     },
     onInitialize() {
       this.Users.splice(0);
@@ -641,6 +699,36 @@ export default {
         nic: "952874691V",
         attempts: 0,
       });
+
+      this.$http
+        .get("users")
+        .then((response) => {
+          response.data.users.forEach((element) => {
+            // console.log(element);
+          });
+        })
+        .catch((err) => {});
+    },
+    onAccessOptionChange(i) {
+      console.log("onAccessOptionChange", i);
+    },
+    onProfileChange(e) {
+      console.log(e);
+      let reader = new FileReader();
+      reader.onload = (fileArray) => {
+        console.log(reader.result);
+        this.profileImg = reader.result;
+      };
+      reader.readAsDataURL(e);
+    },
+    onAccessModuleChange(i) {
+      console.log("onAccessModuleChange", i);
+    },
+    onUserRoleChange(i) {
+      console.log("onUserRoleChange", i);
+    },
+    onUserStatus(i) {
+      console.log(i);
     },
     onEditItem(i) {
       console.log("edited item ->", i);

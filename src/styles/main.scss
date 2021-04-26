@@ -20,6 +20,12 @@
   top: 20px;
 }
 
+.user-form-dialog {
+  align-self: flex-start;
+  position: relative;
+  top: 90px;
+}
+
 .errorDes {
   color: rgb(235, 60, 60);
   font-size: 15px;
@@ -64,9 +70,8 @@
   margin-top: -40px;
 }
 
- 
 #toolbar {
-  //  background-color: red; 
+  //  background-color: red;
   height: 40px !important ;
 }
 
