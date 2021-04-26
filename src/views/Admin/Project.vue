@@ -1,8 +1,7 @@
 <template>
   <div id="Projects">
     <!-- Layout -->
-
-    <DashboardLayout /> 
+ 
     <v-card color="pa-0" tile flat>
       <v-data-table
         :headers="showHeaders"
@@ -15,7 +14,9 @@
           nextIcon: '',
         }"
         id="dt_table"
-       height="85vh"
+ 
+        height="85vh"
+ 
         class="elevation-0"
         dense
         loading-text="Fetching Project Data"
@@ -1616,7 +1617,6 @@ export default {
     paginateData() {
       this.dataTableLoading = true;
       this.$http
-
         .get("projects?page=" + localStorage.getItem("paginateKey"))
         .then((res) => {
           console.log("ppp", res.data.projects.data);
