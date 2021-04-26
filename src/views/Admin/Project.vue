@@ -3,7 +3,7 @@
     <!-- Layout -->
 
     <DashboardLayout />
-    <v-card color="pa-0">
+    <v-card color="pa-0" tile flat>
       <v-data-table
         :headers="showHeaders"
         :items="projects"
@@ -14,11 +14,13 @@
           prevIcon: '',
           nextIcon: '',
         }"
-        id="project_table"
-        class="elevation-0 "
+        id="dt_table"
+        height="85vh"
+        class="elevation-0"
         dense
         loading-text="Fetching Project Data"
         disable-pagination
+        style="z-index:1000;"
       >
         <!-- DataTable Header -->
 
@@ -39,10 +41,12 @@
                 @click="exitFullScreenDataTable"
                 title="Minimize Data Table"
               >
-                mdi-arrow-expand</v-icon
-              >
-
-              PROJECTS
+                mdi-arrow-expand
+              </v-icon>
+              <span v-animate-css="'fadeIn'">
+                <!-- PROJECTS  -->
+                {{ $t("projects.title") }}
+              </span>
             </v-toolbar-title>
 
             <v-divider class="mx-4" inset vertical></v-divider>
@@ -54,7 +58,8 @@
               class="ma-1   d-none  d-sm-none d-md-flex"
               color="orange"
             >
-              on progress
+              <!-- on progress -->
+              {{ $t("status.onProgress") }}
             </v-chip>
             <v-chip
               dark
@@ -62,7 +67,8 @@
               class="ma-1  d-none  d-sm-none d-md-flex"
               color="#039be5"
             >
-              on testing
+              <!-- on testing -->
+              {{ $t("status.onTesting") }}
             </v-chip>
             <v-chip
               dark
@@ -70,7 +76,8 @@
               class="ma-1  d-none  d-sm-none d-md-flex"
               color="green"
             >
-              on complete
+              <!-- on complete -->
+              {{ $t("status.onComplete") }}
             </v-chip>
             <v-spacer></v-spacer>
 
@@ -106,7 +113,10 @@
                 mdi-refresh
               </v-icon>
 
-              <span class="v_toolbar_refresh_text">REFRESH</span>
+              <span class="v_toolbar_refresh_text">
+                <!-- REFRESH -->
+                {{ $t("button.refresh") }}
+              </span>
             </v-btn>
 
             <!-- -------------------------------- -->
@@ -147,7 +157,8 @@
                   <v-icon left dark> mdi-eye </v-icon>
 
                   <span class="v_toolbar_display_column_text">
-                    DISPLAY COLUMNS
+                    <!-- DISPLAY COLUMNS -->
+                    {{ $t("button.displayColumns") }}
                   </span>
                 </v-btn>
               </template>
@@ -189,10 +200,15 @@
               v-shortkey="['alt', 'n']"
               @shortkey="newDialog()"
               @click="newDialog"
+              v-show="ap_add"
             >
+              <!-- v-if="access_role != 1 && access_role != 0" -->
               <v-icon left dark class=""> mdi-plus </v-icon>
 
-              <span class="v_toolbar_add_project_text">ADD PROJECTS</span>
+              <span class="v_toolbar_add_project_text">
+                <!-- ADD PROJECTS -->
+                {{ $t("button.addProjects") }}
+              </span>
             </v-btn>
 
             <!-- FORM DIALOG -->
@@ -418,33 +434,14 @@
                               <template v-slot:no-data>
                                 <v-list-item>
                                   <v-list-item-content>
-                                    <!-- <v-list-item-title>
-                                                    No results matching "<strong>{{
-                                                      search
-                                                    }}</strong
-                                                    >". Press <kbd>enter</kbd> to create a new
-                                                    one
-                                                  </v-list-item-title> -->
-                                    <!-- <v-list-item>No Recodes Found</v-list-item> -->
+                                    <v-list-item-title>
+                                      No results matching
+                                    </v-list-item-title>
                                   </v-list-item-content>
                                 </v-list-item>
                               </template>
                             </v-combobox>
                           </ValidationProvider>
-                          <!-- <ValidationProvider
-                          rules="required"
-                          name="Team Members"
-                          v-slot="{ errors }"
-                        >
-                          <v-text-field
-                            v-model="editedItem.teamMembers_id"
-                            :label="errors[0] ? errors[0] : 'Team Members'"
-                            :error-messages="errors"
-                            hide-details=""
-                            clearable
-                            dense
-                          ></v-text-field>
-                        </ValidationProvider> -->
                         </v-col>
 
                         <!-- project incharage -->
@@ -454,8 +451,9 @@
                             name="Project Incharge"
                             v-slot="{ errors }"
                           >
+                            <!-- <pre>{{selectedIncharge}}</pre> -->
                             <v-combobox
-                              v-model="selectedIncharge"
+                              v-model="selectedIncharge[0]"
                               :items="teamMembers"
                               item-text="members_name"
                               hide-selected
@@ -464,7 +462,6 @@
                               "
                               :error-messages="errors"
                               prefix="*"
-                              multiple
                               persistent-hint
                               hide-details=""
                               small-chips
@@ -474,14 +471,9 @@
                               <template v-slot:no-data>
                                 <v-list-item>
                                   <v-list-item-content>
-                                    <!-- <v-list-item-title>
-                                                    No results matching "<strong>{{
-                                                      search
-                                                    }}</strong
-                                                    >". Press <kbd>enter</kbd> to create a new
-                                                    one
-                                                  </v-list-item-title> -->
-                                    <!-- <v-list-item>No Recodes Found</v-list-item> -->
+                                    <v-list-item-title>
+                                      No results matching
+                                    </v-list-item-title>
                                   </v-list-item-content>
                                 </v-list-item>
                               </template>
@@ -811,11 +803,14 @@
             title="Edit Projects"
             class="mr-2 orange darken-1 pa-1 white--text rounded"
             @click="editItem(item)"
+            v-show="ap_edit"
           >
             mdi-pencil
           </v-icon>
+          <!-- <div class="pa-0 ma-0"  > -->
 
           <v-icon
+            v-show="ap_delete"
             id="dt-trash-action-button"
             small
             title="Delete Projects"
@@ -824,6 +819,7 @@
           >
             mdi-delete
           </v-icon>
+          <!-- </div> -->
         </template>
 
         <!-- body append -->
@@ -917,16 +913,7 @@
         </template>
 
         <!-- Footer Page Text -->
-        <template
-          v-slot:footer.page-text="{
-            pageStart,
-            pageStop,
-            page,
-            itemsPerPage,
-            pageCount,
-            itemsLength,
-          }"
-        >
+        <template v-slot:[`footer.page-text`]>
           <div class="d-flex align-center dt_footer  ">
             <p class="pt-5">Projects Per Page: {{ dtPagination.per_page }}</p>
 
@@ -1262,6 +1249,7 @@
     </v-dialog>
   </div>
 </template>
+
 <script>
 import DashboardLayout from "../../components/DashboardLayout";
 import { ValidationObserver, ValidationProvider } from "vee-validate";
@@ -1278,10 +1266,12 @@ export default {
   data: () => ({
     moment: moment,
     search: "",
-    test: 0,
+    permissions: [],
+
     page: {},
     avatar: {},
     viewData: {},
+
     headers: [],
     projects: [],
     selectedHeaders: [],
@@ -1290,6 +1280,7 @@ export default {
     selectedTeam: [],
     selectedIncharge: [],
     statusItems: ["on progress", "on testing stage", "completed"],
+
     dataTableFullscreen: false,
     dataTableLoading: true,
     viewDialog: false,
@@ -1297,8 +1288,14 @@ export default {
     dialogDelete: false,
     picker1: false,
     picker2: false,
+
+    ap_add: false,
+    ap_delete: false,
+    ap_edit: false,
+
     editedIndex: -1,
     existData: -1,
+
     editorToolBar: [
       ["bold", "italic", "underline"],
       [{ list: "ordered" }, { list: "bullet" }],
@@ -1368,13 +1365,6 @@ export default {
         align: "center",
         class: " ",
       },
-      // {
-      //   text: "status",
-      //   value: "status",
-      //   // width: "10%",
-      // align: "center",
-      //   class: " ",
-      // },
       {
         text: "version",
         value: "projectVersion",
@@ -1460,7 +1450,7 @@ export default {
 
   computed: {
     formTitle() {
-      return this.editedIndex === -1 ? "New project" : "Edit ";
+      return this.editedIndex === -1 ? "New Project" : "Edit ";
     },
     showHeaders() {
       return this.headers.filter((s) => this.selectedHeaders.includes(s));
@@ -1485,17 +1475,55 @@ export default {
     this.headers = Object.values(this.headersMap);
     this.selectedHeaders = this.headers;
   },
-  mounted() {
-    localStorage.setItem("projectPaginateKey", 1);
-    //let helper = this.$helper.apiGet();
-    // console.log("From Helper", helper);
+  beforeMount() {
+    console.log(
+      "access role >>",
+      JSON.parse(localStorage.getItem("token_access"))
+    );
+    let permission = JSON.parse(localStorage.getItem("token_access"));
 
+    permission.forEach((element) => {
+      this.permissions.push(element);
+      if (element == 0) {
+        this.ap_add = false;
+        this.ap_edit = false;
+      }
+      if (element == 1) {
+        this.ap_delete = false;
+        this.ap_add = false;
+        this.ap_edit = false;
+      }
+      if (element == 2) {
+        this.ap_delete = false;
+        this.ap_add = true;
+        this.ap_edit = false;
+      }
+      if (element == 3) {
+        this.ap_delete = false;
+        this.ap_add = true;
+        this.ap_edit = true;
+      }
+      if (element == 4) {
+        this.ap_add = true;
+        this.ap_edit = true;
+        this.ap_delete = true;
+      }
+    });
+
+    console.log("dd", this.permissions);
+  },
+  mounted() {
+    localStorage.setItem("paginateKey", 1);
+    let helper = this.$helper.apiGet();
+    // console.log("From Helper", helper);
+    let gl = this.$gl;
+    console.log(this.$gl.projectURL);
     // this.$refs.searchbar_ref.$refs.input.focus();
   },
 
   methods: {
     expandTable() {
-      var elem = document.getElementById("project_table");
+      var elem = document.getElementById("dt_table");
       if (elem.requestFullscreen) {
         elem.requestFullscreen();
         this.dataTableFullscreen = true;
@@ -1588,10 +1616,14 @@ export default {
     paginateData() {
       this.dataTableLoading = true;
       this.$http
-
         .get("projects?page=" + localStorage.getItem("paginateKey"))
         .then((res) => {
-          // console.log("ppp", res.data);
+          console.log("ppp", res.data.projects.data);
+          // if ( res.data.projects.data.length < 1) {
+          //   this.existData = 1;
+          // } else {
+
+          // }
           this.projects.splice(0);
           this.dtPagination = {
             first_page_url: res.data.projects.first_page_url,
@@ -1789,13 +1821,13 @@ export default {
       this.$http
         .get(url)
         .then((response) => {
-          console.log(response.data);
+          console.log("get", response.data.data[0].incharge_name);
           this.selectedIncharge.push({
             member_id: response.data.data[0].incharge_id,
             members_name: response.data.data[0].incharge_name,
           });
           response.data.data.forEach((element) => {
-            console.log(element);
+            // console.log(element);
             this.selectedTeam.push(element);
             this.editedItem = {
               id: element.project_id,
@@ -1907,7 +1939,7 @@ export default {
           };
 
           let url = "projects/" + this.editedItem.id;
-          console.log(url);
+          console.log("update", update);
           this.$http
             .put(url, update)
             .then((response) => {
@@ -1995,10 +2027,5 @@ export default {
   /* padding-top: 15px; */
   border-top: 2px solid red;
   border-bottom: double red;
-}
-.v-data-footer {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
 }
 </style>
