@@ -11,7 +11,7 @@ import Croppa from "vue-croppa";
 import moment from "moment";
 import Helper from "./helpers/index";
 import vueShortkey from "vue-shortkey";
-
+import i18 from "./i18n.js";
 // Import  CSS
 import "./styles/main.scss";
 import "vue-croppa/dist/vue-croppa.css";
@@ -53,6 +53,7 @@ Vue.config.productionTip = false;
 
 new Vue({
   router,
+   i18,
   store,
   vuetify,
   render: (h) => h(App),
