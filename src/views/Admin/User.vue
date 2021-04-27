@@ -116,6 +116,34 @@
           </div>
         </template>
 
+        <!--COLUMN ROLE -->
+        <template v-slot:[`item.role`]="{ item }">
+          <span v-if="item.role == 0">
+            <v-chip small>CLIENT</v-chip>
+          </span>
+          <span v-if="item.role == 1">
+            <v-chip small>SUPER ADMIN</v-chip>
+          </span>
+          <span v-if="item.role == 2">
+            <v-chip small>ADMIN</v-chip>
+          </span>
+          <span v-if="item.role == 3">
+            <v-chip small>MANAGER</v-chip>
+          </span>
+          <span v-if="item.role == 4">
+            <v-chip small>CASHIER</v-chip>
+          </span>
+          <span v-if="item.role == 5">
+            <v-chip small> SALES REP</v-chip>
+          </span>
+          <span v-if="item.role == 6">
+            <v-chip small>EMPLOYEE</v-chip>
+          </span>
+          <span v-if="item.role == 7">
+            <v-chip small> MARKETING TEAM</v-chip>
+          </span>
+        </template>
+
         <!-- TABLE ACTIONS -->
         <template v-slot:[`item.actions`]="{ item }">
           <v-icon
@@ -458,7 +486,9 @@
                 </v-col>
 
                 <!-- USER PROFILE -->
-                <v-col cols="12" sm="6" md="3">
+
+                <v-col cols="12" sm="6" md="3" v-if="!editedItem.profilePic">
+                  {{ editedItem.profilePic }}
                   <ValidationProvider
                     rules=""
                     name="Profile Pic"
@@ -467,7 +497,7 @@
                     <v-file-input
                       :label="errors[0] ? errors[0] : 'Profile Pic'"
                       :error-messages="errors"
-                      v-model="editedItem.profilePic"
+                      v-model="editedItem.profileImg"
                       hide-details=""
                       prepend-icon=""
                       truncate-length="10"
@@ -483,7 +513,7 @@
                   cols="12"
                   sm="6"
                   md="3"
-                  v-if="profileImg"
+                  v-if="!editedItem.profilePic"
                   class="text-center pa-0"
                 >
                   <v-menu open-on-hover top offset-y>
@@ -502,6 +532,34 @@
                       <v-img :src="profileImg" width="150" height="150" />
                     </v-card>
                   </v-menu>
+                </v-col>
+
+                <v-col
+                  cols="12"
+                  sm="6"
+                  md="3"
+                  class="text-center pa-0"
+                  v-if="editedItem.profilePic"
+                >
+                  <v-card>
+                    <v-img
+                      :src="
+                        'http://localhost:8000/storage/' + editedItem.profilePic
+                      "
+                      width="100%"
+                      height="100"
+                    />
+                    <div class="image_edit">
+                      <v-icon
+                        small
+                        color="white"
+                        class="blue-grey lighten-2 rounded rounded-circle pa-4"
+                        @click="onEditProfilePic"
+                      >
+                        mdi-pencil
+                      </v-icon>
+                    </div>
+                  </v-card>
                 </v-col>
               </v-row>
             </ValidationObserver>
@@ -531,6 +589,11 @@ export default {
   name: "User",
   data() {
     return {
+      url: {
+        store: "register",
+        fetch: "users",
+        show: "users",
+      },
       dataTableLoading: true,
       dataTableFullscreen: false,
       formAdd: false,
@@ -543,7 +606,6 @@ export default {
       search: "",
       moment: moment,
       profileImg: "",
-      profilePic: "",
 
       editedItem: {
         name: "",
@@ -559,7 +621,7 @@ export default {
         userrole: "",
         userStatus: "",
         profilePic: [],
-        profileImg: "",
+        profileImg: [],
       },
       defaultItem: {},
 
@@ -745,13 +807,13 @@ export default {
           access_url: [0, 1, 2],
           role: 6,
           status: 1,
-          profilePic: "",
+          profilePic: this.profileImg,
         };
 
         console.log("STORING DATA >>", store);
 
         this.$http
-          .post("register", store)
+          .post(this.url.store, store)
           .then((result) => {
             console.log(result);
           })
@@ -763,7 +825,7 @@ export default {
       this.Users.splice(0);
 
       this.$http
-        .get("users")
+        .get(this.url.fetch)
         .then((response) => {
           response.data.users.forEach((element) => {
             // console.log(element);
@@ -792,6 +854,10 @@ export default {
     },
     onUserStatus(i) {
       console.log(i);
+    },
+    onEditProfilePic() {
+      console.log("asdasd");
+      this.editedItem.profilePic = "";
     },
     onEditItem(i) {
       console.log("edited item ->", i);
@@ -892,4 +958,12 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.image_edit {
+  position: absolute;
+  margin-top: -75px;
+  padding: 0px 120px;
+  display: block;
+  cursor: pointer;
+}
+</style>

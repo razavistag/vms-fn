@@ -1,7 +1,7 @@
 <template>
   <div id="Projects">
     <!-- Layout -->
- <DashboardLayout/>
+    <DashboardLayout />
     <v-card color="pa-0" tile flat>
       <v-data-table
         :headers="showHeaders"
@@ -14,9 +14,7 @@
           nextIcon: '',
         }"
         id="dt_table"
- 
         height="85vh"
- 
         class="elevation-0"
         dense
         loading-text="Fetching Project Data"
@@ -236,26 +234,7 @@
                     <ValidationObserver ref="form">
                       <v-row>
                         <!-- title -->
-                        <v-col cols="12" sm="6" md="4" v-if="editedIndex != -1">
-                          <ValidationProvider
-                            rules="required|min:5"
-                            name="Project Name"
-                            v-slot="{ errors }"
-                          >
-                            <v-text-field
-                              v-model="editedItem.title"
-                              disabled
-                              prefix="*"
-                              :label="errors[0] ? errors[0] : 'Project Name'"
-                              :error-messages="errors"
-                              hide-details=""
-                              clearable
-                              dense
-                            ></v-text-field>
-                          </ValidationProvider>
-                        </v-col>
-
-                        <v-col cols="12" sm="6" md="4" v-else>
+                        <v-col cols="12" sm="6" md="4">
                           <ValidationProvider
                             rules="required|min:5"
                             name="Project Name"
@@ -1321,7 +1300,7 @@ export default {
         // class: "bg-danger",
       },
       {
-        text: 'logo',
+        text: "logo",
         align: "center",
         sortable: false,
         value: "logo",
@@ -1801,11 +1780,12 @@ export default {
     },
 
     newDialog() {
+      // this.close();
       this.dialog = true;
-      this.profileLogo.splice(0);
-      this.selectedIncharge.splice(0);
-      this.selectedTeam.splice(0);
-      this.avatar = {};
+      // this.profileLogo.splice(0);
+      // this.selectedIncharge.splice(0);
+      // this.selectedTeam.splice(0);
+      // this.avatar = {};
       this.$nextTick(() => {
         this.$refs.form.reset();
         console.log("cleared");
@@ -1950,6 +1930,7 @@ export default {
             .catch((response) => {
               console.log("Error Fround. Project Not Saved");
             });
+
           this.close();
 
           this.$nextTick(() => {
@@ -2028,4 +2009,6 @@ export default {
   border-top: 2px solid red;
   border-bottom: double red;
 }
+
+
 </style>
