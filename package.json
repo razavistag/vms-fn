@@ -5,7 +5,7 @@
   "scripts": {
     "serve": "vue-cli-service serve --watch",
     "build": "vue-cli-service build",
-    "test:unit": "vue-cli-service test:unit"
+    "test:unit": "vue-cli-service test:unit --setupTestFrameworkScriptFile=./tests/setup.js --watch"
   },
   "dependencies": {
     "axios": "^0.21.1",

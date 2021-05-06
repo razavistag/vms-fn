@@ -166,11 +166,14 @@ export default {
     };
   },
   beforeMount() {
-    let permission = JSON.parse(localStorage.getItem("token_access"));
+    // let permission = JSON.parse(localStorage.getItem("token_access"));
 
-    permission.forEach((element) => {
-      console.log("%cACCESS_INDEX >>", "color:green", element);
-    });
+    // permission.forEach((element) => {
+    //   console.log("%cACCESS_INDEX >>", "color:green", element);
+    // });
+
+    let permission = localStorage.getItem("token_access");
+    console.log("%cACCESS_INDEX >>", "color:green", permission);
 
     let permission_url = JSON.parse(localStorage.getItem("token_access_url"));
     permission_url.forEach((element) => {

@@ -397,9 +397,8 @@
                     name="Accessible Operation"
                     v-slot="{ errors }"
                   >
-                    <v-autocomplete
+                    <v-select
                       :items="accessOptions"
-                      multiple
                       v-model="editedItem.access"
                       :label="errors[0] ? errors[0] : 'Access'"
                       :error-messages="errors"
@@ -410,7 +409,7 @@
                       dense
                       item-text="option"
                       item-value="index"
-                    />
+                    ></v-select>
                   </ValidationProvider>
                 </v-col>
 
@@ -421,7 +420,7 @@
                     name="Accessible Modules"
                     v-slot="{ errors }"
                   >
-                    <v-autocomplete
+                    <!-- <v-autocomplete
                       :items="accessUrlOptions"
                       multiple
                       prefix="*"
@@ -435,7 +434,25 @@
                       @change="onAccessModuleChange"
                       item-text="option"
                       item-value="index"
-                    />
+                    /> -->
+
+                    <v-select
+                      :items="accessUrlOptions"
+                      multiple
+                      prefix="*"
+                      clearable
+                      dense
+                      v-model="test"
+                      :label="
+                        errors[0] ? errors[0] : 'Accessible Modules v-select'
+                      "
+                      :error-messages="errors"
+                      allow-overflow
+                      hide-details=""
+                      @change="onAccessModuleChange"
+                      item-text="option"
+                      item-value="index"
+                    ></v-select>
                   </ValidationProvider>
                 </v-col>
 
@@ -446,10 +463,10 @@
                     name="User Role"
                     v-slot="{ errors }"
                   >
-                    <v-autocomplete
+                    <v-select
                       :items="userRoleOptions"
-                      v-model="editedItem.userrole"
-                      :label="errors[0] ? errors[0] : 'User Role'"
+                      v-model="editedItem.role"
+                      :label="errors[0] ? errors[0] : 'User Role v-select'"
                       :error-messages="errors"
                       @change="onUserRoleChange"
                       hide-details=""
@@ -458,7 +475,7 @@
                       dense
                       item-text="option"
                       item-value="index"
-                    />
+                    ></v-select>
                   </ValidationProvider>
                 </v-col>
 
@@ -469,9 +486,9 @@
                     name="User Status"
                     v-slot="{ errors }"
                   >
-                    <v-autocomplete
+                    <v-select
                       :items="userStatusOptions"
-                      v-model="editedItem.userStatus"
+                      v-model="editedItem.status"
                       :label="errors[0] ? errors[0] : 'User Status'"
                       :error-messages="errors"
                       hide-details=""
@@ -481,7 +498,7 @@
                       dense
                       item-text="option"
                       item-value="index"
-                    />
+                    ></v-select>
                   </ValidationProvider>
                 </v-col>
 
@@ -618,8 +635,8 @@ export default {
         attempts: "5",
         access: "",
         accessUrl: "",
-        userrole: "",
-        userStatus: "",
+        role: "",
+        status: "",
         profilePic: [],
         profileImg: [],
       },
@@ -660,16 +677,23 @@ export default {
       accessUrlOptions: [
         { option: "Dashboard", index: 0 },
         { option: "PROJECTS", index: 1 },
+      ],
+
+      // ---------------------------
+      test: [
+        { option: "Dashboard", index: 0 },
+        { option: "PROJECTS", index: 1 },
         { option: "SYSTEMS", index: 2 },
         { option: "TASKS", index: 3 },
         { option: "USERS", index: 4 },
       ],
+      // ---------------------------
 
       accessOptions: [
-        { option: "VIEW", index: 1 },
-        { option: "ADD", index: 2 },
-        { option: "EDIT", index: 3 },
-        { option: "DELETE", index: 4 },
+        { option: "READ ONLY ACCESS", index: 1 },
+        { option: "ADD ONLY ACCESS", index: 2 },
+        { option: "ADD & EDIT ONLY ACCESS", index: 3 },
+        { option: "FULL ACCESS", index: 4 },
       ],
       genderOptions: ["MALE", "FEMALE", "OTHERS"],
       Users: [],
@@ -788,8 +812,8 @@ export default {
         //   access: this.editedItem.access,
         //   attempts: this.editedItem.attempts,
         //   access_url: this.editedItem.accessUrl,
-        //   role: this.editedItem.userrole,
-        //   status: this.editedItem.userStatus,
+        //   role: this.editedItem.role,
+        //   status: this.editedItem.status,
         //   profilePic: this.editedItem.profileImg,
         // };
 
@@ -802,7 +826,7 @@ export default {
           company: "Vistag",
           nic: "15416886V",
           gender: "MALE",
-          access: [1, 2, 3],
+          access: 3,
           attempts: 7,
           access_url: [0, 1, 2],
           role: 6,
@@ -862,7 +886,23 @@ export default {
     onEditItem(i) {
       console.log("edited item ->", i);
       this.editedIndex = this.Users.indexOf(i);
-      this.editedItem = Object.assign({}, i);
+      // this.editedItem = Object.assign({}, i);
+      this.editedItem = Object.assign({
+        name: i.name,
+        email: i.email,
+        phone: i.phone,
+        address: i.address,
+        nic: i.nic,
+        gender: i.gender,
+        company: i.company,
+        attempts: i.attempts,
+        access: i.access,
+        accessUrl:JSON.parse( i.access_url),
+        role: i.role,
+        status: i.status,
+        profilePic: i.profilePic,
+        profileImg: [],
+      });
       this.formAdd = true;
     },
     closeForm() {
@@ -923,36 +963,22 @@ export default {
     },
     onAccessPermission() {
       console.log(
-        "access role >>",
-        JSON.parse(localStorage.getItem("token_access"))
+        "access role from user page >>",
+        localStorage.getItem("token_access")
       );
-      let permission = JSON.parse(localStorage.getItem("token_access"));
-      permission.forEach((element) => {
-        if (element == 0) {
-          this.ap_add = false;
-          this.ap_edit = false;
-        }
-        if (element == 1) {
-          this.ap_delete = false;
-          this.ap_add = false;
-          this.ap_edit = false;
-        }
-        if (element == 2) {
-          this.ap_add = true;
-          this.ap_delete = false;
-          this.ap_edit = false;
-        }
-        if (element == 3) {
-          this.ap_add = true;
-          this.ap_edit = true;
-          this.ap_delete = false;
-        }
-        if (element == 4) {
-          this.ap_add = true;
-          this.ap_edit = true;
-          this.ap_delete = true;
-        }
-      });
+      let access = localStorage.getItem("token_access");
+      if (access == 2) {
+        this.ap_add = true;
+      }
+      if (access == 3) {
+        this.ap_add = true;
+        this.ap_edit = true;
+      }
+      if (access == 4) {
+        this.ap_add = true;
+        this.ap_edit = true;
+        this.ap_delete = true;
+      }
     },
   },
 };

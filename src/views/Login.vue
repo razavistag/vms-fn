@@ -27,6 +27,7 @@
                         <v-text-field
                           outlined
                           dense
+                          id="loginEmail"
                           v-model="email"
                           hide-details=""
                           :label="errors[0] ? errors[0] : 'Email'"
@@ -48,6 +49,7 @@
                         <v-text-field
                           outlined
                           dense
+                          id="loginPassword"
                           type="password"
                           v-model="password"
                           :error-messages="errors"
@@ -67,15 +69,16 @@
                       class="pa-0  ma-0  mt-3 pl-12 d-flex flex-row "
                     >
                       <v-checkbox
+                        id="loginRememberCheckBox"
                         class="d-flex justify-center align-center"
                         v-model="rememberMe"
                       >
                         Remember Me
                       </v-checkbox>
 
-                      <v-btn color="blue" text tile class=" ml-6"
-                        >Forget Password</v-btn
-                      >
+                      <v-btn color="blue" text tile class=" ml-6">
+                        Forget Password
+                      </v-btn>
                     </v-col>
 
                     <v-col
@@ -84,7 +87,9 @@
                       class="  pt-0 pb-0  ma-0  mt-3 pl-8 pr-8 "
                     >
                       <P class="red--text"> {{ message }}</P>
-                      <v-btn block color="success" @click="Login">Login</v-btn>
+                      <v-btn block color="success" @click="Login" id="loginBtn">
+                        Login
+                      </v-btn>
                     </v-col>
                   </v-row>
 
