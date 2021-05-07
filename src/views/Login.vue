@@ -87,7 +87,12 @@
                       class="  pt-0 pb-0  ma-0  mt-3 pl-8 pr-8 "
                     >
                       <P class="red--text"> {{ message }}</P>
-                      <v-btn block color="success" @click="Login" id="loginBtn">
+                      <v-btn
+                        block
+                        color="success"
+                        @click="LoginSubmit"
+                        id="loginBtn"
+                      >
                         Login
                       </v-btn>
                     </v-col>
@@ -384,6 +389,7 @@
             </v-card>
           </v-col>
         </v-row>
+        <v-btn @click="tabLogin" id="pressBtn">press</v-btn>
       </v-container>
     </div>
   </div>
@@ -392,7 +398,7 @@
 <script>
 import Footer from "../components/Footer";
 import Appbar from "../components/Appbar";
-
+import axios from "axios";
 import { ValidationObserver, ValidationProvider } from "vee-validate";
 
 export default {
@@ -431,10 +437,26 @@ export default {
     tabLogin() {
       // console.log(0);
       this.tab_login = true;
+      console.log(true);
     },
-    Login() {
+    mockAxiosGetFunction() {
+      this.$http.get("/projects?page=1").then((res) => {
+        console.log("test_get_projects", res);
+      });
+    },
+    mockAxiosPostFunction() {
+      const post_arr = {
+        email: this.email,
+        password: this.password,
+      };
+      this.$http.post("/login", post_arr).then((res) => {
+        console.log("test_post_login ", res);
+      });
+    },
+    LoginSubmit() {
       this.$refs.form.validate().then((success) => {
         if (!success) {
+          console.log("empty");
           return;
         }
 
@@ -446,7 +468,7 @@ export default {
         this.$http
           .post(uri, login)
           .then((response) => {
-            console.log(response.data.message);
+            console.log(response.data);
             this.message = response.data.message;
 
             if (this.rememberMe == true) {
@@ -462,7 +484,7 @@ export default {
 
               this.$nextTick(() => {
                 this.$refs.form.reset();
-                console.log("cleared");
+                console.log("cleared rest");
               });
 
               localStorage.setItem("token", response.data.access_token);
@@ -485,7 +507,7 @@ export default {
 
         this.$nextTick(() => {
           this.$refs.form.reset();
-          console.log("cleared");
+          console.log("cleared next");
         });
       });
     },
