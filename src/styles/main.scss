@@ -25,6 +25,12 @@
   position: relative;
   top: 90px;
 }
+.user-privilage-dialog {
+  align-self: flex-start;
+  position: relative;
+  top: 90px;
+  z-index: 1200;
+}
 
 .errorDes {
   color: rgb(235, 60, 60);

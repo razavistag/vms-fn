@@ -206,6 +206,169 @@
 
     <!-- ADD FORM -->
     <v-dialog
+      v-model="privillageModel"
+      max-width="700px"
+      persistent
+      content-class="user-privilage-dialog"
+      scrollable
+    >
+      <v-card>
+        <v-card-title class="indigo lighten-4">
+          <span class="headline ">
+            PRIVILAGES
+          </span>
+          <v-spacer></v-spacer>
+          <v-icon @click="privillageModel = false">mdi-close</v-icon>
+        </v-card-title>
+
+        <v-card-text style="height: 300px;">
+          <v-row class=" mt-3">
+            <!-- DASHBOARD -->
+            <v-col cols="12" sm="6" md="6" class="  d-flex align-center">
+              <span>DASHBOARD</span>
+            </v-col>
+            <v-col cols="12" sm="6" md="6" class="  d-flex align-center">
+              <ValidationProvider
+                rules="required"
+                name="Accessible Operation"
+                v-slot="{ errors }"
+              >
+                <v-select
+                  :items="accessOptions"
+                  v-model="editedItem.access"
+                  :label="errors[0] ? errors[0] : 'Access'"
+                  :error-messages="errors"
+                  hide-details=""
+                  @change="onAccessOptionChange"
+                  prefix="*"
+                  clearable
+                  dense
+                  item-text="option"
+                  item-value="index"
+                ></v-select>
+              </ValidationProvider>
+            </v-col>
+
+            <!-- PROJECTS -->
+            <v-col cols="12" sm="6" md="6" class="  d-flex align-center">
+              <span>PROJECTS</span>
+            </v-col>
+            <v-col cols="12" sm="6" md="6" class="  d-flex align-center">
+              <ValidationProvider
+                rules="required"
+                name="Accessible Operation"
+                v-slot="{ errors }"
+              >
+                <v-select
+                  :items="accessOptions"
+                  v-model="privillage.project"
+                  :label="errors[0] ? errors[0] : 'Access'"
+                  :error-messages="errors"
+                  hide-details=""
+                  @change="onAccessOptionChange"
+                  prefix="*"
+                  clearable
+                  dense
+                  item-text="option"
+                  item-value="index"
+                ></v-select>
+              </ValidationProvider>
+            </v-col>
+
+            <!-- SYSTEM -->
+            <v-col cols="12" sm="6" md="6" class="  d-flex align-center">
+              <span>SYSTEM</span>
+            </v-col>
+            <v-col cols="12" sm="6" md="6" class="  d-flex align-center">
+              <ValidationProvider
+                rules="required"
+                name="Accessible Operation"
+                v-slot="{ errors }"
+              >
+                <v-select
+                  :items="accessOptions"
+                  v-model="privillage.system"
+                  :label="errors[0] ? errors[0] : 'Access'"
+                  :error-messages="errors"
+                  hide-details=""
+                  @change="onAccessOptionChange"
+                  prefix="*"
+                  clearable
+                  dense
+                  item-text="option"
+                  item-value="index"
+                ></v-select>
+              </ValidationProvider>
+            </v-col>
+
+            <!-- TASK -->
+            <v-col cols="12" sm="6" md="6" class="  d-flex align-center">
+              <span>SYSTEM</span>
+            </v-col>
+            <v-col cols="12" sm="6" md="6" class="  d-flex align-center">
+              <ValidationProvider
+                rules="required"
+                name="Accessible Operation"
+                v-slot="{ errors }"
+              >
+                <v-select
+                  :items="accessOptions"
+                  v-model="privillage.task"
+                  :label="errors[0] ? errors[0] : 'Access'"
+                  :error-messages="errors"
+                  hide-details=""
+                  @change="onAccessOptionChange"
+                  prefix="*"
+                  clearable
+                  dense
+                  item-text="option"
+                  item-value="index"
+                ></v-select>
+              </ValidationProvider>
+            </v-col>
+
+            <!-- USER -->
+            <v-col cols="12" sm="6" md="6" class="  d-flex align-center">
+              <span>USER</span>
+            </v-col>
+            <v-col cols="12" sm="6" md="6" class="  d-flex align-center">
+              <ValidationProvider
+                rules="required"
+                name="Accessible Operation"
+                v-slot="{ errors }"
+              >
+                {{ privillage.user }}
+                <v-select
+                  :items="accessOptions"
+                  v-model="privillage.user"
+                  :label="errors[0] ? errors[0] : 'Access'"
+                  :error-messages="errors"
+                  hide-details=""
+                  @change="onAccessOptionChange('users', accessOptions)"
+                  prefix="*"
+                  clearable
+                  dense
+                  item-text="option"
+                  item-value="val"
+                ></v-select>
+              </ValidationProvider>
+            </v-col>
+          </v-row>
+        </v-card-text>
+        <v-card-actions class="fixed-bottom">
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="privillageModel = false">
+            Cancel
+          </v-btn>
+          <v-btn color="blue darken-1" text @click="onPrivillageSubnit">
+            Save
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- ADD FORM -->
+    <v-dialog
       v-model="formAdd"
       max-width="1200px"
       persistent
@@ -391,7 +554,7 @@
                 </v-col>
 
                 <!-- ACCESS OPERATIONS -->
-                <v-col cols="12" sm="6" md="3">
+                <!-- <v-col cols="12" sm="6" md="3">
                   <ValidationProvider
                     rules="required"
                     name="Accessible Operation"
@@ -411,31 +574,15 @@
                       item-value="index"
                     ></v-select>
                   </ValidationProvider>
-                </v-col>
+                </v-col> -->
 
                 <!-- ACCESS URLS -->
-                <v-col cols="12" sm="6" md="3">
+                <!-- <v-col cols="12" sm="6" md="3">
                   <ValidationProvider
                     rules="required"
                     name="Accessible Modules"
                     v-slot="{ errors }"
                   >
-                    <!-- <v-autocomplete
-                      :items="accessUrlOptions"
-                      multiple
-                      prefix="*"
-                      clearable
-                      dense
-                      v-model="editedItem.accessUrl"
-                      :label="errors[0] ? errors[0] : 'Accessible Modules'"
-                      :error-messages="errors"
-                      allow-overflow
-                      hide-details=""
-                      @change="onAccessModuleChange"
-                      item-text="option"
-                      item-value="index"
-                    /> -->
-
                     <v-select
                       :items="accessUrlOptions"
                       multiple
@@ -454,6 +601,13 @@
                       item-value="index"
                     ></v-select>
                   </ValidationProvider>
+                </v-col> -->
+
+                <!-- ADD PRIVILLAGE -->
+                <v-col cols="12" sm="6" md="3">
+                  <v-btn block text outlined @click="onPrivillage">
+                    ADD PRIVILLAGE
+                  </v-btn>
                 </v-col>
 
                 <!-- USER ROLE -->
@@ -503,7 +657,6 @@
                 </v-col>
 
                 <!-- USER PROFILE -->
-
                 <v-col cols="12" sm="6" md="3" v-if="!editedItem.profilePic">
                   {{ editedItem.profilePic }}
                   <ValidationProvider
@@ -614,6 +767,7 @@ export default {
       dataTableLoading: true,
       dataTableFullscreen: false,
       formAdd: false,
+      privillageModel: true,
       ap_add: false, //ACCESS PERMISSION FOR ADD
       ap_edit: false, //ACCESS PERMISSION FOR EDIT
       ap_delete: false, //ACCESS PERMISSION FOR DELETE
@@ -624,6 +778,7 @@ export default {
       moment: moment,
       profileImg: "",
 
+      privillage: {},
       editedItem: {
         name: "",
         email: "",
@@ -680,20 +835,15 @@ export default {
       ],
 
       // ---------------------------
-      test: [
-        { option: "Dashboard", index: 0 },
-        { option: "PROJECTS", index: 1 },
-        { option: "SYSTEMS", index: 2 },
-        { option: "TASKS", index: 3 },
-        { option: "USERS", index: 4 },
-      ],
+      userAccessOption: {},
       // ---------------------------
 
       accessOptions: [
-        { option: "READ ONLY ACCESS", index: 1 },
-        { option: "ADD ONLY ACCESS", index: 2 },
-        { option: "ADD & EDIT ONLY ACCESS", index: 3 },
-        { option: "FULL ACCESS", index: 4 },
+        { option: "NO ACCESS", val: 0 },
+        { option: "READ ONLY ACCESS", val: 1 },
+        { option: "ADD ONLY ACCESS", val: 2 },
+        { option: "ADD & EDIT ONLY ACCESS", val: 3 },
+        { option: "FULL ACCESS", val: 4 },
       ],
       genderOptions: ["MALE", "FEMALE", "OTHERS"],
       Users: [],
@@ -790,6 +940,9 @@ export default {
       console.log("%cDD LOG", "color:red", this.Users[0]);
       this.formAdd = true;
       console.log("selected Role", e);
+    },
+    onPrivillage() {
+      this.privillageModel = true;
     },
     save() {
       if (this.editedIndex > -1) {
@@ -897,7 +1050,7 @@ export default {
         company: i.company,
         attempts: i.attempts,
         access: i.access,
-        accessUrl:JSON.parse( i.access_url),
+        accessUrl: JSON.parse(i.access_url),
         role: i.role,
         status: i.status,
         profilePic: i.profilePic,
