@@ -413,8 +413,8 @@ export default {
     return {
       tab_login: false,
       tab_register: false,
-      email: "admin@gmail.com",
-      password: "password",
+      email: "",
+      password: "",
       rememberMe: false,
       Activate_Signin: true,
       Activate_Register: true,
@@ -437,11 +437,11 @@ export default {
     tabLogin() {
       // console.log(0);
       this.tab_login = true;
-      console.log(true);
+      // console.log(true);
     },
     mockAxiosGetFunction() {
       this.$http.get("/projects?page=1").then((res) => {
-        console.log("test_get_projects", res);
+        // console.log("test_get_projects", res);
       });
     },
     mockAxiosPostFunction() {
@@ -450,13 +450,14 @@ export default {
         password: this.password,
       };
       this.$http.post("/login", post_arr).then((res) => {
-        console.log("test_post_login ", res);
+        // console.log("test_post_login ", res);
       });
     },
     LoginSubmit() {
+      console.log("trigger login function");
       this.$refs.form.validate().then((success) => {
         if (!success) {
-          console.log("empty");
+          // console.log("empty");
           return;
         }
 
@@ -468,11 +469,12 @@ export default {
         this.$http
           .post(uri, login)
           .then((response) => {
-            console.log(response.data);
+            // console.log(response.data);
+            // console.log(response.data.message);
             this.message = response.data.message;
 
             if (this.rememberMe == true) {
-              console.log("remember true");
+              // console.log("remember true");
               localStorage.setItem("Remember", true);
             }
 
@@ -482,32 +484,36 @@ export default {
               this.email = "";
               this.password = "";
 
-              this.$nextTick(() => {
-                this.$refs.form.reset();
-                console.log("cleared rest");
-              });
-
               localStorage.setItem("token", response.data.access_token);
               localStorage.setItem("token_access", response.data.user_access);
               localStorage.setItem(
                 "token_access_url",
                 response.data.user_access_url
               );
-              this.$router.push({
-                name: "AdminDashboard",
-              });
+              this.$router
+                .push({
+                  path: "dashboard",
+                })
+                .catch((e) => {
+                  // console.log("catch on admin dashboard error", e);
+                });
+
+              // this.$nextTick(() => {
+              //   this.$refs.form.reset();
+              //   console.log("cleared rest");
+              // });
             }
           })
           .catch((response) => {
             console.log(response);
             this.message = "ACCOUNT NOT FOUND";
 
-            console.log("access denied");
+            // console.log("access denied");
           });
 
         this.$nextTick(() => {
           this.$refs.form.reset();
-          console.log("cleared next");
+          // console.log("cleared next");
         });
       });
     },
