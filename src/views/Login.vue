@@ -27,6 +27,7 @@
                         <v-text-field
                           outlined
                           dense
+                          id="loginEmail"
                           v-model="email"
                           hide-details=""
                           :label="errors[0] ? errors[0] : 'Email'"
@@ -48,6 +49,7 @@
                         <v-text-field
                           outlined
                           dense
+                          id="loginPassword"
                           type="password"
                           v-model="password"
                           :error-messages="errors"
@@ -67,15 +69,16 @@
                       class="pa-0  ma-0  mt-3 pl-12 d-flex flex-row "
                     >
                       <v-checkbox
+                        id="loginRememberCheckBox"
                         class="d-flex justify-center align-center"
                         v-model="rememberMe"
                       >
                         Remember Me
                       </v-checkbox>
 
-                      <v-btn color="blue" text tile class=" ml-6"
-                        >Forget Password</v-btn
-                      >
+                      <v-btn color="blue" text tile class=" ml-6">
+                        Forget Password
+                      </v-btn>
                     </v-col>
 
                     <v-col
@@ -84,7 +87,14 @@
                       class="  pt-0 pb-0  ma-0  mt-3 pl-8 pr-8 "
                     >
                       <P class="red--text"> {{ message }}</P>
-                      <v-btn block color="success" @click="Login">Login</v-btn>
+                      <v-btn
+                        block
+                        color="success"
+                        @click="LoginSubmit"
+                        id="loginSubmitBtn"
+                      >
+                        Login
+                      </v-btn>
                     </v-col>
                   </v-row>
 
@@ -379,6 +389,7 @@
             </v-card>
           </v-col>
         </v-row>
+        <v-btn @click="tabLogin" id="pressBtn">press</v-btn>
       </v-container>
     </div>
   </div>
@@ -387,7 +398,7 @@
 <script>
 import Footer from "../components/Footer";
 import Appbar from "../components/Appbar";
-
+import axios from "axios";
 import { ValidationObserver, ValidationProvider } from "vee-validate";
 
 export default {
@@ -402,8 +413,11 @@ export default {
     return {
       tab_login: false,
       tab_register: false,
-      email: "admin@gmail.com",
-      password: "password",
+      // email: "admin@gmail.com",
+      // password: "password",
+      
+      email: "",
+      password: "",
       rememberMe: false,
       Activate_Signin: true,
       Activate_Register: true,
@@ -426,10 +440,26 @@ export default {
     tabLogin() {
       // console.log(0);
       this.tab_login = true;
+      // console.log(true);
     },
-    Login() {
+    mockAxiosGetFunction() {
+      this.$http.get("/projects?page=1").then((res) => {
+        // console.log("test_get_projects", res);
+      });
+    },
+    mockAxiosPostFunction() {
+      const post_arr = {
+        email: this.email,
+        password: this.password,
+      };
+      this.$http.post("/login", post_arr).then((res) => {
+        // console.log("test_post_login ", res);
+      });
+    },
+    LoginSubmit() {
       this.$refs.form.validate().then((success) => {
         if (!success) {
+          // console.log("empty");
           return;
         }
 
@@ -441,11 +471,12 @@ export default {
         this.$http
           .post(uri, login)
           .then((response) => {
-            console.log(response.data.message);
+            // console.log(response.data);
+            // console.log(response.data.message);
             this.message = response.data.message;
 
             if (this.rememberMe == true) {
-              console.log("remember true");
+              // console.log("remember true");
               localStorage.setItem("Remember", true);
             }
 
@@ -455,32 +486,36 @@ export default {
               this.email = "";
               this.password = "";
 
-              this.$nextTick(() => {
-                this.$refs.form.reset();
-                console.log("cleared");
-              });
-
               localStorage.setItem("token", response.data.access_token);
               localStorage.setItem("token_access", response.data.user_access);
               localStorage.setItem(
                 "token_access_url",
                 response.data.user_access_url
               );
-              this.$router.push({
-                name: "AdminDashboard",
-              });
+              this.$router
+                .push({
+                  path: "dashboard",
+                })
+                .catch((e) => {
+                  // console.log("catch on admin dashboard error", e);
+                });
+
+              // this.$nextTick(() => {
+              //   this.$refs.form.reset();
+              //   console.log("cleared rest");
+              // });
             }
           })
           .catch((response) => {
             console.log(response);
             this.message = "ACCOUNT NOT FOUND";
 
-            console.log("access denied");
+            // console.log("access denied");
           });
 
         this.$nextTick(() => {
           this.$refs.form.reset();
-          console.log("cleared");
+          // console.log("cleared next");
         });
       });
     },

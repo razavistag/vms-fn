@@ -802,7 +802,7 @@
         </template>
 
         <!-- body append -->
-        <template slot="body.append">
+        <!-- <template slot="body.append">
           <tr
             class="pink--text text-end"
             :class="{ 'v-data-table__mobile-table-row': isMobile }"
@@ -889,7 +889,7 @@
               v-if="!isMobile"
             ></th>
           </tr>
-        </template>
+        </template> -->
 
         <!-- Footer Page Text -->
         <template v-slot:[`footer.page-text`]>
@@ -1455,47 +1455,13 @@ export default {
     this.selectedHeaders = this.headers;
   },
   beforeMount() {
-    console.log(
-      "access role >>",
-      JSON.parse(localStorage.getItem("token_access"))
-    );
-    let permission = JSON.parse(localStorage.getItem("token_access"));
-
-    permission.forEach((element) => {
-      this.permissions.push(element);
-      if (element == 0) {
-        this.ap_add = false;
-        this.ap_edit = false;
-      }
-      if (element == 1) {
-        this.ap_delete = false;
-        this.ap_add = false;
-        this.ap_edit = false;
-      }
-      if (element == 2) {
-        this.ap_delete = false;
-        this.ap_add = true;
-        this.ap_edit = false;
-      }
-      if (element == 3) {
-        this.ap_delete = false;
-        this.ap_add = true;
-        this.ap_edit = true;
-      }
-      if (element == 4) {
-        this.ap_add = true;
-        this.ap_edit = true;
-        this.ap_delete = true;
-      }
-    });
-
-    console.log("dd", this.permissions);
+    this.onAccessPermission();
   },
   mounted() {
     localStorage.setItem("paginateKey", 1);
-    let helper = this.$helper.apiGet();
-    console.log("From Helper", helper);
-    let gl = this.$gl;
+    // let helper = this.$helper.apiGet();
+    // console.log("From Helper", helper);
+    // let gl = this.$gl;
     // console.log('from helper',this.$gl.projectURL);
     // this.$refs.searchbar_ref.$refs.input.focus();
   },
@@ -2000,6 +1966,25 @@ export default {
 
       console.log(this.profileLogo);
     },
+    onAccessPermission() {
+      console.log(
+        "access role from user page >>",
+        localStorage.getItem("token_access")
+      );
+      let access = localStorage.getItem("token_access");
+      if (access == 2) {
+        this.ap_add = true;
+      }
+      if (access == 3) {
+        this.ap_add = true;
+        this.ap_edit = true;
+      }
+      if (access == 4) {
+        this.ap_add = true;
+        this.ap_edit = true;
+        this.ap_delete = true;
+      }
+    },
   },
 };
 </script>
@@ -2009,6 +1994,4 @@ export default {
   border-top: 2px solid red;
   border-bottom: double red;
 }
-
-
 </style>
