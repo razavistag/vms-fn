@@ -91,7 +91,7 @@
                         block
                         color="success"
                         @click="LoginSubmit"
-                        id="loginBtn"
+                        id="loginSubmitBtn"
                       >
                         Login
                       </v-btn>
@@ -413,6 +413,9 @@ export default {
     return {
       tab_login: false,
       tab_register: false,
+      // email: "admin@gmail.com",
+      // password: "password",
+      
       email: "",
       password: "",
       rememberMe: false,

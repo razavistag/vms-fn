@@ -28,7 +28,7 @@ describe("Login.vue", () => {
     expect(wrapper.find("#loginEmail").exists()).toBe(true);
     expect(wrapper.find("#loginPassword").exists()).toBe(true);
     expect(wrapper.find("#loginRememberCheckBox").exists()).toBe(true);
-    expect(wrapper.find("#loginBtn").exists()).toBe(true);
+    expect(wrapper.find("#loginSubmitBtn").exists()).toBe(true);
   });
 
   test("Should not login if email & passowrd are empty", () => {
