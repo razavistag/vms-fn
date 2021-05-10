@@ -1,7 +1,6 @@
 module.exports = {
   preset: "@vue/cli-plugin-unit-jest",
   verbose: true,
-  coverageReporters: ["html", "text-summary"],
   reporters: [
     "default",
     [

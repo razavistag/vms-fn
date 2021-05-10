@@ -454,7 +454,6 @@ export default {
       });
     },
     LoginSubmit() {
-      console.log("trigger login function");
       this.$refs.form.validate().then((success) => {
         if (!success) {
           // console.log("empty");
