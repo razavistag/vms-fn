@@ -167,6 +167,7 @@ export default {
     };
   },
   beforeMount() {
+ 
     this.checkingRoutes();
   },
   mounted() {
@@ -184,6 +185,22 @@ export default {
       let token_access = JSON.parse(localStorage.getItem("token_access"));
       if (token_access[0] != 0) {
         console.log("dashboard");
+ 
+
+    let permission = JSON.parse(localStorage.getItem("token_access"));
+
+    permission.forEach((element) => {
+      //console.log("%cACCESS_INDEX >>", "color:green", element);
+    });
+
+    let permission = localStorage.getItem("token_access");
+    console.log("%cACCESS_INDEX >>", "color:green", permission);
+
+    let permission_url = JSON.parse(localStorage.getItem("token_access_url"));
+    permission_url.forEach((element) => {
+      //console.log("%cLayout_INDEX >>", "color:blue", element);
+      if (element == 0) {
+ 
         this.items.push({
           id: 0,
           title: this.$t("menu.dashboard"),
@@ -227,6 +244,7 @@ export default {
           to: "users",
         });
       }
+ 
     },
     redirectToLogin() {
       let getToken = JSON.parse(localStorage.getItem("token"));
@@ -241,19 +259,51 @@ export default {
           });
       }
     },
+ 
+    });
+  },
+  mounted() {
+
+    //console.log(localStorage.getItem("fullScreen"));
+
+    let getToken = JSON.parse(localStorage.getItem("token"));
+    console.log("get token", getToken);
+
+    if (getToken == null) {
+      this.$router
+        .push({
+          path: "login",
+        })
+        .catch((e) => {
+          // console.log("catch on admin dashboard error", e);
+        });
+    }
+    console.log(localStorage.getItem("fullScreen"));
+
+    if (localStorage.getItem("fullScreen") == 1) {
+      this.fullscreen = true;
+
+      //console.log("full screen");
+    } else {
+      // console.log("normal screen");
+      this.fullscreen = false;
+    }
+  },
+  methods: {
+ 
     languageChange(e) {
-      console.log(e);
+      //console.log(e);
       localStorage.setItem("Lang", e);
       window.location.reload();
     },
     logout() {
-      console.log("loggedout");
+      //console.log("loggedout");
       let url = "/logout";
       this.$http
         .get(url)
         .then((response) => {
-          console.log(response.data);
-          console.log(response);
+          //console.log(response.data);
+          //console.log(response);
           localStorage.removeItem("token");
           // localStorage.removeItem("token_access_url");
           // localStorage.removeItem("token_access");
@@ -280,10 +330,10 @@ export default {
         .then(() => {
           this.fullscreen = true;
           localStorage.setItem("fullScreen", 1);
-          console.log("fullscreen activated");
+          //console.log("fullscreen activated");
         })
         .catch((e) => {
-          console.log(e);
+          //console.log(e);
         });
     },
     exitFullScreen() {
@@ -298,7 +348,7 @@ export default {
         });
     },
     bugCapture() {
-      console.log("capture bug");
+      //console.log("capture bug");
       html2canvas(document.getElementById("app"), {
         // html2canvas(document.getElementsByClassName(".v-main__wrap"), {
         logging: true,
@@ -314,7 +364,6 @@ export default {
           localStorage.setItem("screenshot", canvas.toDataURL("image/jpg"));
           // this.saveAs(canvas.toDataURL("image/jpg"), "FastFest.jpg");
         })
-
         .catch((error) => {
           console.log("ERROR SAVING BUG CAPTURE IMAGE", error);
         });
