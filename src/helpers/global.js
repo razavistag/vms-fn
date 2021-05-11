@@ -19,14 +19,14 @@ export default {
     // IF REMEMBER TRUE NAVIGATE TO DASHBOARD FROM LOGIN
     if ("dashboard") {
       if (localStorage.getItem("Remember") == "true") {
-        console.log("remember true");
+        //console.log("remember true");
         return next({
           path: "/dashboard",
           name: "AdminDashboard",
           component: AdminDashboard,
         });
       } else {
-        console.log("remember false");
+        //console.log("remember false");
         next();
       }
     }
@@ -34,7 +34,7 @@ export default {
     // IF TOKEN EXSIST NAVIGATE TO DASHBOARD IF NOT RETURN TO LOGIN
     if (login) {
       if (!localStorage.getItem("token")) {
-        console.log("Login");
+        //console.log("Login");
         return next({
           path: "/login",
           name: "Login",
@@ -48,10 +48,10 @@ export default {
     // CHECKING ACCESS URL
     let urlget = JSON.parse(localStorage.getItem("token_access_url"));
     if (urlget.find((i) => i == access_url_id)) {
-      console.log("%c allow >> ", "color:orange");
+      //console.log("%c allow >> ", "color:orange");
       next();
     } else {
-      console.log("%c NOT allow>>", "color:orange");
+      //console.log("%c NOT allow>>", "color:orange");
       next({
         path: "/dashboard",
       });
@@ -59,7 +59,7 @@ export default {
   },
 
   UserRole(i) {
-    console.log("from helper 123: - ", i);
+    //console.log("from helper 123: - ", i);
     if (i == "SUPER ADMIN") {
       return 1;
     }
@@ -82,4 +82,29 @@ export default {
       return 7;
     }
   },
+  expandTable(id='') {
+      var elem = document.getElementById(id);
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+        //this.dataTableFullscreen = true;
+      } else if (elem.webkitRequestFullscreen) {
+        elem.webkitRequestFullscreen(); /* Safari */
+        //this.dataTableFullscreen = true;
+      } else if (elem.msRequestFullscreen) {
+        elem.msRequestFullscreen(); /* IE11 */
+        //this.dataTableFullscreen = true;
+      }
+    },
+    exitFullScreenDataTable() {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+        //this.dataTableFullscreen = false;
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen(); /* Safari */
+        //this.dataTableFullscreen = false;
+      } else if (document.msExitFullscreen) {
+        document.msExitFullscreen(); /* IE11 */
+        //this.dataTableFullscreen = false;
+      }
+    },
 };

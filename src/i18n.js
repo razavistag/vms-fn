@@ -10,6 +10,7 @@ export default new VueI18n({
         refresh: "Refresh",
         displayColumns: "Display Columns",
         addProjects: "Add Projects",
+        addSystems: "Add Systems",
       },
 
       // STATUS
@@ -49,43 +50,9 @@ export default new VueI18n({
         },
       },
 
-      // USERS PAGE
-      users: {
-        title: "Users",
-      },
-    },
-    spanish: {
-      // BUTTONS
-      button: {
-        refresh: "Actualizar",
-        displayColumns: "Mostrar columnas",
-        addProjects: "Agregar proyectos",
-      },
-
-      // STATUS
-      status: {
-        onProgress: "en progreso",
-        onTesting: "en pruebas",
-        onComplete: "en completo",
-      },
-
-      // SIDEBAR NAVIGATION
-      menu: {
-        dashboard: "Tablero ",
-        projects: "Proyectos",
-        systems: "Sistemas",
-        tasks: "Tareas",
-        users: "Usuarios",
-      },
-
-      // DASHBOARD PAGE
-      dashboard: {
-        title: "Tablero",
-      },
-
-      // PROJECT PAGE
-      projects: {
-        title: "Proyectos",
+      // SYSTEM PAGE
+      systems: {
+        title: "Systems",
         dtHeader: {
           logo: "logo",
           project: "proyecto",
@@ -101,8 +68,11 @@ export default new VueI18n({
 
       // USERS PAGE
       users: {
-        title: "Usuarios",
+        title: "Users",
       },
+    },
+    spanish: {
+
     },
   },
 });
