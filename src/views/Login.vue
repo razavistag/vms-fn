@@ -413,11 +413,11 @@ export default {
     return {
       tab_login: false,
       tab_register: false,
-      // email: "admin@gmail.com",
-      // password: "password",
+      email: "admin@gmail.com",
+      password: "password",
       
-      email: "",
-      password: "",
+      // email: "",
+      // password: "",
       rememberMe: false,
       Activate_Signin: true,
       Activate_Register: true,

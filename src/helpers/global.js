@@ -15,7 +15,7 @@ export default {
     store: "projects/",
   },
 
-  routerService(next, login, access_url_id) {
+  routerService(next, login, access_id) {
     // IF REMEMBER TRUE NAVIGATE TO DASHBOARD FROM LOGIN
     if ("dashboard") {
       if (localStorage.getItem("Remember") == "true") {
@@ -46,16 +46,43 @@ export default {
     }
 
     // CHECKING ACCESS URL
-    let urlget = JSON.parse(localStorage.getItem("token_access_url"));
-    if (urlget.find((i) => i == access_url_id)) {
-      console.log("%c allow >> ", "color:orange");
+    let access = JSON.parse(localStorage.getItem("token_access"));
+
+    if (access[0] != 0) {
       next();
     } else {
-      console.log("%c NOT allow>>", "color:orange");
       next({
         path: "/dashboard",
       });
     }
-  },
+    if (access[1] != 0) {
+      next();
+    }
+    else {
+      next({
+        path: "/dashboard",
+      });
+    }
 
+    // access.forEach((element) => {
+    //   console.log("access from router serveice", element);
+    //   if (access_id === 0) {
+    //     next({
+    //       path: "/dashboard",
+    //     });
+    //   } else {
+    //     next();
+    //   }
+    // });
+    // let urlget = JSON.parse(localStorage.getItem("token_access_url"));
+    // if (urlget.find((i) => i == access_url_id)) {
+    //   console.log("%c allow >> ", "color:orange");
+    //   next();
+    // } else {
+    //   console.log("%c NOT allow>>", "color:orange");
+    //   next({
+    //     path: "/dashboard",
+    //   });
+    // }
+  },
 };

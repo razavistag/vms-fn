@@ -167,22 +167,32 @@ export default {
     };
   },
   beforeMount() {
-    let permission = localStorage.getItem("token_access");
-    console.log("%cACCESS_INDEX >>", "color:green", permission);
-
-    let permission_url = JSON.parse(localStorage.getItem("token_access_url"));
-    permission_url.forEach((element) => {
-      console.log("%cLayout_INDEX >>", "color:blue", element);
-      if (element == 0) {
+    this.checkingRoutes();
+  },
+  mounted() {
+    this.redirectToLogin();
+    this.checkFullScreen();
+  },
+  methods: {
+    checkingRoutes() {
+      // modules   are indexed
+      // 0 - dashboard
+      // 1 - project
+      // 2 - system
+      // 3 - task
+      // 4 - user
+      let token_access = JSON.parse(localStorage.getItem("token_access"));
+      if (token_access[0] != 0) {
+        console.log("dashboard");
         this.items.push({
           id: 0,
-          // title: "DASHBOARD",
           title: this.$t("menu.dashboard"),
           icon: "mdi-home",
           to: "/dashboard",
         });
       }
-      if (element == 1) {
+      if (token_access[1] != 0) {
+        console.log("project");
         this.items.push({
           id: 1,
           title: this.$t("menu.projects"),
@@ -190,7 +200,8 @@ export default {
           to: "/projects",
         });
       }
-      if (element == 2) {
+      if (token_access[2] != 0) {
+        console.log("system");
         this.items.push({
           id: 2,
           title: this.$t("menu.systems"),
@@ -198,7 +209,8 @@ export default {
           to: "systems",
         });
       }
-      if (element == 3) {
+      if (token_access[3] != 0) {
+        console.log("task");
         this.items.push({
           id: 3,
           title: this.$t("menu.tasks"),
@@ -206,7 +218,8 @@ export default {
           to: "tasks",
         });
       }
-      if (element == 4) {
+      if (token_access[4] != 0) {
+        console.log("user");
         this.items.push({
           id: 3,
           title: this.$t("menu.users"),
@@ -214,32 +227,20 @@ export default {
           to: "users",
         });
       }
-    });
-  },
-  mounted() {
-    let getToken = JSON.parse(localStorage.getItem("token"));
-    console.log("get token", getToken);
-
-    if (getToken == null) {
-      this.$router
-        .push({
-          path: "login",
-        })
-        .catch((e) => {
-          // console.log("catch on admin dashboard error", e);
-        });
-    }
-    console.log(localStorage.getItem("fullScreen"));
-    if (localStorage.getItem("fullScreen") == 1) {
-      this.fullscreen = true;
-
-      console.log("full screen");
-    } else {
-      // console.log("normal screen");
-      this.fullscreen = false;
-    }
-  },
-  methods: {
+    },
+    redirectToLogin() {
+      let getToken = JSON.parse(localStorage.getItem("token"));
+      console.log("get token", getToken);
+      if (getToken == null) {
+        this.$router
+          .push({
+            path: "login",
+          })
+          .catch((e) => {
+            console.log("catch on admin dashboard error", e);
+          });
+      }
+    },
     languageChange(e) {
       console.log(e);
       localStorage.setItem("Lang", e);
@@ -254,8 +255,8 @@ export default {
           console.log(response.data);
           console.log(response);
           localStorage.removeItem("token");
-          localStorage.removeItem("token_access_url");
-          localStorage.removeItem("token_access");
+          // localStorage.removeItem("token_access_url");
+          // localStorage.removeItem("token_access");
           this.$router.push({
             name: "Login",
           });
@@ -263,6 +264,15 @@ export default {
         .catch((response) => {
           console.log("Error Fround. logout issue");
         });
+    },
+    checkFullScreen() {
+      if (localStorage.getItem("fullScreen") == 1) {
+        this.fullscreen = true;
+        // console.log("full screen");
+      } else {
+        // console.log("normal screen");
+        this.fullscreen = false;
+      }
     },
     getFullScreen() {
       document.documentElement

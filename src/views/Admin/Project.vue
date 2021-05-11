@@ -1468,6 +1468,7 @@ export default {
 
   methods: {
     expandTable() {
+      
       var elem = document.getElementById("dt_table");
       if (elem.requestFullscreen) {
         elem.requestFullscreen();
