@@ -48,21 +48,21 @@ export default {
     // CHECKING ACCESS URL
     let access = JSON.parse(localStorage.getItem("token_access"));
 
-    if (access[0] != 0) {
-      next();
-    } else {
-      next({
-        path: "/dashboard",
-      });
-    }
-    if (access[1] != 0) {
-      next();
-    }
-    else {
-      next({
-        path: "/dashboard",
-      });
-    }
+    // if (access[0] != 0) {
+    //   next();
+    // } else {
+    //   next({
+    //     path: "/dashboard",
+    //   });
+    // }
+    // if (access[1] != 0) {
+    //   next();
+    // }
+    // else {
+    //   next({
+    //     path: "/dashboard",
+    //   });
+    // }
 
     // access.forEach((element) => {
     //   console.log("access from router serveice", element);
