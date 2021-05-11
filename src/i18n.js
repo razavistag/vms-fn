@@ -10,7 +10,11 @@ export default new VueI18n({
         refresh: "Refresh",
         displayColumns: "Display Columns",
         addProjects: "Add Projects",
+ 
+        addSystems: "Add Systems",
+ 
         addUsers: "Add Users",
+ 
       },
 
       // STATUS
@@ -50,11 +54,32 @@ export default new VueI18n({
         },
       },
 
+ 
+      // SYSTEM PAGE
+      systems: {
+        title: "Systems",
+        dtHeader: {
+          logo: "logo",
+          project: "proyecto",
+          startingDate: "fecha de inicio",
+          deadline: "plazo",
+          duration: "duración",
+          incharge: "en cargo",
+          version: "versión",
+          cost: "costo",
+          action: "acción",
+        },
+      },
+
+ 
+ 
       // USERS PAGE
       users: {
         title: "Users",
       },
     },
+ 
     spanish: {},
+ 
   },
 });
