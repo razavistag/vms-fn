@@ -44,7 +44,13 @@
 
         <v-spacer></v-spacer>
 
-        <v-btn text class="text-decoration-none" to="login" small>
+        <v-btn
+          text
+          class="text-decoration-none"
+          to="login"
+          small
+          id="login_btn"
+        >
           Login <v-icon>mdi-login</v-icon>
         </v-btn>
       </v-toolbar>

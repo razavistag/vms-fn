@@ -10,7 +10,11 @@ export default new VueI18n({
         refresh: "Refresh",
         displayColumns: "Display Columns",
         addProjects: "Add Projects",
+ 
         addSystems: "Add Systems",
+ 
+        addUsers: "Add Users",
+ 
       },
 
       // STATUS
@@ -50,6 +54,7 @@ export default new VueI18n({
         },
       },
 
+ 
       // SYSTEM PAGE
       systems: {
         title: "Systems",
@@ -66,13 +71,15 @@ export default new VueI18n({
         },
       },
 
+ 
+ 
       // USERS PAGE
       users: {
         title: "Users",
       },
     },
-    spanish: {
-
-    },
+ 
+    spanish: {},
+ 
   },
 });

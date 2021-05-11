@@ -49,6 +49,7 @@
         <v-icon>mdi-arrow-expand</v-icon>
       </v-btn>
       <v-btn
+        id="logoutBtn"
         small
         icon
         @click="logout"
@@ -166,11 +167,15 @@ export default {
     };
   },
   beforeMount() {
+
     let permission = JSON.parse(localStorage.getItem("token_access"));
 
     permission.forEach((element) => {
       //console.log("%cACCESS_INDEX >>", "color:green", element);
     });
+
+    let permission = localStorage.getItem("token_access");
+    console.log("%cACCESS_INDEX >>", "color:green", permission);
 
     let permission_url = JSON.parse(localStorage.getItem("token_access_url"));
     permission_url.forEach((element) => {
@@ -219,7 +224,23 @@ export default {
     });
   },
   mounted() {
+
     //console.log(localStorage.getItem("fullScreen"));
+
+    let getToken = JSON.parse(localStorage.getItem("token"));
+    console.log("get token", getToken);
+
+    if (getToken == null) {
+      this.$router
+        .push({
+          path: "login",
+        })
+        .catch((e) => {
+          // console.log("catch on admin dashboard error", e);
+        });
+    }
+    console.log(localStorage.getItem("fullScreen"));
+
     if (localStorage.getItem("fullScreen") == 1) {
       this.fullscreen = true;
 
@@ -244,12 +265,14 @@ export default {
           //console.log(response.data);
           //console.log(response);
           localStorage.removeItem("token");
+          localStorage.removeItem("token_access_url");
+          localStorage.removeItem("token_access");
           this.$router.push({
             name: "Login",
           });
         })
         .catch((response) => {
-          console.log("Error Fround. Project Not Saved");
+          console.log("Error Fround. logout issue");
         });
     },
     getFullScreen() {

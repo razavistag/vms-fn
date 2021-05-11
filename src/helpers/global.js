@@ -58,30 +58,7 @@ export default {
     }
   },
 
-  UserRole(i) {
-    //console.log("from helper 123: - ", i);
-    if (i == "SUPER ADMIN") {
-      return 1;
-    }
-    if (i == "ADMIN") {
-      return 2;
-    }
-    if (i == "MANAGER") {
-      return 3;
-    }
-    if (i == "CASHIER") {
-      return 4;
-    }
-    if (i == "SALES REP") {
-      return 5;
-    }
-    if (i == "EMPLOYEE") {
-      return 6;
-    }
-    if (i == "MARKETING TEAM") {
-      return 7;
-    }
-  },
+
   expandTable(id='') {
       var elem = document.getElementById(id);
       if (elem.requestFullscreen) {

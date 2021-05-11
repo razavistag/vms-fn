@@ -1,7 +1,7 @@
 <template>
   <div id="Projects">
     <!-- Layout -->
- <DashboardLayout/>
+    <DashboardLayout />
     <v-card color="pa-0" tile flat>
       <v-data-table
         :headers="showHeaders"
@@ -14,9 +14,7 @@
           nextIcon: '',
         }"
         id="dt_table"
- 
         height="85vh"
- 
         class="elevation-0"
         dense
         loading-text="Fetching Project Data"
@@ -236,26 +234,7 @@
                     <ValidationObserver ref="form">
                       <v-row>
                         <!-- title -->
-                        <v-col cols="12" sm="6" md="4" v-if="editedIndex != -1">
-                          <ValidationProvider
-                            rules="required|min:5"
-                            name="Project Name"
-                            v-slot="{ errors }"
-                          >
-                            <v-text-field
-                              v-model="editedItem.title"
-                              disabled
-                              prefix="*"
-                              :label="errors[0] ? errors[0] : 'Project Name'"
-                              :error-messages="errors"
-                              hide-details=""
-                              clearable
-                              dense
-                            ></v-text-field>
-                          </ValidationProvider>
-                        </v-col>
-
-                        <v-col cols="12" sm="6" md="4" v-else>
+                        <v-col cols="12" sm="6" md="4">
                           <ValidationProvider
                             rules="required|min:5"
                             name="Project Name"
@@ -823,7 +802,7 @@
         </template>
 
         <!-- body append -->
-        <template slot="body.append">
+        <!-- <template slot="body.append">
           <tr
             class="pink--text text-end"
             :class="{ 'v-data-table__mobile-table-row': isMobile }"
@@ -910,7 +889,7 @@
               v-if="!isMobile"
             ></th>
           </tr>
-        </template>
+        </template> -->
 
         <!-- Footer Page Text -->
         <template v-slot:[`footer.page-text`]>
@@ -1321,7 +1300,7 @@ export default {
         // class: "bg-danger",
       },
       {
-        text: 'logo',
+        text: "logo",
         align: "center",
         sortable: false,
         value: "logo",
@@ -1476,47 +1455,13 @@ export default {
     this.selectedHeaders = this.headers;
   },
   beforeMount() {
-    console.log(
-      "access role >>",
-      JSON.parse(localStorage.getItem("token_access"))
-    );
-    let permission = JSON.parse(localStorage.getItem("token_access"));
-
-    permission.forEach((element) => {
-      this.permissions.push(element);
-      if (element == 0) {
-        this.ap_add = false;
-        this.ap_edit = false;
-      }
-      if (element == 1) {
-        this.ap_delete = false;
-        this.ap_add = false;
-        this.ap_edit = false;
-      }
-      if (element == 2) {
-        this.ap_delete = false;
-        this.ap_add = true;
-        this.ap_edit = false;
-      }
-      if (element == 3) {
-        this.ap_delete = false;
-        this.ap_add = true;
-        this.ap_edit = true;
-      }
-      if (element == 4) {
-        this.ap_add = true;
-        this.ap_edit = true;
-        this.ap_delete = true;
-      }
-    });
-
-    console.log("dd", this.permissions);
+    this.onAccessPermission();
   },
   mounted() {
     localStorage.setItem("paginateKey", 1);
-    let helper = this.$helper.apiGet();
-    console.log("From Helper", helper);
-    let gl = this.$gl;
+    // let helper = this.$helper.apiGet();
+    // console.log("From Helper", helper);
+    // let gl = this.$gl;
     // console.log('from helper',this.$gl.projectURL);
     // this.$refs.searchbar_ref.$refs.input.focus();
   },
@@ -1801,11 +1746,12 @@ export default {
     },
 
     newDialog() {
+      // this.close();
       this.dialog = true;
-      this.profileLogo.splice(0);
-      this.selectedIncharge.splice(0);
-      this.selectedTeam.splice(0);
-      this.avatar = {};
+      // this.profileLogo.splice(0);
+      // this.selectedIncharge.splice(0);
+      // this.selectedTeam.splice(0);
+      // this.avatar = {};
       this.$nextTick(() => {
         this.$refs.form.reset();
         console.log("cleared");
@@ -1950,6 +1896,7 @@ export default {
             .catch((response) => {
               console.log("Error Fround. Project Not Saved");
             });
+
           this.close();
 
           this.$nextTick(() => {
@@ -2018,6 +1965,25 @@ export default {
       reader.readAsDataURL(e);
 
       console.log(this.profileLogo);
+    },
+    onAccessPermission() {
+      console.log(
+        "access role from user page >>",
+        localStorage.getItem("token_access")
+      );
+      let access = localStorage.getItem("token_access");
+      if (access == 2) {
+        this.ap_add = true;
+      }
+      if (access == 3) {
+        this.ap_add = true;
+        this.ap_edit = true;
+      }
+      if (access == 4) {
+        this.ap_add = true;
+        this.ap_edit = true;
+        this.ap_delete = true;
+      }
     },
   },
 };
