@@ -701,7 +701,7 @@ export default {
           dbPassword: this.system_field_arr.dbPassword,
           projectId: this.system_field_arr.projectSelectedList.id,
           projectTitle: this.system_field_arr.projectSelectedList.title,
-          status: this.system_field_arr.status,
+          status: 1,
         };
 
         if (this.system_field_arr.systemId == 0) {
