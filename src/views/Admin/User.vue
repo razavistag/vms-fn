@@ -170,6 +170,7 @@
             x-small
             title="Delete Projects"
             class="red darken-1 pa-1 white--text rounded"
+            @click="onDeleteItem(item)"
             v-show="appAccess >= 4"
           >
             mdi-delete
@@ -363,7 +364,7 @@
 
     <!-- ADD MODEL FORM -->
     <v-dialog
-      v-model="formAdd"
+      v-model="formAddmModel"
       max-width="1200px"
       persistent
       content-class="user-form-dialog"
@@ -957,15 +958,23 @@
                   class="text-center pa-0"
                   v-if="editedItem.profileEditShow"
                 >
- 
                   <v-card>
+                    <!-- IMG FROM SERVER -->
                     <v-img
                       :src="
                         'http://localhost:8000/storage/' + editedItem.profilePic
                       "
                       width="100%"
                       height="100"
+                      v-if="editedItem.profilePic"
                     />
+                    <!-- IMG FROM DEFAULT -->
+                    <v-img
+                      src="../../assets/default_logo.jpeg"
+                      width="100%"
+                      height="100"
+                      v-else
+                    ></v-img>
                     <div class="image_edit">
                       <v-icon
                         small
@@ -994,6 +1003,47 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <!-- DELETE MODEL FORM -->
+    <v-dialog v-model="formDeleteModel" max-width="550" persistent>
+      <v-card>
+        <v-card-title class="headline blue-grey lighten-2">
+          DELETE CONFIRMATION
+
+          <v-spacer></v-spacer>
+          <v-icon @click="formDeleteModel = false">mdi-close</v-icon>
+        </v-card-title>
+
+        <v-card-text class="pa-3">
+          ARE YOU SURE YOUR WANT TO DELETE
+          <strong>{{ editedItem.name }}</strong> ?
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="formDeleteModel = false">
+            CANCEL
+          </v-btn>
+
+          <v-btn color="red darken-1" text @click="onDeleteConfirm">
+            DELETE
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- NOTIFICATION -->
+    <v-snackbar
+      v-model="snackbar.show"
+      :timeout="snackbar.time"
+      :color="snackbar.color"
+      top
+      outlined
+      right
+    >
+      <!-- <v-icon small color="red">mdi-close</v-icon> -->
+      {{ snackbar.message }}
+    </v-snackbar>
   </div>
 </template>
 
@@ -1010,10 +1060,12 @@ export default {
         store: "register",
         fetch: "users",
         show: "users/",
+        delete: "users/",
       },
       dataTableLoading: true,
       dataTableFullscreen: false,
-      formAdd: false,
+      formAddmModel: false,
+      formDeleteModel: false,
       privillageModel: false,
       dobDatePicker: false,
 
@@ -1023,9 +1075,16 @@ export default {
       accessClearIndex: 0,
       search: "",
       moment: moment,
+
       profileImg: "",
 
       defaultItem: {},
+      snackbar: {
+        show: true,
+        time: 3000,
+        message: "test notification",
+        color: "red",
+      },
       privillage: {
         0: 0,
         1: 0,
@@ -1206,20 +1265,27 @@ export default {
     // this.ddTest();
   },
   mounted() {
-    console.log("USER COUNT - MOUNTED", this.Users.length);
-    if (this.Users.length >= 0) {
-      this.existData = 1;
-    }
-    setTimeout(() => {
-      this.dataTableLoading = false;
-    }, 1000);
+    this.dataTableLoadingIndicator();
+
+    // a.forEach(element => {
+    //  console.log(element)
+    // });
   },
 
   methods: {
     ddTest(e) {
       console.log("%cDD LOG", "color:red", this.Users[0]);
-      this.formAdd = true;
+      this.formAddmModel = true;
       console.log("selected Role", e);
+    },
+    dataTableLoadingIndicator() {
+      console.log("USER COUNT - MOUNTED", this.Users.length);
+      if (this.Users.length >= 0) {
+        this.existData = 1;
+      }
+      setTimeout(() => {
+        this.dataTableLoading = false;
+      }, 1000);
     },
     onPrivillage() {
       this.privillageModel = true;
@@ -1304,7 +1370,7 @@ export default {
           task: 0,
           user: 0,
         };
-      }  
+      }
       if (this.accessClearIndex == 0) {
         this.privillage = {
           0: 0,
@@ -1313,7 +1379,7 @@ export default {
           3: 0,
           4: 0,
         };
-      }  
+      }
     },
     privillageSubmit() {
       // modules               ||  access  are indexed
@@ -1358,6 +1424,25 @@ export default {
       this.editedItem.profileEditShow = false;
       this.editedItem.profileViewerShow = true;
       this.editedItem.profileUploadShow = true;
+    },
+    onDeleteItem(e) {
+      this.formDeleteModel = true;
+      this.editedItem = Object.assign(e);
+      // this.editedIndex = e.id;
+      console.log(e);
+    },
+    onDeleteConfirm() {
+      console.log("delete", this.editedIndex);
+      this.$http
+        .delete(this.url.delete + this.editedItem.id)
+        .then((response) => {
+          console.log(response.data);
+          this.onInitialize();
+          this.formDeleteModel = false;
+        })
+        .catch((response) => {
+          console.log("Error Fround. User Not Deleted");
+        });
     },
     onEditItem(e) {
       console.log("edited item ->", e);
@@ -1410,21 +1495,21 @@ export default {
           mothlyTargetAmount: i.monthly_target,
           mothlyTargetPercentage: i.target_percentage,
         });
-        this.formAdd = true;
+        this.formAddmModel = true;
         this.editedItem.profileEditShow = true;
         this.editedItem.profileViewerShow = false;
         this.editedItem.profileUploadShow = false;
       });
     },
     closeForm() {
-      this.formAdd = false;
+      this.formAddmModel = false;
 
       this.editedItem = Object.assign({}, this.defaultItem);
       this.editedIndex = -1;
     },
     onNewDialog() {
       console.log("Add New Form");
-      this.formAdd = true;
+      this.formAddmModel = true;
       this.accessClearIndex = 0;
 
       this.editedItem.profileUploadShow = true;

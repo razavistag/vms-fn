@@ -171,23 +171,30 @@
                     name="User"
                     v-slot="{ errors }"
                   >
+                    <!-- USER AUTOCOMPLETE-->
                     <v-autocomplete
                       v-model="system_field_arr.userSelectedList"
-                      :search-input.sync="fetchUserList"
                       :items="userList"
+                      :search-input.sync="fetchUserList"
                       :label="errors[0] ? errors[0] : 'User'"
                       :error-messages="errors"
-                      item-text="name"
-                      item-value="id"
+                      item-text="userName"
+                      item-value="userId"
                       prefix="*"
                       clearable
+                      return-object
                       dense
                       hide-no-data
-                      hide-selected
-                      return-object
                       hide-details=""
-                      auto-select-first
+                      hide-selected
+                      single-line
                     >
+                      <template v-slot:selection="data">
+                        {{ data.item.userName }}
+                      </template>
+                      <template v-slot:item="{ item }">
+                        {{ item.userName }}
+                      </template>
                     </v-autocomplete>
                   </ValidationProvider>
                 </v-col>
@@ -283,6 +290,7 @@
                   </v-menu>
                 </v-col>
 
+                <!-- INCHARGE AUTOCOMPLETE-->
                 <v-col cols="12" sm="6" md="3">
                   <ValidationProvider
                     rules="required"
@@ -291,12 +299,12 @@
                   >
                     <v-autocomplete
                       v-model="system_field_arr.inchareSelectedList"
-                      :search-input.sync="fetchInchareList"
                       :items="inchareList"
+                      :search-input.sync="fetchInchareList"
                       :label="errors[0] ? errors[0] : 'Inchare'"
                       :error-messages="errors"
-                      item-text="name"
-                      item-value="id"
+                      item-text="userName"
+                      item-value="userId"
                       prefix="*"
                       clearable
                       dense
@@ -304,10 +312,13 @@
                       hide-selected
                       return-object
                       hide-details=""
+                      single-line
                     >
                     </v-autocomplete>
                   </ValidationProvider>
                 </v-col>
+
+                <!-- PROJECT AUTOCOMPLETE-->
                 <v-col cols="12" sm="6" md="3">
                   <ValidationProvider
                     rules="required|min:3"
@@ -320,8 +331,8 @@
                       :items="projectList"
                       :label="errors[0] ? errors[0] : 'Project'"
                       :error-messages="errors"
-                      item-text="title"
-                      item-value="id"
+                      item-text="projectTitle"
+                      item-value="projectId"
                       prefix="*"
                       clearable
                       dense
@@ -330,6 +341,12 @@
                       return-object
                       hide-details=""
                     >
+                      <template v-slot:selection="data">
+                        {{ data.item.projectTitle.substring(0, 17) + "..." }}
+                      </template>
+                      <template v-slot:item="{ item }">
+                        {{ item.projectTitle }}
+                      </template>
                     </v-autocomplete>
                   </ValidationProvider>
                 </v-col>
@@ -749,38 +766,60 @@ export default {
     },
     editSystem(item) {
       console.log("Edit", item.id);
+
       this.$http
         .get(this.controller + "/" + item.id)
         .then((response) => {
+          console.log("edited Info", response.data.data);
+
           this.system_modal();
-          this.system_field_arr.systemId = response.data.data.id;
-          this.userList = [
-            {
-              id: response.data.data.userId,
-              name: response.data.data.userName,
+          let i = response.data.data;
+
+          // SELECTED USER LIST
+          this.userList.push({
+            userId: i.userId,
+            userName: i.userName,
+          });
+
+          // SELECTED INCHARGE LIST
+          this.inchareList.push({
+            userId: i.incharedId,
+            userName: i.incharedName,
+          });
+          // SELECTED PROJECT LIST
+          this.projectList.push({
+            projectId: i.projectId,
+            projectTitle: i.projectTitle,
+          });
+
+          // ASSIGNING FECTED OBJECT TO SYSTEM FIELD ARRAY
+          this.system_field_arr = Object.assign({
+            userSelectedList: {
+              userId: i.userId,
             },
-          ];
-          this.system_field_arr.deployedDate = response.data.data.deployedDate;
-          this.system_field_arr.deployedDate = response.data.data.deployedDate;
-          this.system_field_arr.domain = response.data.data.domain;
-          this.system_field_arr.domainExpiryDate =
-            response.data.data.domainExpiryDate;
-          this.system_field_arr.domainNote = response.data.data.domainNote;
-          this.system_field_arr.systemNote = response.data.data.systemNote;
-          this.inchareList = [
-            {
-              id: response.data.data.incharedId,
-              name: response.data.data.incharedName,
+            inchareSelectedList: {
+              userId: i.incharedId,
             },
-          ];
-          this.system_field_arr.dbUsername = response.data.data.dbUsername;
-          this.system_field_arr.dbPassword = response.data.data.dbPassword;
-          this.system_field_arr.projectSelectedList =
-            response.data.data.projectTitle;
-          this.system_field_arr.status = response.data.data.status;
+            projectSelectedList: {
+              projectId: i.projectId,
+            },
+            domainNote: i.domainNote,
+            systemNote: i.systemNote,
+            deployedDate: moment(i.deployedDate * 1000)
+              .add(1, "d")
+              .toISOString()
+              .substr(0, 10),
+            domainExpiryDate: moment(i.domainExpiryDate * 1000)
+              .add(1, "d")
+              .toISOString()
+              .substr(0, 10),
+            domain: i.domain,
+            dbUsername: i.dbUsername,
+            dbPassword: i.dbPassword,
+          });
         })
-        .catch((response) => {
-          // console.log(response);
+        .catch((error) => {
+          console.log("found on edit information", error);
         });
     },
     deleteSystem(item) {
