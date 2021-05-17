@@ -96,7 +96,7 @@
               v-shortkey="['alt', 'n']"
               @shortkey="onNewDialog()"
               @click="onNewDialog"
-              v-show="ap_add"
+              v-show="appAccess >= 2"
             >
               <v-icon left dark class=""> mdi-plus </v-icon>
               <span class="v_toolbar_add_project_text">
@@ -159,8 +159,8 @@
             x-small
             title="Edit Projects"
             class="mr-2 orange darken-1 pa-1 white--text rounded"
-            v-show="ap_edit"
             @click="onEditItem(item)"
+            v-show="appAccess >= 3"
           >
             mdi-pencil
           </v-icon>
@@ -170,7 +170,7 @@
             x-small
             title="Delete Projects"
             class="red darken-1 pa-1 white--text rounded"
-            v-show="ap_delete"
+            v-show="appAccess >= 4"
           >
             mdi-delete
           </v-icon>
@@ -204,7 +204,7 @@
       </v-data-table>
     </v-card>
 
-    <!-- ADD FORM -->
+    <!--PRIVILLAGE MODE FORM -->
     <v-dialog
       v-model="privillageModel"
       max-width="700px"
@@ -223,7 +223,7 @@
 
         <v-card-text style="height: 300px;">
           <v-row class=" mt-3">
-            <!-- DASHBOARD -->
+            <!-- DASHBOARD PRIVILAGE -->
             <v-col cols="12" sm="6" md="6" class="  d-flex align-center">
               <span>DASHBOARD</span>
             </v-col>
@@ -248,7 +248,7 @@
               </ValidationProvider>
             </v-col>
 
-            <!-- PROJECTS -->
+            <!-- PROJECTS PRIVILAGE -->
             <v-col cols="12" sm="6" md="6" class="  d-flex align-center">
               <span>PROJECTS</span>
             </v-col>
@@ -273,7 +273,7 @@
               </ValidationProvider>
             </v-col>
 
-            <!-- SYSTEM -->
+            <!-- SYSTEM PRIVILAGE -->
             <v-col cols="12" sm="6" md="6" class="  d-flex align-center">
               <span>SYSTEM</span>
             </v-col>
@@ -298,7 +298,7 @@
               </ValidationProvider>
             </v-col>
 
-            <!-- TASK -->
+            <!-- TASK PRIVILAGE -->
             <v-col cols="12" sm="6" md="6" class="  d-flex align-center">
               <span>TASK</span>
             </v-col>
@@ -323,7 +323,7 @@
               </ValidationProvider>
             </v-col>
 
-            <!-- USER -->
+            <!-- USER PRIVILAGE -->
             <v-col cols="12" sm="6" md="6" class="  d-flex align-center">
               <span>USER</span>
             </v-col>
@@ -361,7 +361,7 @@
       </v-card>
     </v-dialog>
 
-    <!-- ADD FORM -->
+    <!-- ADD MODEL FORM -->
     <v-dialog
       v-model="formAdd"
       max-width="1200px"
@@ -381,7 +381,7 @@
           <v-icon @click="closeForm">mdi-close</v-icon>
         </v-card-title>
 
-        <v-card-text style="height: 300px;">
+        <v-card-text>
           <v-container>
             <ValidationObserver ref="form">
               <v-row>
@@ -547,6 +547,281 @@
                   </ValidationProvider>
                 </v-col>
 
+                <!-- DOB -->
+                <v-col cols="12" sm="6" md="3">
+                  <ValidationProvider
+                    rules="required"
+                    name="Date of birth"
+                    v-slot="{ errors }"
+                  >
+                    <v-menu
+                      v-model="dobDatePicker"
+                      :close-on-content-click="false"
+                      :nudge-right="40"
+                      transition="scale-transition"
+                      offset-y
+                      min-width="auto"
+                    >
+                      <template v-slot:activator="{ on, attrs }">
+                        <ValidationProvider
+                          rules="required"
+                          name="Date of birth"
+                          v-slot="{ errors }"
+                        >
+                          <v-text-field
+                            v-model="editedItem.dob"
+                            :label="errors[0] ? errors[0] : 'Date of birth'"
+                            :error-messages="errors"
+                            hide-details=""
+                            clearable
+                            prefix="*"
+                            dense
+                            readonly
+                            v-bind="attrs"
+                            v-on="on"
+                          ></v-text-field>
+                        </ValidationProvider>
+                      </template>
+                      <v-date-picker
+                        v-model="editedItem.dob"
+                        dateFormat="mm-YYYY"
+                        @input="dobDatePicker = false"
+                      ></v-date-picker>
+                    </v-menu>
+                  </ValidationProvider>
+                </v-col>
+
+                <!-- CITY -->
+                <v-col cols="12" sm="6" md="3">
+                  <ValidationProvider
+                    rules="required"
+                    name="City"
+                    v-slot="{ errors }"
+                  >
+                    <v-select
+                      :items="cityOptions"
+                      v-model="editedItem.city"
+                      :label="errors[0] ? errors[0] : 'City'"
+                      :error-messages="errors"
+                      hide-details=""
+                      prefix="*"
+                      clearable
+                      dense
+                      item-text="option"
+                      item-value="index"
+                    ></v-select>
+                  </ValidationProvider>
+                </v-col>
+
+                <!-- LOCATIONS -->
+                <v-col cols="12" sm="6" md="3">
+                  <ValidationProvider
+                    rules="required"
+                    name="Location"
+                    v-slot="{ errors }"
+                  >
+                    <v-select
+                      :items="locationOptions"
+                      v-model="editedItem.location"
+                      :label="errors[0] ? errors[0] : 'Location'"
+                      :error-messages="errors"
+                      hide-details=""
+                      prefix="*"
+                      clearable
+                      dense
+                      item-text="option"
+                      item-value="index"
+                    ></v-select>
+                  </ValidationProvider>
+                </v-col>
+
+                <!-- ZIP CODE -->
+                <v-col cols="12" sm="6" md="3">
+                  <ValidationProvider
+                    rules="required|min:3"
+                    name="Zip Code"
+                    v-slot="{ errors }"
+                  >
+                    <v-text-field
+                      v-model="editedItem.zipCode"
+                      :label="errors[0] ? errors[0] : 'Zip Code'"
+                      :error-messages="errors"
+                      prefix="*"
+                      clearable
+                      dense
+                      hide-details=""
+                    >
+                    </v-text-field>
+                  </ValidationProvider>
+                </v-col>
+
+                <!-- ACCOUNT NUMBER -->
+                <v-col cols="12" sm="6" md="3">
+                  <ValidationProvider
+                    rules="required"
+                    name="Account Number"
+                    v-slot="{ errors }"
+                  >
+                    <v-text-field
+                      v-model="editedItem.accountNumber"
+                      :label="errors[0] ? errors[0] : 'Account Number'"
+                      :error-messages="errors"
+                      prefix="*"
+                      clearable
+                      dense
+                      hide-details=""
+                    >
+                    </v-text-field>
+                  </ValidationProvider>
+                </v-col>
+
+                <!-- USER TYPE -->
+                <v-col cols="12" sm="6" md="3">
+                  <ValidationProvider
+                    rules="required"
+                    name="User Type"
+                    v-slot="{ errors }"
+                  >
+                    <v-select
+                      :items="userTypeOptions"
+                      v-model="editedItem.userType"
+                      :label="errors[0] ? errors[0] : 'User Type'"
+                      :error-messages="errors"
+                      hide-details=""
+                      prefix="*"
+                      clearable
+                      dense
+                      item-text="option"
+                      item-value="index"
+                    ></v-select>
+                  </ValidationProvider>
+                </v-col>
+
+                <!-- OPENING BALANCE AMOUNT -->
+                <v-col cols="12" sm="6" md="3">
+                  <ValidationProvider
+                    rules="required|numeric"
+                    name="Opening Balance"
+                    v-slot="{ errors }"
+                  >
+                    <v-text-field
+                      v-model="editedItem.openingBalance"
+                      :label="errors[0] ? errors[0] : 'Opening Balance'"
+                      :error-messages="errors"
+                      prefix="*"
+                      clearable
+                      dense
+                      hide-details=""
+                    >
+                    </v-text-field>
+                  </ValidationProvider>
+                </v-col>
+
+                <!--   BALANCE AMOUNT -->
+                <v-col cols="12" sm="6" md="3">
+                  <ValidationProvider
+                    rules="required|numeric"
+                    name="Balance Amount"
+                    v-slot="{ errors }"
+                  >
+                    <v-text-field
+                      v-model="editedItem.Balance"
+                      :label="errors[0] ? errors[0] : 'Balance Amount'"
+                      :error-messages="errors"
+                      prefix="*"
+                      clearable
+                      dense
+                      hide-details=""
+                    >
+                    </v-text-field>
+                  </ValidationProvider>
+                </v-col>
+
+                <!-- CREDIT LIMIT -->
+                <v-col cols="12" sm="6" md="3">
+                  <ValidationProvider
+                    rules="required|numeric"
+                    name="Credit Limit"
+                    v-slot="{ errors }"
+                  >
+                    <v-text-field
+                      v-model="editedItem.CreditLimit"
+                      :label="errors[0] ? errors[0] : 'Credit Limit'"
+                      :error-messages="errors"
+                      prefix="*"
+                      clearable
+                      dense
+                      hide-details=""
+                    >
+                    </v-text-field>
+                  </ValidationProvider>
+                </v-col>
+
+                <!-- BASIC SALARY -->
+                <v-col cols="12" sm="6" md="3">
+                  <ValidationProvider
+                    rules="required|numeric"
+                    name="Basic Salary"
+                    v-slot="{ errors }"
+                  >
+                    <v-text-field
+                      v-model="editedItem.basicSalary"
+                      :label="errors[0] ? errors[0] : 'Basic Salary'"
+                      :error-messages="errors"
+                      prefix="*"
+                      clearable
+                      dense
+                      hide-details=""
+                    >
+                    </v-text-field>
+                  </ValidationProvider>
+                </v-col>
+
+                <!-- MONTHLY TARGET AMOUNT -->
+                <v-col cols="12" sm="6" md="3">
+                  <ValidationProvider
+                    rules="required|numeric"
+                    name="Monthly Target Amount"
+                    v-slot="{ errors }"
+                  >
+                    <v-text-field
+                      v-model="editedItem.mothlyTargetAmount"
+                      :label="errors[0] ? errors[0] : 'Monthly Target Amount'"
+                      :error-messages="errors"
+                      prefix="*"
+                      clearable
+                      dense
+                      hide-details=""
+                    >
+                    </v-text-field>
+                  </ValidationProvider>
+                </v-col>
+
+                <!-- MONTHLY TARGET PERCENTAGE -->
+                <v-col cols="12" sm="6" md="3">
+                  <ValidationProvider
+                    :rules="{
+                      regex: /^(100(\.00?)?|[1-9]?\d(\.\d\d?)?)$/,
+                      required: { allowFalse: false },
+                    }"
+                    name="Monthly Target Percentage"
+                    v-slot="{ errors }"
+                  >
+                    <v-text-field
+                      v-model="editedItem.mothlyTargetPercentage"
+                      :label="
+                        errors[0] ? errors[0] : 'Monthly Target Percentage'
+                      "
+                      :error-messages="errors"
+                      prefix="*"
+                      clearable
+                      dense
+                      hide-details=""
+                    >
+                    </v-text-field>
+                  </ValidationProvider>
+                </v-col>
+
                 <!-- ADD PRIVILLAGE -->
                 <v-col cols="12" sm="6" md="3">
                   <v-btn block text outlined @click="onPrivillage">
@@ -567,6 +842,28 @@
                       :label="errors[0] ? errors[0] : 'User Role'"
                       :error-messages="errors"
                       @change="onUserRoleChange"
+                      hide-details=""
+                      prefix="*"
+                      clearable
+                      dense
+                      item-text="option"
+                      item-value="index"
+                    ></v-select>
+                  </ValidationProvider>
+                </v-col>
+
+                <!-- LANGUAGE-->
+                <v-col cols="12" sm="6" md="3">
+                  <ValidationProvider
+                    rules="required"
+                    name="Language"
+                    v-slot="{ errors }"
+                  >
+                    <v-select
+                      :items="languageOptions"
+                      v-model="editedItem.language"
+                      :label="errors[0] ? errors[0] : 'Language'"
+                      :error-messages="errors"
                       hide-details=""
                       prefix="*"
                       clearable
@@ -601,8 +898,12 @@
                 </v-col>
 
                 <!-- USER PROFILE -->
-                <v-col cols="12" sm="6" md="3" v-if="!editedItem.profilePic">
-                  {{ editedItem.profilePic }}
+                <v-col
+                  cols="12"
+                  sm="6"
+                  md="3"
+                  v-if="editedItem.profileUploadShow"
+                >
                   <ValidationProvider
                     rules=""
                     name="Profile Pic"
@@ -627,8 +928,8 @@
                   cols="12"
                   sm="6"
                   md="3"
-                  v-if="!editedItem.profilePic"
                   class="text-center pa-0"
+                  v-if="editedItem.profileViewerShow"
                 >
                   <v-menu open-on-hover top offset-y>
                     <template v-slot:activator="{ on, attrs }">
@@ -648,13 +949,15 @@
                   </v-menu>
                 </v-col>
 
+                <!-- PROFILE IMAGE FROM EDIT -->
                 <v-col
                   cols="12"
                   sm="6"
                   md="3"
                   class="text-center pa-0"
-                  v-if="editedItem.profilePic"
+                  v-if="editedItem.profileEditShow"
                 >
+ 
                   <v-card>
                     <v-img
                       :src="
@@ -706,24 +1009,30 @@ export default {
       url: {
         store: "register",
         fetch: "users",
-        show: "users",
+        show: "users/",
       },
       dataTableLoading: true,
       dataTableFullscreen: false,
       formAdd: false,
       privillageModel: false,
-      ap_add: true, //ACCESS PERMISSION FOR ADD
-      ap_edit: false, //ACCESS PERMISSION FOR EDIT
-      ap_delete: false, //ACCESS PERMISSION FOR DELETE
+      dobDatePicker: false,
 
+      appAccess: 0, //ACCESS PERMISSION FOR Users
       existData: -1,
       editedIndex: -1,
+      accessClearIndex: 0,
       search: "",
       moment: moment,
       profileImg: "",
 
       defaultItem: {},
-      privillage: {},
+      privillage: {
+        0: 0,
+        1: 0,
+        2: 0,
+        3: 0,
+        4: 0,
+      },
       editedItem: {
         name: "",
         email: "",
@@ -739,6 +1048,22 @@ export default {
         status: "",
         profilePic: [],
         profileImg: [],
+        dob: "",
+        city: "",
+        location: "",
+        zipCode: "",
+        accountNumber: "",
+        userType: "",
+        openingBalance: "",
+        Balance: "",
+        CreditLimit: "",
+        basicSalary: "",
+        language: "",
+        mothlyTargetAmount: "",
+        mothlyTargetPercentage: "",
+        profileUploadShow: true,
+        profileViewerShow: false,
+        profileEditShow: false,
       },
       dtPagination: {
         first_page_url: "",
@@ -758,7 +1083,27 @@ export default {
         localCurrentPage: parseInt(localStorage.getItem("paginateKey")),
         total: 1,
       },
-
+      languageOptions: [
+        { option: "ENGLISH", index: 1 },
+        { option: "SPANISH", index: 2 },
+      ],
+      userTypeOptions: [
+        { option: "CUSTOMER", index: 1 },
+        { option: "VENDOR", index: 2 },
+        { option: "SUPPLIER", index: 3 },
+      ],
+      locationOptions: [
+        { option: "AKURANA", index: 1 },
+        { option: "ALAWATHUGODA", index: 2 },
+        { option: "BULUGIHATENNA", index: 3 },
+        { option: "MADAWALA", index: 4 },
+      ],
+      cityOptions: [
+        { option: "COLOMBO", index: 1 },
+        { option: "KANDY", index: 2 },
+        { option: "JAFFNA", index: 3 },
+        { option: "MATALE", index: 4 },
+      ],
       userRoleOptions: [
         { option: "SUPER ADMIN", index: 1 },
         { option: "ADMIN", index: 2 },
@@ -883,54 +1228,54 @@ export default {
       if (this.editedIndex > -1) {
         console.log("triggered update function");
       } else {
-        // this.$refs.form.validate().then((success) => {
-        //   if (!success) {
-        //     return;
-        //   }
-        let access = this.privillageSubmit();
-        console.log(access);
-        console.log("triggered store function");
-        const store = {
-          name: this.editedItem.name,
-          email: this.editedItem.email,
-          password: "password",
-          address: this.editedItem.address,
-          phone: this.editedItem.phone,
-          company: this.editedItem.company,
-          nic: this.editedItem.nic,
-          gender: this.editedItem.gender,
-          access: access,
-          attempts: this.editedItem.attempts,
-          role: this.editedItem.role,
-          status: this.editedItem.status,
-          profilePic: this.profileImg,
-        };
+        this.$refs.form.validate().then((success) => {
+          if (!success) {
+            return;
+          }
+          let access = this.privillageSubmit();
+          console.log(access);
+          console.log("triggered store function");
+          const store = {
+            name: this.editedItem.name,
+            email: this.editedItem.email,
+            password: "password",
+            address: this.editedItem.address,
+            phone: this.editedItem.phone,
+            company: this.editedItem.company,
+            nic: this.editedItem.nic,
+            gender: this.editedItem.gender,
+            access: access,
+            attempts: this.editedItem.attempts,
+            role: this.editedItem.role,
+            status: this.editedItem.status,
+            profilePic: this.profileImg,
+            access: this.privillageSubmit(),
+            dob: moment(this.editedItem.dob).format("X"),
+            city: this.editedItem.city,
+            location: this.editedItem.location,
+            zip: this.editedItem.zipCode,
+            account_number: this.editedItem.accountNumber,
+            user_type: this.editedItem.userType,
+            opening_balance: this.editedItem.openingBalance,
+            balance: this.editedItem.Balance,
+            credit_limit: this.editedItem.CreditLimit,
+            basic_salary: this.editedItem.basicSalary,
+            monthly_target: this.editedItem.mothlyTargetAmount,
+            target_percentage: this.editedItem.mothlyTargetPercentage,
+            language: this.editedItem.language,
+            payment_terms: 0,
+            sales_rep_id: 0,
+          };
 
-        // const store = {
-        //   name: "Ikram",
-        //   email: "ikram@gmail.com",
-        //   password: "password",
-        //   address: "12, Norhtshore Street, Francisco",
-        //   phone: "10236547778",
-        //   company: "Vistag",
-        //   nic: "15416886V",
-        //   gender: "MALE",
-        //   access: access,
-        //   attempts: 7,
-        //   role: 6,
-        //   status: 1,
-        //   profilePic: this.profileImg,
-        // };
+          console.log("STO   RING DATA >>", store);
 
-        console.log("STO   RING DATA >>", store);
-
-        this.$http
-          .post(this.url.store, store)
-          .then((result) => {
-            console.log(result);
-          })
-          .catch((err) => {});
-        // });
+          this.$http
+            .post(this.url.store, store)
+            .then((result) => {
+              console.log(result);
+            })
+            .catch((err) => {});
+        });
       }
     },
     onInitialize() {
@@ -949,13 +1294,26 @@ export default {
     privillageCancel() {
       this.privillageModel = false;
 
-      this.privillage = {
-        dashboard: 0,
-        project: 0,
-        system: 0,
-        task: 0,
-        user: 0,
-      };
+      console.log(this.accessClearIndex);
+
+      if (this.accessClearIndex == 1) {
+        this.privillage = {
+          dashboard: 0,
+          project: 0,
+          system: 0,
+          task: 0,
+          user: 0,
+        };
+      }  
+      if (this.accessClearIndex == 0) {
+        this.privillage = {
+          0: 0,
+          1: 0,
+          2: 0,
+          3: 0,
+          4: 0,
+        };
+      }  
     },
     privillageSubmit() {
       // modules               ||  access  are indexed
@@ -983,6 +1341,7 @@ export default {
         this.profileImg = reader.result;
       };
       reader.readAsDataURL(e);
+      this.editedItem.profileViewerShow = true;
     },
     onAccessModuleChange(i) {
       console.log("onAccessModuleChange", i);
@@ -996,28 +1355,66 @@ export default {
     onEditProfilePic() {
       console.log("asdasd");
       this.editedItem.profilePic = "";
+      this.editedItem.profileEditShow = false;
+      this.editedItem.profileViewerShow = true;
+      this.editedItem.profileUploadShow = true;
     },
-    onEditItem(i) {
-      console.log("edited item ->", i);
-      this.editedIndex = this.Users.indexOf(i);
-      // this.editedItem = Object.assign({}, i);
-      this.editedItem = Object.assign({
-        name: i.name,
-        email: i.email,
-        phone: i.phone,
-        address: i.address,
-        nic: i.nic,
-        gender: i.gender,
-        company: i.company,
-        attempts: i.attempts,
-        access: i.access,
-        accessUrl: JSON.parse(i.access_url),
-        role: i.role,
-        status: i.status,
-        profilePic: i.profilePic,
-        profileImg: [],
+    onEditItem(e) {
+      console.log("edited item ->", e);
+
+      this.$http.get(this.url.show + e.id).then((response) => {
+        console.log(response.data.selected_user);
+
+        let i = response.data.selected_user;
+        let access = JSON.parse(i.access);
+        console.log(i.access);
+
+        this.accessClearIndex = 1;
+        this.privillage.dashboard = access[0];
+        this.privillage.project = access[1];
+        this.privillage.system = access[2];
+        this.privillage.task = access[3];
+        this.privillage.user = access[4];
+
+        this.editedIndex = this.Users.indexOf(e);
+        this.editedItem = Object.assign({
+          name: i.name,
+          email: i.email,
+          phone: i.phone,
+          address: i.address,
+          nic: i.nic,
+          gender: i.gender,
+          company: i.company,
+          attempts: i.attempts,
+          access: i.access,
+          role: i.role,
+          status: i.status,
+          profilePic: i.profilePic,
+          profileImg: [],
+
+          dob: moment(i.dob * 1000)
+            .add(1, "d")
+            .toISOString()
+            .substr(0, 10),
+
+          city: i.city,
+          location: i.location,
+          zipCode: i.zip,
+          accountNumber: i.account_number,
+          userType: i.user_type,
+          openingBalance: i.opening_balance,
+          Balance: i.balance,
+          CreditLimit: i.credit_limit,
+          basicSalary: i.basic_salary,
+          language: i.language,
+          mothlyTargetAmount: i.monthly_target,
+          mothlyTargetPercentage: i.target_percentage,
+        });
+        this.formAdd = true;
+        this.editedItem.profileEditShow = true;
+        this.editedItem.profileViewerShow = false;
+        this.editedItem.profileUploadShow = false;
       });
-      this.formAdd = true;
     },
     closeForm() {
       this.formAdd = false;
@@ -1028,6 +1425,11 @@ export default {
     onNewDialog() {
       console.log("Add New Form");
       this.formAdd = true;
+      this.accessClearIndex = 0;
+
+      this.editedItem.profileUploadShow = true;
+      this.editedItem.profileViewerShow = false;
+      this.editedItem.profileEditShow = false;
     },
     onRefresh() {
       console.log("onRefresh Triggred");
@@ -1076,23 +1478,8 @@ export default {
       }
     },
     onAccessPermission() {
-      console.log(
-        "access role from user page >>",
-        localStorage.getItem("token_access")
-      );
-      let access = localStorage.getItem("token_access");
-      if (access == 2) {
-        this.ap_add = true;
-      }
-      if (access == 3) {
-        this.ap_add = true;
-        this.ap_edit = true;
-      }
-      if (access == 4) {
-        this.ap_add = true;
-        this.ap_edit = true;
-        this.ap_delete = true;
-      }
+      let access = JSON.parse(localStorage.getItem("token_access"));
+      this.appAccess = access[4];
     },
   },
 };

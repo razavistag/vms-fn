@@ -16,35 +16,6 @@ export default {
   },
 
   routerService(next, login, access_id) {
-    // IF REMEMBER TRUE NAVIGATE TO DASHBOARD FROM LOGIN
-    if ("dashboard") {
-      if (localStorage.getItem("Remember") == "true") {
-        console.log("remember true");
-        return next({
-          path: "/dashboard",
-          name: "AdminDashboard",
-          component: AdminDashboard,
-        });
-      } else {
-        console.log("remember false");
-        next();
-      }
-    }
-
-    // IF TOKEN EXSIST NAVIGATE TO DASHBOARD IF NOT RETURN TO LOGIN
-    if (login) {
-      if (!localStorage.getItem("token")) {
-        console.log("Login");
-        return next({
-          path: "/login",
-          name: "Login",
-          component: Login,
-        });
-      } else {
-        next();
-      }
-    }
-
     // CHECKING ACCESS URL
     let access = JSON.parse(localStorage.getItem("token_access"));
 

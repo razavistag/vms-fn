@@ -170,9 +170,10 @@ export default {
     this.checkingRoutes();
   },
   mounted() {
-    this.redirectToLogin();
+     
     this.checkFullScreen();
   },
+  
   methods: {
     checkingRoutes() {
       // modules   are indexed
@@ -255,10 +256,13 @@ export default {
           console.log(response.data);
           console.log(response);
           localStorage.removeItem("token");
-          // localStorage.removeItem("token_access_url");
-          // localStorage.removeItem("token_access");
-          this.$router.push({
-            name: "Login",
+
+          localStorage.removeItem("token_access");
+          // this.$router.push({
+          //   path: "login",
+          // });
+          this.$router.go({
+            path: "login",
           });
         })
         .catch((response) => {
