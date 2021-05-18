@@ -5,10 +5,11 @@
     <!-- DB TABLE -->
     <v-card color="pa-0" tile flat>
       <v-data-table
-        :headers="headersMap"
+        :headers="showHeaders"
         :items="Users"
         :fixed-header="true"
         :loading="dataTableLoading"
+        :items-per-page="5"
         :footer-props="{
           'items-per-page-options': [pagination.total],
           prevIcon: '',
@@ -35,6 +36,7 @@
               >
                 mdi-image-filter-center-focus-strong
               </v-icon>
+
               <!-- TABLE MINIMIZE ICON -->
               <v-icon
                 v-else
@@ -43,13 +45,16 @@
               >
                 mdi-arrow-expand
               </v-icon>
+
               <!-- TABLE TITLE  -->
               <span v-animate-css="'fadeIn'">
                 {{ $t("users.title") }}
               </span>
             </v-toolbar-title>
+
             <v-divider class="mx-4" inset vertical></v-divider>
             <v-spacer></v-spacer>
+
             <!-- SEARCH TEXT -->
             <div v-shortkey="['alt', 's']" @shortkey="focusSearchKey">
               <v-text-field
@@ -68,7 +73,7 @@
 
             <!-- REFRESH BUTTONS -->
             <v-btn
-              color="indigo lighten-1"
+              :color="DTbtnColor"
               class=" ma-1 text-center"
               id="v_toolbar_refresh_btn"
               outlined
@@ -87,9 +92,56 @@
               </span>
             </v-btn>
 
+            <!-- HIDE COLUMNS-->
+            <v-menu top :close-on-content-click="false">
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  :color="DTbtnColor"
+                  class=" ma-1"
+                  outlined
+                  small
+                  v-bind="attrs"
+                  v-on="on"
+                  v-shortkey="['alt', 'd']"
+                >
+                  <v-icon left dark> mdi-eye </v-icon>
+
+                  <span class="v_toolbar_display_column_text">
+                    {{ $t("button.displayColumns") }}
+                  </span>
+                </v-btn>
+              </template>
+
+              <v-list flat>
+                <v-list-item class="fixed">
+                  <v-select
+                    v-model="selectedHeaders"
+                    :items="headers"
+                    label="Display Columns"
+                    multiple
+                    return-object
+                    class=""
+                    hide-details=""
+                    dense
+                    :menu-props="{ maxHeight: '400', top: true, offsetY: true }"
+                  >
+                    <template v-slot:selection="{ item, index }">
+                      <v-chip v-if="index < 2" x-small>
+                        <span>{{ item.text }}</span>
+                      </v-chip>
+
+                      <span v-if="index === 2" class="grey--text caption">
+                        (+{{ selectedHeaders.length - 2 }} others)
+                      </span>
+                    </template>
+                  </v-select>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+
             <!-- ADD BUTTONS -->
             <v-btn
-              color="indigo lighten-1"
+              :color="DTbtnColor"
               class=" ma-1"
               outlined
               small
@@ -151,6 +203,7 @@
             x-small
             class="mr-2 blue darken-1  pa-1 shrink   white--text rounded"
             title="View Projects"
+            @click="onView(item)"
           >
             mdi-eye
           </v-icon>
@@ -179,8 +232,19 @@
 
         <!-- FOOTER PAGE TEXT -->
         <template v-slot:[`footer.page-text`]>
-          <div class="d-flex align-center dt_footer  ">
+          <div class="d-flex align-center justify-end dt_footer  ">
             <p class="pt-5">Projects Per Page: {{ dtPagination.per_page }}</p>
+
+            <!-- <v-col cols="12" sm="2">
+              <v-select
+                v-model="selectedPageCount"
+                :items="pageCount"
+                dense
+                hide-details=""
+                hide-selected
+                @change="onPaginateChange"
+              ></v-select>
+            </v-col> -->
 
             <p class="pt-5 ml-4">
               Projects: {{ dtPagination.from }} - {{ dtPagination.total }}
@@ -214,7 +278,7 @@
       scrollable
     >
       <v-card>
-        <v-card-title class="indigo lighten-4">
+        <v-card-title :class="ModelHeaderColor">
           <span class="headline ">
             PRIVILAGES
           </span>
@@ -371,7 +435,7 @@
       scrollable
     >
       <v-card>
-        <v-card-title class="indigo lighten-4">
+        <v-card-title :class="ModelHeaderColor">
           <span class="headline ">
             {{ formTitle }}
             <span v-if="editedIndex != -1">
@@ -824,7 +888,12 @@
                 </v-col>
 
                 <!-- ADD PRIVILLAGE -->
-                <v-col cols="12" sm="6" md="3">
+                <v-col
+                  cols="12"
+                  sm="6"
+                  md="3"
+                  v-if="editedItem.id !== user.id && editedItem.role != 1"
+                >
                   <v-btn block text outlined @click="onPrivillage">
                     ADD PRIVILLAGE
                   </v-btn>
@@ -998,7 +1067,7 @@
             Cancel
           </v-btn>
           <v-btn color="blue darken-1" text @click="save">
-            Save
+            {{ submitBtn }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -1007,7 +1076,7 @@
     <!-- DELETE MODEL FORM -->
     <v-dialog v-model="formDeleteModel" max-width="550" persistent>
       <v-card>
-        <v-card-title class="headline blue-grey lighten-2">
+        <v-card-title :class="ModelHeaderColor">
           DELETE CONFIRMATION
 
           <v-spacer></v-spacer>
@@ -1032,6 +1101,58 @@
       </v-card>
     </v-dialog>
 
+    <!-- VIEW MODEL -->
+
+    <v-dialog
+      v-model="viewModel"
+      max-width="700px"
+      persistent
+      content-class="user-privilage-dialog"
+      scrollable
+    >
+      <v-card>
+        <v-card-title :class="ModelHeaderColor">
+          <strong class="  ">
+            {{ editedItem.name }}
+          </strong>
+          <v-spacer></v-spacer>
+          <v-icon @click="viewModel = false">mdi-close</v-icon>
+        </v-card-title>
+
+        <v-card-text style="height: 350px;">
+          <v-row class="mt-2">
+            <v-col
+              md="4"
+              sm="4"
+              cols="4"
+              class=" d-flex justify-center align-center"
+            >
+              <v-avatar size="175">
+                <img
+                  :src="
+                    'http://localhost:8000/storage/' + editedItem.profilePic
+                  "
+                  v-if="editedItem.profilePic"
+                />
+                <v-img src="../../assets/default_logo.jpeg" v-else></v-img>
+              </v-avatar>
+            </v-col>
+
+            <v-col md="8" sm="8" cols="8" class="">
+              <p>{{ editedItem.name }}</p>
+              <p>{{ editedItem.email }}</p>
+              <p>{{ editedItem.phone }}</p>
+              <p>{{ editedItem.email }}</p>
+              <p>{{ editedItem.address }}</p>
+              <p>{{ editedItem.nic }}</p>
+              <p>{{ editedItem.gender }}</p>
+              <p>{{ editedItem.company }}</p>
+            </v-col>
+          </v-row>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+
     <!-- NOTIFICATION -->
     <v-snackbar
       v-model="snackbar.show"
@@ -1041,7 +1162,10 @@
       outlined
       right
     >
-      <!-- <v-icon small color="red">mdi-close</v-icon> -->
+      <v-icon small color="red" left v-if="snackbar.color == 'red'"
+        >mdi-close-circle</v-icon
+      >
+      <v-icon small color="green" left v-else>mdi-check-circle</v-icon>
       {{ snackbar.message }}
     </v-snackbar>
   </div>
@@ -1057,7 +1181,9 @@ export default {
   data() {
     return {
       url: {
-        store: "register",
+        register: "register",
+        users: "users/",
+
         fetch: "users",
         show: "users/",
         delete: "users/",
@@ -1067,32 +1193,45 @@ export default {
       formAddmModel: false,
       formDeleteModel: false,
       privillageModel: false,
+      viewModel: false,
       dobDatePicker: false,
+      superAdmin: false,
+
+      DTbtnColor: "indigo lighten-1 ",
+      ModelHeaderColor: "indigo lighten-4",
 
       appAccess: 0, //ACCESS PERMISSION FOR Users
       existData: -1,
       editedIndex: -1,
       accessClearIndex: 0,
+
       search: "",
       moment: moment,
 
       profileImg: "",
 
       defaultItem: {},
+      user: {},
+
+      headers: [],
+      selectedHeaders: [],
+      Users: [],
+
       snackbar: {
-        show: true,
+        show: false,
         time: 3000,
-        message: "test notification",
-        color: "red",
+        message: "",
+        color: "",
       },
       privillage: {
-        0: 0,
-        1: 0,
-        2: 0,
-        3: 0,
-        4: 0,
+        // 0: 0,
+        // 1: 0,
+        // 2: 0,
+        // 3: 0,
+        // 4: 0,
       },
       editedItem: {
+        id: "",
         name: "",
         email: "",
         phone: "",
@@ -1139,7 +1278,7 @@ export default {
       },
       pagination: {
         current: 1,
-        localCurrentPage: parseInt(localStorage.getItem("paginateKey")),
+        localCurrentPage: parseInt(localStorage.getItem("user_pk")),
         total: 1,
       },
       languageOptions: [
@@ -1185,7 +1324,6 @@ export default {
         { option: "FULL ACCESS", val: 4 },
       ],
       genderOptions: ["MALE", "FEMALE", "OTHERS"],
-      Users: [],
       headersMap: [
         {
           text: "#",
@@ -1258,26 +1396,27 @@ export default {
     formTitle() {
       return this.editedIndex === -1 ? "New User" : "Edit ";
     },
+    submitBtn() {
+      return this.editedIndex === -1 ? "SAVE" : "UPDATE";
+    },
+    showHeaders() {
+      return this.headers.filter((f) => this.selectedHeaders.includes(f));
+    },
+  },
+  created() {
+    localStorage.setItem("user_pk", 1);
+    this.onInitialize();
+    this.headers = Object.values(this.headersMap);
+    this.selectedHeaders = this.headers;
   },
   beforeMount() {
     this.onAccessPermission();
-    this.onInitialize();
-    // this.ddTest();
   },
   mounted() {
     this.dataTableLoadingIndicator();
-
-    // a.forEach(element => {
-    //  console.log(element)
-    // });
   },
 
   methods: {
-    ddTest(e) {
-      console.log("%cDD LOG", "color:red", this.Users[0]);
-      this.formAddmModel = true;
-      console.log("selected Role", e);
-    },
     dataTableLoadingIndicator() {
       console.log("USER COUNT - MOUNTED", this.Users.length);
       if (this.Users.length >= 0) {
@@ -1291,71 +1430,156 @@ export default {
       this.privillageModel = true;
     },
     save() {
-      if (this.editedIndex > -1) {
-        console.log("triggered update function");
-      } else {
-        this.$refs.form.validate().then((success) => {
-          if (!success) {
-            return;
-          }
-          let access = this.privillageSubmit();
-          console.log(access);
-          console.log("triggered store function");
-          const store = {
-            name: this.editedItem.name,
-            email: this.editedItem.email,
-            password: "password",
-            address: this.editedItem.address,
-            phone: this.editedItem.phone,
-            company: this.editedItem.company,
-            nic: this.editedItem.nic,
-            gender: this.editedItem.gender,
-            access: access,
-            attempts: this.editedItem.attempts,
-            role: this.editedItem.role,
-            status: this.editedItem.status,
-            profilePic: this.profileImg,
-            access: this.privillageSubmit(),
-            dob: moment(this.editedItem.dob).format("X"),
-            city: this.editedItem.city,
-            location: this.editedItem.location,
-            zip: this.editedItem.zipCode,
-            account_number: this.editedItem.accountNumber,
-            user_type: this.editedItem.userType,
-            opening_balance: this.editedItem.openingBalance,
-            balance: this.editedItem.Balance,
-            credit_limit: this.editedItem.CreditLimit,
-            basic_salary: this.editedItem.basicSalary,
-            monthly_target: this.editedItem.mothlyTargetAmount,
-            target_percentage: this.editedItem.mothlyTargetPercentage,
-            language: this.editedItem.language,
-            payment_terms: 0,
-            sales_rep_id: 0,
-          };
+      this.$refs.form.validate().then((success) => {
+        if (!success) {
+          return;
+        }
+        let access = this.privillageSubmit();
 
-          console.log("STO   RING DATA >>", store);
-
+        const obj = {
+          id: this.editedItem.id,
+          name: this.editedItem.name,
+          email: this.editedItem.email,
+          password: "password",
+          address: this.editedItem.address,
+          phone: this.editedItem.phone,
+          company: this.editedItem.company,
+          nic: this.editedItem.nic,
+          gender: this.editedItem.gender,
+          access: access,
+          attempts: this.editedItem.attempts,
+          role: this.editedItem.role,
+          status: this.editedItem.status,
+          profilePic: this.profileImg,
+          access: this.privillageSubmit(),
+          dob: moment(this.editedItem.dob).format("X"),
+          city: this.editedItem.city,
+          location: this.editedItem.location,
+          zip: this.editedItem.zipCode,
+          account_number: this.editedItem.accountNumber,
+          user_type: this.editedItem.userType,
+          opening_balance: this.editedItem.openingBalance,
+          balance: this.editedItem.Balance,
+          credit_limit: this.editedItem.CreditLimit,
+          basic_salary: this.editedItem.basicSalary,
+          monthly_target: this.editedItem.mothlyTargetAmount,
+          target_percentage: this.editedItem.mothlyTargetPercentage,
+          language: this.editedItem.language,
+          payment_terms: 0,
+          sales_rep_id: 0,
+        };
+        if (this.editedIndex > -1) {
+          // UPDATE USER
           this.$http
-            .post(this.url.store, store)
+            .put(this.url.users + obj.id, obj)
+            .then((result) => {
+              console.log("update console", result);
+              this.onClear();
+              this.snackbar = {
+                show: true,
+                message: "User has been updated successfully",
+                color: "green",
+              };
+            })
+            .catch((err) => {
+              this.snackbar = {
+                show: true,
+                message: "Something went wrong on update... please try again",
+                color: "red",
+              };
+              this.$gl.Unauthorized(err.response.status);
+            });
+        } else {
+          // STORE USER
+          this.$http
+            .post(this.url.register, obj)
             .then((result) => {
               console.log(result);
+              this.onInitialize();
+              this.onClear();
+              this.snackbar = {
+                show: true,
+                message: "User has been added successfully",
+                color: "green",
+              };
             })
-            .catch((err) => {});
-        });
-      }
+            .catch((err) => {
+              this.snackbar = {
+                show: true,
+                message: "Something went wrong on save... please try again",
+                color: "red",
+              };
+            });
+        }
+      });
     },
     onInitialize() {
       this.Users.splice(0);
 
       this.$http
-        .get(this.url.fetch)
+        .get("users?page=" + localStorage.getItem("user_pk"))
         .then((response) => {
-          response.data.users.forEach((element) => {
-            // console.log(element);
+          console.log(response.data.users);
+
+          this.dtPagination = {
+            first_page_url: response.data.users.first_page_url,
+            from: response.data.users.from,
+            last_page: response.data.users.last_page,
+            last_page_url: response.data.users.last_page_url,
+            next_page_url: response.data.users.next_page_url,
+            path: response.data.users.path,
+            per_page: response.data.users.per_page,
+            prev_page_url: response.data.users.prev_page_url,
+            to: response.data.users.to,
+            total: response.data.users.total,
+            links: response.data.users.links.forEach((element) => {
+              element;
+            }),
+          };
+          this.pagination.total = response.data.users.last_page;
+
+          response.data.users.data.forEach((element) => {
             this.Users.push(element);
           });
         })
-        .catch((err) => {});
+        .catch((err) => {
+          if (err.response) {
+            this.$gl.Unauthorized(err.response.status);
+          }
+        });
+    },
+    onPaginateChange(e) {
+      this.Users.splice(0);
+      this.$http
+        .get("users/paginate/" + e)
+        .then((response) => {
+          console.log(response.data);
+          this.dtPagination = {
+            first_page_url: response.data.users.first_page_url,
+            from: response.data.users.from,
+            last_page: response.data.users.last_page,
+            last_page_url: response.data.users.last_page_url,
+            next_page_url: response.data.users.next_page_url,
+            path: response.data.users.path,
+            per_page: response.data.users.per_page,
+            prev_page_url: response.data.users.prev_page_url,
+            to: response.data.users.to,
+            total: response.data.users.total,
+            links: response.data.users.links.forEach((element) => {
+              element;
+            }),
+          };
+          this.pagination.total = response.data.users.last_page;
+
+          response.data.users.data.forEach((element) => {
+            this.Users.push(element);
+          });
+        })
+        .catch((err) => {
+          if (err.response) {
+            this.$gl.Unauthorized(err.response.status);
+          }
+        });
     },
     privillageCancel() {
       this.privillageModel = false;
@@ -1444,6 +1668,11 @@ export default {
           console.log("Error Fround. User Not Deleted");
         });
     },
+    onView(e) {
+      console.log(e);
+      this.viewModel = true;
+      this.editedItem = Object.assign(e);
+    },
     onEditItem(e) {
       console.log("edited item ->", e);
 
@@ -1463,6 +1692,7 @@ export default {
 
         this.editedIndex = this.Users.indexOf(e);
         this.editedItem = Object.assign({
+          id: i.id,
           name: i.name,
           email: i.email,
           phone: i.phone,
@@ -1503,12 +1733,48 @@ export default {
     },
     closeForm() {
       this.formAddmModel = false;
-
-      this.editedItem = Object.assign({}, this.defaultItem);
-      this.editedIndex = -1;
+    },
+    onClear() {
+      this.$nextTick(() => {
+        this.formAddmModel = false;
+        this.$refs.form.reset();
+        this.editedItem = Object.assign({
+          id: "",
+          name: "",
+          email: "",
+          phone: "",
+          address: "",
+          nic: "",
+          gender: "",
+          company: "",
+          attempts: "5",
+          access: "",
+          accessUrl: "",
+          role: "",
+          status: "",
+          profilePic: [],
+          profileImg: [],
+          dob: "",
+          city: "",
+          location: "",
+          zipCode: "",
+          accountNumber: "",
+          userType: "",
+          openingBalance: "",
+          Balance: "",
+          CreditLimit: "",
+          basicSalary: "",
+          language: "",
+          mothlyTargetAmount: "",
+          mothlyTargetPercentage: "",
+          profileUploadShow: true,
+          profileViewerShow: false,
+          profileEditShow: false,
+        });
+        this.editedIndex = -1;
+      });
     },
     onNewDialog() {
-      console.log("Add New Form");
       this.formAddmModel = true;
       this.accessClearIndex = 0;
 
@@ -1522,11 +1788,26 @@ export default {
     },
     onSearch(e) {
       console.log("onSearch function", e);
+      this.dataTableLoading = true;
+      if (this.search.length > 0) {
+        this.$http.get(this.url.users + "search/" + e).then((response) => {
+          console.log(response.data);
+          this.Users.splice(0);
+          response.data.users.forEach((element) => {
+            this.Users.push(element);
+          }, 4000);
+          this.dataTableLoading = false;
+        });
+      } else {
+        this.Users.splice(0);
+        this.onInitialize();
+        this.dataTableLoading = false;
+        this.existData = 1;
+      }
     },
     onPageChange(e) {
-      // console.log(e)
-      localStorage.setItem("paginateKey", e);
-      this.paginateData();
+      localStorage.setItem("user_pk", e);
+      this.onInitialize();
     },
     focusSearchKey() {
       console.log("a");
@@ -1564,7 +1845,10 @@ export default {
     },
     onAccessPermission() {
       let access = JSON.parse(localStorage.getItem("token_access"));
+      let user = JSON.parse(localStorage.getItem("user"));
       this.appAccess = access[4];
+
+      this.user = Object.assign(user);
     },
   },
 };

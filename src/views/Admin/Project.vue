@@ -198,7 +198,7 @@
               v-shortkey="['alt', 'n']"
               @shortkey="newDialog()"
               @click="newDialog"
-               v-show="appAccess >= 2"
+              v-show="appAccess >= 2"
             >
               <!-- v-if="access_role != 1 && access_role != 0" -->
               <v-icon left dark class=""> mdi-plus </v-icon>
@@ -782,7 +782,7 @@
             title="Edit Projects"
             class="mr-2 orange darken-1 pa-1 white--text rounded"
             @click="editItem(item)"
-             v-show="appAccess >= 3"
+            v-show="appAccess >= 3"
           >
             mdi-pencil
           </v-icon>
@@ -794,7 +794,7 @@
             title="Delete Projects"
             class="red darken-1 pa-1 white--text rounded"
             @click="deleteItem(item)"
-             v-show="appAccess >= 4"
+            v-show="appAccess >= 4"
           >
             mdi-delete
           </v-icon>
@@ -1267,6 +1267,7 @@ export default {
     dialogDelete: false,
     picker1: false,
     picker2: false,
+    superAdmin: false,
 
     appAccess: 0, //ACCESS PERMISSION FOR Users
 
@@ -1457,7 +1458,7 @@ export default {
   },
   mounted() {
     localStorage.setItem("paginateKey", 1);
-     },
+  },
 
   methods: {
     expandTable() {

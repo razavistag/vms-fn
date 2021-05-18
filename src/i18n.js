@@ -35,7 +35,7 @@ export default new VueI18n({
 
       // DASHBOARD PAGE
       dashboard: {
-        title: "dashboard",
+        title: "Dashboard",
       },
 
       // PROJECT PAGE

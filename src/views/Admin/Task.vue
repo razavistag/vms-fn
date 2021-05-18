@@ -132,6 +132,7 @@
               v-shortkey="['alt', 'n']"
               @shortkey="newDialog()"
               @click="newDialog"
+              v-show="appAccess >= 2"
             >
               <v-icon left dark class=""> mdi-plus </v-icon>
 
@@ -171,7 +172,12 @@
                             {{ AxiosProgressCount }}
                           </div> -->
 
-                          <v-progress-linear v-model="AxiosProgressCount" height="15" class="w-50" v-show="AxiosProgressCount != 0">
+                          <v-progress-linear
+                            v-model="AxiosProgressCount"
+                            height="15"
+                            class="w-50"
+                            v-show="AxiosProgressCount != 0"
+                          >
                             <span>{{ AxiosProgressCount }}</span>
                           </v-progress-linear>
                           <!-- REMOVE ROW BUTTON -->
@@ -551,6 +557,7 @@
             small
             title="Edit Projects"
             class="mr-2 orange darken-1 pa-1 white--text rounded"
+            v-show="appAccess >= 3"
           >
             mdi-pencil
           </v-icon>
@@ -560,6 +567,7 @@
             small
             title="Delete Projects"
             class="red darken-1 pa-1 white--text rounded"
+            v-show="appAccess >= 4"
           >
             mdi-delete
           </v-icon>
@@ -614,6 +622,7 @@ export default {
     search: "",
     AxiosProgressCount: 0,
     uploaded: 0,
+    appAccess: 0, //ACCESS PERMISSION FOR Users
 
     selectedHeaders: [],
     headers: [],
@@ -982,6 +991,11 @@ export default {
         this.Tasks.push(this.editedItem);
       }
       // this.close();
+    },
+
+    onAccessPermission() {
+      let access = JSON.parse(localStorage.getItem("token_access"));
+      this.appAccess = access[3];
     },
   },
 };
