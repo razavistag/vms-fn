@@ -1457,12 +1457,7 @@ export default {
   },
   mounted() {
     localStorage.setItem("paginateKey", 1);
-    // let helper = this.$helper.apiGet();
-    // console.log("From Helper", helper);
-    // let gl = this.$gl;
-    // console.log('from helper',this.$gl.projectURL);
-    // this.$refs.searchbar_ref.$refs.input.focus();
-  },
+     },
 
   methods: {
     expandTable() {

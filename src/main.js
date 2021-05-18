@@ -9,7 +9,7 @@ import VeeValidate from "vee-validate";
 import axios from "axios";
 import Croppa from "vue-croppa";
 import moment from "moment";
-import Helper from "./helpers/index";
+
 import global from "./helpers/global";
 import vueShortkey from "vue-shortkey";
 import VAnimateCss from "v-animate-css";
@@ -33,25 +33,21 @@ Vue.use(VAnimateCss);
 
 localStorage.setItem("fullScreen", 0);
 const base = axios.create({
- 
   baseURL: "http://localhost:8000/",
   // baseURL: "http://127.0.0.1:8000/",
   // baseURL: "http://13.58.106.113:334/api",
   // baseURL: "https://13.58.106.113/api",
- 
 });
 
 Vue.prototype.$http = base;
-Vue.prototype.$helper = Helper;
 Vue.prototype.$gl = global;
 
- 
 //base.defaults.headers.common['Authorization'] = "Bearer " +localStorage.getItem("token");
-base.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-base.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
-base.defaults.headers.common['Access-Control-Allow-Methods'] = 'POST, GET, OPTIONS, PUT, DELETE';
- 
- 
+base.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
+base.defaults.headers.common["Access-Control-Allow-Origin"] = "*";
+base.defaults.headers.common["Access-Control-Allow-Methods"] =
+  "POST, GET, OPTIONS, PUT, DELETE";
+
 Vue.prototype.$http.interceptors.request.use(
   (config) => {
     let accessToken = localStorage.getItem("token");
@@ -60,7 +56,7 @@ Vue.prototype.$http.interceptors.request.use(
         {
           Authorization: `Bearer ${accessToken}`,
           withCredentials: true,
-          credentials: 'same-origin',
+          credentials: "same-origin",
         },
         config.headers
       );
