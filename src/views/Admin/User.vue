@@ -53,6 +53,42 @@
             </v-toolbar-title>
 
             <v-divider class="mx-4" inset vertical></v-divider>
+
+            <v-menu bottom right :close-on-content-click="false">
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn icon small v-bind="attrs" v-on="on">
+                  <v-icon small>mdi-file-export</v-icon>
+                </v-btn>
+              </template>
+
+              <v-list>
+                <v-list-item-content
+                  v-for="(item, i) in excelTitles"
+                  :key="i"
+                  dense
+                  class="pl-4 pr-4 pt-0 pb-0 ma-0"
+                >
+                  <v-checkbox
+                    class="pa-0 ma-0  "
+                    hide-details=""
+                    v-model="selectedExcelTitle"
+                    :label="item"
+                    :value="item"
+                  ></v-checkbox>
+                </v-list-item-content>
+
+                <v-btn
+                  small
+                  @click="exportToExcel"
+                  :color="DTbtnColor"
+                  dark
+                  class="ma-4"
+                >
+                  EXPORT
+                </v-btn>
+              </v-list>
+            </v-menu>
+
             <v-spacer></v-spacer>
 
             <!-- SEARCH TEXT -->
@@ -1175,6 +1211,7 @@
 import DashboardLayout from "../../components/DashboardLayout";
 import { ValidationObserver, ValidationProvider } from "vee-validate";
 import moment from "moment";
+import { json2excel, excel2json } from "js2excel";
 
 export default {
   name: "User",
@@ -1230,6 +1267,8 @@ export default {
         // 3: 0,
         // 4: 0,
       },
+      selectedExcelTitle: ["id", "name", "email"],
+      excelTitles: ["id", "name", "email", "phone"],
       editedItem: {
         id: "",
         name: "",
@@ -1417,6 +1456,38 @@ export default {
   },
 
   methods: {
+    exportToExcel() {
+      console.log(this.selectedExcelTitle);
+
+      // this.Users.forEach((i) => {
+      //   // console.log({ e: element, v: i });
+      //   this.selectedExcelTitle.forEach((element) => {
+      //     // console.log(element);
+      //     console.log({ e: element, v: i.id });
+      //   });
+      // });
+
+      this.selectedExcelTitle;
+
+      let data = [];
+      this.Users.forEach((element) => {
+        data.push({
+          c_id: element.id,
+          c_name: element.name,
+          c_email: element.name,
+          c_email: element.name,
+        });
+      });
+      // try {
+      //   json2excel({
+      //     data,
+      //     name: "sc",
+      //     formateDate: "yyyy/mm/dd",
+      //   });
+      // } catch (e) {
+      //   console.error("export error");
+      // }
+    },
     dataTableLoadingIndicator() {
       console.log("USER COUNT - MOUNTED", this.Users.length);
       if (this.Users.length >= 0) {
