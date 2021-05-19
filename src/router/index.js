@@ -43,8 +43,8 @@ const routes = [
     component: Project,
     meta: { AuthRequired: true },
     beforeEnter: (to, from, next) => {
-      let access = JSON.parse(localStorage.getItem("token_access"));
-      if (access[1] != 0) {
+      let auth = global.AccessCheck("project");
+      if (auth == 1) {
         next();
       } else {
         next({
@@ -59,8 +59,8 @@ const routes = [
     component: System,
     meta: { AuthRequired: true },
     beforeEnter: (to, from, next) => {
-      let access = JSON.parse(localStorage.getItem("token_access"));
-      if (access[2] != 0) {
+      let auth = global.AccessCheck("systems");
+      if (auth == 1) {
         next();
       } else {
         next({
@@ -75,8 +75,8 @@ const routes = [
     component: Task,
     meta: { AuthRequired: true },
     beforeEnter: (to, from, next) => {
-      let access = JSON.parse(localStorage.getItem("token_access"));
-      if (access[3] != 0) {
+      let auth = global.AccessCheck("tasks");
+      if (auth == 1) {
         next();
       } else {
         next({
@@ -91,12 +91,10 @@ const routes = [
     component: User,
     meta: { AuthRequired: true },
     beforeEnter: (to, from, next) => {
-      let access = JSON.parse(localStorage.getItem("token_access"));
-      if (access[4] != 0) {
-        console.log("users allow", true);
+      let auth = global.AccessCheck("users");
+      if (auth == 1) {
         next();
       } else {
-        console.log("users refuse", false);
         next({
           path: "/dashboard",
         });

@@ -13,9 +13,13 @@
       {{ $t("dashboard.title") }}
       <v-spacer></v-spacer>
 
+      <v-btn small icon color="white" dark title="Choose Theme">
+        <v-icon small>mdi-select-color</v-icon>
+      </v-btn>
+
       <v-menu top close-on-click>
         <template v-slot:activator="{ on, attrs }">
-          <v-btn color="white" dark v-bind="attrs" v-on="on" icon>
+          <v-btn color="white" dark v-bind="attrs" small v-on="on" icon>
             <v-icon small>mdi-translate</v-icon>
           </v-btn>
         </template>
@@ -48,6 +52,7 @@
       >
         <v-icon>mdi-arrow-expand</v-icon>
       </v-btn>
+
       <v-btn
         id="logoutBtn"
         small
@@ -58,6 +63,14 @@
       >
         <v-icon small>mdi-logout</v-icon>
       </v-btn>
+
+      <v-avatar size="22" color="white" class="pa-1 ma-1">
+        <img
+          :src="'http://localhost:8000/storage/' + user.profile"
+          v-if="user.profile"
+        />
+        <v-img src="../assets/default_logo.jpeg" v-else></v-img>
+      </v-avatar>
     </v-app-bar>
 
     <!-- desktop navigation on hover -->
@@ -69,7 +82,30 @@
       mini-variant-width="40"
       class="navigation_drawer_desktop"
       expand-on-hover
+      dark
     >
+      <!-- User Information -->
+
+      <v-list-item class="px-2">
+        <v-list-item-avatar size="30">
+          <v-img
+            :src="'http://localhost:8000/storage/' + user.profile"
+            v-if="user.profile"
+          ></v-img>
+
+          <v-img src="../assets/default_logo.jpeg" v-else></v-img>
+        </v-list-item-avatar>
+
+        <v-list-item-title>
+          {{ user.name }}
+        </v-list-item-title>
+
+        <v-btn icon @click.stop="mini = !mini">
+          <v-icon small>mdi-pencil</v-icon>
+        </v-btn>
+      </v-list-item>
+
+      <v-divider></v-divider>
       <!-- expand-on-hover -->
       <v-list dense nav class="pa-0">
         <v-list-item
@@ -80,7 +116,7 @@
           class="text-decoration-none"
         >
           <v-list-item-icon>
-            <v-icon class="gray--text" small>{{ item.icon }}</v-icon>
+            <v-icon class="gray--text pa-1" small>{{ item.icon }}</v-icon>
           </v-list-item-icon>
 
           <v-list-item-content>
@@ -131,38 +167,15 @@ export default {
   name: "DashboardLayout",
   data() {
     return {
-      headerColor: "primary",
-      sideBar: "indigo lighten-4",
+      headerColor: "blue-grey darken-1",
+      sideBar: "blue-grey darken-3",
+
       expand_on_hover: true,
       mobileDrawer: false,
       access_permission: false,
       Languages: [{ lan: "English" }, { lan: "spanish" }],
-      items: [
-        // {
-        //   id: 0,
-        //   title: "DASHBOARD",
-        //   icon: "mdi-home",
-        //   to: "/dashboard",
-        // },
-        // {
-        //   id: 1,
-        //   title: "PROJECTS",
-        //   icon: "mdi-image-filter-center-focus-strong",
-        //   to: "/projects",
-        // },
-        // {
-        //   id: 2,
-        //   title: "SYSTEMS",
-        //   icon: "mdi-server",
-        //   to: "systems",
-        // },
-        // {
-        //   id: 3,
-        //   title: "TASKS",
-        //   icon: "mdi-clipboard-list",
-        //   to: "tasks",
-        // },
-      ],
+      user: {},
+      items: [],
       fullscreen: false,
     };
   },
@@ -170,11 +183,17 @@ export default {
     this.checkingRoutes();
   },
   mounted() {
-     
     this.checkFullScreen();
+    this.userInfomration();
   },
-  
+
   methods: {
+    userInfomration() {
+      let i = JSON.parse(localStorage.getItem("user"));
+      this.user = Object.assign(i);
+
+      console.log(this.user);
+    },
     checkingRoutes() {
       // modules   are indexed
       // 0 - dashboard

@@ -389,7 +389,6 @@
             </v-card>
           </v-col>
         </v-row>
-        <v-btn @click="tabLogin" id="pressBtn">press</v-btn>
       </v-container>
     </div>
   </div>
@@ -415,7 +414,7 @@ export default {
       tab_register: false,
       email: "admin@gmail.com",
       password: "password",
-      
+
       // email: "",
       // password: "",
       rememberMe: false,
@@ -488,6 +487,10 @@ export default {
 
               localStorage.setItem("token", response.data.access_token);
               localStorage.setItem("token_access", response.data.user_access);
+              localStorage.setItem(
+                "user",
+                JSON.stringify(response.data.user_information)
+              );
               localStorage.setItem(
                 "token_access_url",
                 response.data.user_access_url
