@@ -1457,36 +1457,60 @@ export default {
 
   methods: {
     exportToExcel() {
-      console.log(this.selectedExcelTitle);
+      // console.log(this.selectedExcelTitle);
 
-      // this.Users.forEach((i) => {
-      //   // console.log({ e: element, v: i });
+      // // this.Users.forEach((i) => {
+      // //   // console.log({ e: element, v: i });
+      // //   this.selectedExcelTitle.forEach((element) => {
+      // //     // console.log(element);
+      // //     console.log({ e: element, v: i.id });
+      // //   });
+      // // });
+      // var jsonData = {};
+      // var arr = [];
+      // this.selectedExcelTitle.forEach((element) => {
+      //   var columnName = element;
+      //   jsonData[columnName] = "123";
+      // });
+
+      // this.Users.forEach((e) => {
+      //   console.log(e.name);
       //   this.selectedExcelTitle.forEach((element) => {
-      //     // console.log(element);
-      //     console.log({ e: element, v: i.id });
+      //     jsonData[id] = e.id;
+      //     jsonData[name] = e.id;
       //   });
       // });
 
-      this.selectedExcelTitle;
+      // arr.push(jsonData);
+
+      // console.log("arr", arr);
+      // let check_id = this.selectedExcelTitle.find((d) => d === "id");
+      // let check_name = this.selectedExcelTitle.find((d) => d === "name");
 
       let data = [];
-      this.Users.forEach((element) => {
+      this.Users.forEach((i) => {
         data.push({
-          c_id: element.id,
-          c_name: element.name,
-          c_email: element.name,
-          c_email: element.name,
+          id: i.id,
+          name: i.name,
+          email: i.email,
+          phone: i.phone,
+          address: i.address,
+          nic: i.nic,
+          gender: i.gender,
+          company: i.company,
+          attempts: i.attempts,
         });
       });
-      // try {
-      //   json2excel({
-      //     data,
-      //     name: "sc",
-      //     formateDate: "yyyy/mm/dd",
-      //   });
-      // } catch (e) {
-      //   console.error("export error");
-      // }
+
+      try {
+        json2excel({
+          data,
+          name: "sc",
+          formateDate: "yyyy/mm/dd",
+        });
+      } catch (e) {
+        console.error("export error");
+      }
     },
     dataTableLoadingIndicator() {
       console.log("USER COUNT - MOUNTED", this.Users.length);
