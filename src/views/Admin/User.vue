@@ -54,6 +54,7 @@
 
             <v-divider class="mx-4" inset vertical></v-divider>
 
+            <!-- SELECT OPTION FOR EXPORT TO EXCEL -->
             <v-menu bottom right :close-on-content-click="false">
               <template v-slot:activator="{ on, attrs }">
                 <v-btn icon small v-bind="attrs" v-on="on">
@@ -128,7 +129,7 @@
               </span>
             </v-btn>
 
-            <!-- HIDE COLUMNS-->
+            <!--HIDE COLUMNS-->
             <v-menu top :close-on-content-click="false">
               <template v-slot:activator="{ on, attrs }">
                 <v-btn
@@ -147,31 +148,21 @@
                   </span>
                 </v-btn>
               </template>
-
-              <v-list flat>
-                <v-list-item class="fixed">
-                  <v-select
-                    v-model="selectedHeaders"
-                    :items="headers"
-                    label="Display Columns"
-                    multiple
-                    return-object
-                    class=""
+              <v-list>
+                <v-list-item-content
+                  v-for="(item, i) in headers"
+                  :key="i"
+                  dense
+                  class="pl-4 pr-4 pt-0 pb-0 ma-0"
+                >
+                  <v-checkbox
+                    class="pa-0 ma-0  "
                     hide-details=""
-                    dense
-                    :menu-props="{ maxHeight: '400', top: true, offsetY: true }"
-                  >
-                    <template v-slot:selection="{ item, index }">
-                      <v-chip v-if="index < 2" x-small>
-                        <span>{{ item.text }}</span>
-                      </v-chip>
-
-                      <span v-if="index === 2" class="grey--text caption">
-                        (+{{ selectedHeaders.length - 2 }} others)
-                      </span>
-                    </template>
-                  </v-select>
-                </v-list-item>
+                    v-model="selectedHeaders"
+                    :label="item.text"
+                    :value="item.value"
+                  ></v-checkbox>
+                </v-list-item-content>
               </v-list>
             </v-menu>
 
@@ -1138,7 +1129,6 @@
     </v-dialog>
 
     <!-- VIEW MODEL -->
-
     <v-dialog
       v-model="viewModel"
       max-width="700px"
@@ -1198,9 +1188,9 @@
       outlined
       right
     >
-      <v-icon small color="red" left v-if="snackbar.color == 'red'"
-        >mdi-close-circle</v-icon
-      >
+      <v-icon small color="red" left v-if="snackbar.color == 'red'">
+        mdi-close-circle
+      </v-icon>
       <v-icon small color="green" left v-else>mdi-check-circle</v-icon>
       {{ snackbar.message }}
     </v-snackbar>
@@ -1244,7 +1234,6 @@ export default {
 
       search: "",
       moment: moment,
-
       profileImg: "",
 
       defaultItem: {},
@@ -1253,6 +1242,8 @@ export default {
       headers: [],
       selectedHeaders: [],
       Users: [],
+      selectedExcelTitle: [],
+      excelTitles: [],
 
       snackbar: {
         show: false,
@@ -1267,8 +1258,6 @@ export default {
         // 3: 0,
         // 4: 0,
       },
-      selectedExcelTitle: ["id", "name", "email"],
-      excelTitles: ["id", "name", "email", "phone"],
       editedItem: {
         id: "",
         name: "",
@@ -1439,14 +1428,13 @@ export default {
       return this.editedIndex === -1 ? "SAVE" : "UPDATE";
     },
     showHeaders() {
-      return this.headers.filter((f) => this.selectedHeaders.includes(f));
+      return this.headers.filter((f) => this.selectedHeaders.includes(f.value));
     },
   },
   created() {
     localStorage.setItem("user_pk", 1);
     this.onInitialize();
-    this.headers = Object.values(this.headersMap);
-    this.selectedHeaders = this.headers;
+    this.datatableColumnVisibility();
   },
   beforeMount() {
     this.onAccessPermission();
@@ -1456,56 +1444,58 @@ export default {
   },
 
   methods: {
+    datatableColumnVisibility() {
+      this.headersMap.forEach((element) => {
+        this.headers.push(element);
+        this.selectedHeaders.push(element.value);
+      });
+    },
     exportToExcel() {
-      // console.log(this.selectedExcelTitle);
-
-      // // this.Users.forEach((i) => {
-      // //   // console.log({ e: element, v: i });
-      // //   this.selectedExcelTitle.forEach((element) => {
-      // //     // console.log(element);
-      // //     console.log({ e: element, v: i.id });
-      // //   });
-      // // });
-      // var jsonData = {};
-      // var arr = [];
-      // this.selectedExcelTitle.forEach((element) => {
-      //   var columnName = element;
-      //   jsonData[columnName] = "123";
-      // });
-
-      // this.Users.forEach((e) => {
-      //   console.log(e.name);
-      //   this.selectedExcelTitle.forEach((element) => {
-      //     jsonData[id] = e.id;
-      //     jsonData[name] = e.id;
-      //   });
-      // });
-
-      // arr.push(jsonData);
-
-      // console.log("arr", arr);
-      // let check_id = this.selectedExcelTitle.find((d) => d === "id");
-      // let check_name = this.selectedExcelTitle.find((d) => d === "name");
-
-      let data = [];
-      this.Users.forEach((i) => {
-        data.push({
-          id: i.id,
-          name: i.name,
-          email: i.email,
-          phone: i.phone,
-          address: i.address,
-          nic: i.nic,
-          gender: i.gender,
-          company: i.company,
-          attempts: i.attempts,
+      let objects = [];
+      this.Users.forEach((element) => {
+        objects.push({
+          id: element.id,
+          name: element.name,
+          email: element.email,
+          company: element.company,
+          phone: element.phone,
+          address: element.address,
+          gender: element.gender,
+          role:
+            element.role == 0
+              ? "CLIENT"
+              : element.role == 1
+              ? "SUPER ADMIN"
+              : element.role == 2
+              ? "ADMIN"
+              : element.role == 3
+              ? "MANAGER"
+              : element.role == 4
+              ? "CASHIER"
+              : element.role == 5
+              ? "SALES REP"
+              : element.role == 6
+              ? "EMPLOYEE"
+              : element.role == 7
+              ? "MARKETING TEAM"
+              : null,
         });
       });
 
+      let jsonObject = objects;
+      let selectedArray = this.selectedExcelTitle;
+      let filteredJsonObject = jsonObject.map(function(entry) {
+        return selectedArray.reduce(function(res, key) {
+          res[key] = entry[key];
+          return res;
+        }, {});
+      });
+
+      let data = filteredJsonObject;
       try {
         json2excel({
           data,
-          name: "sc",
+          name: this.moment().unix()+ '_file',
           formateDate: "yyyy/mm/dd",
         });
       } catch (e) {
@@ -1608,9 +1598,21 @@ export default {
         }
       });
     },
+    onInitializeExportColumns() {
+      this.excelTitles = [
+        "id",
+        "name",
+        "email",
+        "company",
+        "phone",
+        "address",
+        "gender",
+        "role",
+      ];
+      this.selectedExcelTitle = this.excelTitles;
+    },
     onInitialize() {
       this.Users.splice(0);
-
       this.$http
         .get("users?page=" + localStorage.getItem("user_pk"))
         .then((response) => {
@@ -1632,10 +1634,10 @@ export default {
             }),
           };
           this.pagination.total = response.data.users.last_page;
-
           response.data.users.data.forEach((element) => {
             this.Users.push(element);
           });
+          this.onInitializeExportColumns();
         })
         .catch((err) => {
           if (err.response) {
@@ -1746,9 +1748,7 @@ export default {
     },
     onDeleteItem(e) {
       this.formDeleteModel = true;
-      this.editedItem = Object.assign(e);
-      // this.editedIndex = e.id;
-      console.log(e);
+      this.editedItem = Object.assign(e); 
     },
     onDeleteConfirm() {
       console.log("delete", this.editedIndex);
