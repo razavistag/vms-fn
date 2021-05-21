@@ -391,6 +391,21 @@
         </v-row>
       </v-container>
     </div>
+    <!-- NOTIFICATION -->
+    <v-snackbar
+      v-model="snackbar.show"
+      :timeout="snackbar.time"
+      :color="snackbar.color"
+      top
+      outlined
+      right
+    >
+      <v-icon small color="red" left v-if="snackbar.color == 'red'">
+        mdi-close-circle
+      </v-icon>
+      <v-icon small color="green" left v-else>mdi-check-circle</v-icon>
+      {{ snackbar.message }}
+    </v-snackbar>
   </div>
 </template>
 
@@ -413,7 +428,7 @@ export default {
       tab_login: false,
       tab_register: false,
       email: "admin@gmail.com",
-      password: "password",
+      password: "password123",
 
       // email: "",
       // password: "",
@@ -430,6 +445,12 @@ export default {
         address: "200, Akurana, Kandy",
         password: "password",
         passwordConfirm: "password",
+      },
+      snackbar: {
+        show: false,
+        time: 3000,
+        message: "",
+        color: "",
       },
       genderItems: ["MALE", "FEMALE", "OTHERS"],
       message: "",
@@ -458,7 +479,6 @@ export default {
     LoginSubmit() {
       this.$refs.form.validate().then((success) => {
         if (!success) {
-          // console.log("empty");
           return;
         }
 
@@ -470,12 +490,9 @@ export default {
         this.$http
           .post(uri, login)
           .then((response) => {
-            // console.log(response.data);
-            // console.log(response.data.message);
             this.message = response.data.message;
 
             if (this.rememberMe == true) {
-              // console.log("remember true");
               localStorage.setItem("Remember", true);
             }
 
@@ -502,23 +519,19 @@ export default {
                 .catch((e) => {
                   // console.log("catch on admin dashboard error", e);
                 });
-
-              // this.$nextTick(() => {
-              //   this.$refs.form.reset();
-              //   console.log("cleared rest");
-              // });
             }
           })
-          .catch((response) => {
-            console.log(response);
+          .catch((err) => {
+            console.log(err);
             this.message = "ACCOUNT NOT FOUND";
-
-            // console.log("access denied");
+            if (err.response) {
+              console.log(err.response.data.message);
+              this.notification(err.response.data.message, "red");
+            }
           });
 
         this.$nextTick(() => {
           this.$refs.form.reset();
-          // console.log("cleared next");
         });
       });
     },
@@ -584,6 +597,14 @@ export default {
           console.log("response");
           console.log("response");
         });
+    },
+
+    notification(m, c) {
+      this.snackbar = {
+        show: true,
+        message: m,
+        color: c,
+      };
     },
   },
 };
