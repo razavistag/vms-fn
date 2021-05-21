@@ -5,7 +5,7 @@
     <!-- DB TABLE -->
     <v-card color="pa-0" tile flat>
       <v-data-table
-        :headers="showHeaders"
+        :headers="headers"
         :items="Users"
         :fixed-header="true"
         :loading="dataTableLoading"
@@ -84,11 +84,66 @@
                   :color="DTbtnColor"
                   dark
                   class="ma-4"
+                  :loading="exportExecelLoading"
                 >
-                  EXPORT
+                  EXPORT EXCEL
                 </v-btn>
               </v-list>
             </v-menu>
+
+            <!-- SELECT OPTION FOR EXPORT TO PDF -->
+            <v-menu bottom right :close-on-content-click="false">
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn icon small v-bind="attrs" v-on="on">
+                  <v-icon small>mdi-file-pdf</v-icon>
+                </v-btn>
+              </template>
+
+              <v-list>
+                <v-list-item-content
+                  v-for="(item, i) in pdfTitles"
+                  :key="i"
+                  dense
+                  class="pl-4 pr-4 pt-0 pb-0 ma-0"
+                >
+                  <v-checkbox
+                    class="pa-0 ma-0  "
+                    hide-details=""
+                    v-model="selectedPDFTitle"
+                    :label="item"
+                    :value="item"
+                  ></v-checkbox>
+                </v-list-item-content>
+
+                <v-list dense>
+                  <v-subheader>Choose Layout</v-subheader>
+                  <v-radio-group
+                    v-model="pdfLayout"
+                    mandatory
+                    class="ma-0 ml-1 mr-1"
+                  >
+                    <v-radio label="landscape" value="l"></v-radio>
+                    <v-radio label="portrait" value="p"></v-radio>
+                  </v-radio-group>
+                </v-list>
+
+                <v-btn
+                  small
+                  @click="exportToPdf"
+                  :color="DTbtnColor"
+                  :loading="exportPDFLoading"
+                  dark
+                  class="mb-4 ml-4 mr-4"
+                >
+                  EXPORT PDF
+                </v-btn>
+              </v-list>
+            </v-menu>
+
+            <!-- COPY TO Clipboard -->
+            <v-btn icon small @click="onClipboard">
+              <v-icon small>mdi-clipboard-edit-outline</v-icon>
+            </v-btn>
 
             <v-spacer></v-spacer>
 
@@ -150,7 +205,7 @@
               </template>
               <v-list>
                 <v-list-item-content
-                  v-for="(item, i) in headers"
+                  v-for="(item, i) in headersList"
                   :key="i"
                   dense
                   class="pl-4 pr-4 pt-0 pb-0 ma-0"
@@ -161,6 +216,8 @@
                     v-model="selectedHeaders"
                     :label="item.text"
                     :value="item.value"
+                    multiple
+                    @change="onChangeColumn"
                   ></v-checkbox>
                 </v-list-item-content>
               </v-list>
@@ -1129,53 +1186,77 @@
     </v-dialog>
 
     <!-- VIEW MODEL -->
-    <v-dialog
-      v-model="viewModel"
-      max-width="700px"
-      persistent
-      content-class="user-privilage-dialog"
-      scrollable
-    >
-      <v-card>
-        <v-card-title :class="ModelHeaderColor">
-          <strong class="  ">
-            {{ editedItem.name }}
-          </strong>
-          <v-spacer></v-spacer>
-          <v-icon @click="viewModel = false">mdi-close</v-icon>
+    <v-dialog v-model="viewModel" max-width="374" scrollable>
+      <v-card class=" " max-width="374">
+        <img
+          :src="'http://localhost:8000/storage/' + editedItem.profilePic"
+          v-if="editedItem.profilePic"
+        />
+        <v-img src="../../assets/default_logo.jpeg" v-else></v-img>
+
+        <v-card-title class="     pt-2 pb-0">
+          <p class="chip_bar_on_complete" v-if="editedItem.status == 1"></p>
+          <p class="chip_bar_on_progress" v-else></p>
+          <p>{{ editedItem.name }}</p>
         </v-card-title>
 
-        <v-card-text style="height: 350px;">
-          <v-row class="mt-2">
-            <v-col
-              md="4"
-              sm="4"
-              cols="4"
-              class=" d-flex justify-center align-center"
-            >
-              <v-avatar size="175">
-                <img
-                  :src="
-                    'http://localhost:8000/storage/' + editedItem.profilePic
-                  "
-                  v-if="editedItem.profilePic"
-                />
-                <v-img src="../../assets/default_logo.jpeg" v-else></v-img>
-              </v-avatar>
-            </v-col>
+        <v-card-text class="ma-0  ">
+          <span v-if="editedItem.role == 0">
+            <v-icon left small>mdi-human-edit</v-icon> CLIENT
+          </span>
+          <span v-if="editedItem.role == 1">
+            <v-icon left small>mdi-human-edit</v-icon> SUPER ADMIN
+          </span>
+          <span v-if="editedItem.role == 2">
+            <v-icon left small>mdi-human-edit</v-icon> ADMIN
+          </span>
+          <span v-if="editedItem.role == 3">
+            <v-icon left small>mdi-human-edit</v-icon> MANAGER
+          </span>
+          <span v-if="editedItem.role == 4">
+            <v-icon left small>mdi-human-edit</v-icon> CASHIER
+          </span>
+          <span v-if="editedItem.role == 5">
+            <v-icon left small>mdi-human-edit</v-icon> SALES REP
+          </span>
+          <span v-if="editedItem.role == 6">
+            <v-icon left small>mdi-human-edit</v-icon> EMPLOYEE
+          </span>
+          <span v-if="editedItem.role == 7">
+            <v-icon left small>mdi-human-edit</v-icon> MARKETING TEAM
+          </span>
+          <p class="ma-0 pa-0">
+            <v-icon left small>mdi-email</v-icon>{{ editedItem.email }}
+          </p>
+          <p class="ma-0 pa-0">
+            <v-icon left small>mdi-phone</v-icon>{{ editedItem.phone }}
+          </p>
 
-            <v-col md="8" sm="8" cols="8" class="">
-              <p>{{ editedItem.name }}</p>
-              <p>{{ editedItem.email }}</p>
-              <p>{{ editedItem.phone }}</p>
-              <p>{{ editedItem.email }}</p>
-              <p>{{ editedItem.address }}</p>
-              <p>{{ editedItem.nic }}</p>
-              <p>{{ editedItem.gender }}</p>
-              <p>{{ editedItem.company }}</p>
-            </v-col>
-          </v-row>
+          <p class="ma-0 pa-0">
+            <v-icon left small>mdi-map</v-icon>{{ editedItem.address }}
+          </p>
+          <p class="ma-0 pa-0">
+            <v-icon left small>mdi-card-account-details</v-icon
+            >{{ editedItem.nic }}
+          </p>
+          <p class="ma-0 pa-0">
+            <v-icon left small>mdi-gender-male-female</v-icon
+            >{{ editedItem.gender }}
+          </p>
+          <p class="ma-0 pa-0">
+            <v-icon left small>mdi-office-building-marker</v-icon
+            >{{ editedItem.company }}
+          </p>
         </v-card-text>
+
+        <v-divider class="mx-4"></v-divider>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn :color="DTbtnColor" text @click="viewModel = false">
+            CANCEL
+          </v-btn>
+        </v-card-actions>
       </v-card>
     </v-dialog>
 
@@ -1202,11 +1283,14 @@ import DashboardLayout from "../../components/DashboardLayout";
 import { ValidationObserver, ValidationProvider } from "vee-validate";
 import moment from "moment";
 import { json2excel, excel2json } from "js2excel";
+import { jsPDF } from "jspdf";
 
 export default {
   name: "User",
   data() {
     return {
+      loading: false,
+      selection: 1,
       url: {
         register: "register",
         users: "users/",
@@ -1223,6 +1307,9 @@ export default {
       viewModel: false,
       dobDatePicker: false,
       superAdmin: false,
+      exportExecelLoading: false,
+      exportPDFLoading: false,
+      pdfLayout: null,
 
       DTbtnColor: "indigo lighten-1 ",
       ModelHeaderColor: "indigo lighten-4",
@@ -1239,11 +1326,14 @@ export default {
       defaultItem: {},
       user: {},
 
+      Users: [],
+      headersList: [],
       headers: [],
       selectedHeaders: [],
-      Users: [],
       selectedExcelTitle: [],
+      selectedPDFTitle: [],
       excelTitles: [],
+      pdfTitles: [],
 
       snackbar: {
         show: false,
@@ -1427,30 +1517,119 @@ export default {
     submitBtn() {
       return this.editedIndex === -1 ? "SAVE" : "UPDATE";
     },
-    showHeaders() {
-      return this.headers.filter((f) => this.selectedHeaders.includes(f.value));
-    },
   },
   created() {
     localStorage.setItem("user_pk", 1);
+
     this.onInitialize();
     this.datatableColumnVisibility();
   },
   beforeMount() {
     this.onAccessPermission();
+    this.onInitializeExportColumns();
   },
   mounted() {
     this.dataTableLoadingIndicator();
   },
 
   methods: {
-    datatableColumnVisibility() {
-      this.headersMap.forEach((element) => {
-        this.headers.push(element);
-        this.selectedHeaders.push(element.value);
-      });
+    onClipboard() {
+      let jsonObject = JSON.stringify(this.Users);
+      navigator.clipboard.writeText(jsonObject);
     },
+    datatableColumnVisibility() {
+      let x = JSON.parse(localStorage.getItem("user_active_columns"));
+      this.headersList.push(
+        {
+          text: "Name",
+          align: "center",
+          sortable: true,
+          value: "name",
+          align: "start",
+        },
+        {
+          text: "Company",
+          align: "center",
+          sortable: true,
+          value: "company",
+          align: "start",
+        },
+        {
+          text: "Phone",
+          align: "center",
+          sortable: true,
+          value: "phone",
+          align: "start",
+        },
+        {
+          text: "Address",
+          align: "center",
+          sortable: true,
+          value: "address",
+          align: "start",
+        },
+        {
+          text: "Gender",
+          align: "center",
+          sortable: true,
+          value: "gender",
+          align: "start",
+        },
+        {
+          text: "Role",
+          align: "center",
+          sortable: true,
+          value: "role",
+          align: "start",
+        }
+      );
+
+      if (x == null) {
+        let obj = this.headersMap;
+        let result = obj.map((col) => col.value);
+        localStorage.setItem("user_active_columns", JSON.stringify(result));
+
+        result.forEach((element) => {
+          this.selectedHeaders.push(element);
+        });
+        this.headersMap.forEach((element) => {
+          this.headers.push(element);
+        });
+      } else {
+        x.forEach((element) => {
+          this.selectedHeaders.push(element);
+        });
+
+        let headersMap = this.headersMap;
+        let selected_arr = x;
+        let filtered = headersMap.filter(({ value }) =>
+          selected_arr.includes(value)
+        );
+
+        this.headers.splice(0);
+        filtered.forEach((element) => {
+          this.headers.push(element);
+        });
+      }
+    },
+    onChangeColumn(e) {
+      this.headers.splice(0);
+      localStorage.setItem("user_active_columns", JSON.stringify(e));
+      let headersMap = this.headersMap;
+      let selected_arr = e;
+      let filtered = headersMap.filter(({ value }) =>
+        selected_arr.includes(value)
+      );
+
+      filtered.forEach((element) => {
+        this.headers.push(element);
+      });
+
+      console.log("onChangeColumn", e);
+    },
+
     exportToExcel() {
+      this.exportExecelLoading = true;
       let objects = [];
       this.Users.forEach((element) => {
         objects.push({
@@ -1492,16 +1671,126 @@ export default {
       });
 
       let data = filteredJsonObject;
+      let fileName = this.moment().unix() + "_file";
       try {
         json2excel({
           data,
-          name: this.moment().unix()+ '_file',
+          name: fileName,
           formateDate: "yyyy/mm/dd",
         });
+        this.notification(
+          fileName + " has been exported successfully",
+          "green"
+        );
+
+        setTimeout(() => {
+          this.exportExecelLoading = false;
+        }, 4000);
       } catch (e) {
         console.error("export error");
+        this.exportExecelLoading = false;
+        this.notification(fileName + " Export Failed. Please try again", "red");
       }
     },
+
+    exportToPdf() {
+      this.exportPDFLoading = true;
+
+      try {
+        let userName = JSON.parse(localStorage.getItem("user"));
+        let header = [];
+        let data = [];
+        let jsonObject = data;
+        let selectedArray = this.selectedPDFTitle;
+
+        const pdf = new jsPDF({
+          orientation: this.pdfLayout,
+          unit: "mm",
+          format: "a4",
+          putOnlyUsedFonts: true,
+          compress: true,
+          encryption: {
+            userPassword: userName.phone,
+            ownerPassword: "admin",
+            userPermissions: ["print", "modify", "copy", "annot-forms"],
+          },
+        });
+
+        this.selectedPDFTitle.forEach((element, key) => {
+          header.push(element);
+        });
+        this.Users.forEach((element, key) => {
+          data.push({
+            id: element.id.toString(),
+            name: element.name,
+            email: element.email,
+            company: element.company,
+            phone: element.phone,
+            address: element.address,
+            gender: element.gender,
+            role:
+              element.role == 0
+                ? "CLIENT"
+                : element.role == 1
+                ? "SUPER ADMIN"
+                : element.role == 2
+                ? "ADMIN"
+                : element.role == 3
+                ? "MANAGER"
+                : element.role == 4
+                ? "CASHIER"
+                : element.role == 5
+                ? "SALES REP"
+                : element.role == 6
+                ? "EMPLOYEE"
+                : element.role == 7
+                ? "MARKETING TEAM"
+                : null,
+          });
+        });
+
+        let filteredData = jsonObject.map(function(entry) {
+          return selectedArray.reduce(function(res, key) {
+            res[key] = entry[key];
+            return res;
+          }, {});
+        });
+
+        let headerConfig = header.map((key) => ({
+          name: key,
+          prompt: key,
+          width: 47,
+          align: "center",
+          padding: 0,
+        }));
+
+        let ColumnConfig = {
+          headerBackgroundColor: "#c5cae9",
+          fontSize: 10,
+          autoSize: false,
+        };
+
+        let fileName = this.moment().unix() + "_file";
+
+        pdf.table(5, 5, filteredData, headerConfig, ColumnConfig);
+        pdf.autoPrint({ variant: "non-conform" });
+        pdf.save(fileName + ".pdf");
+
+        this.notification(
+          fileName + " has been exported successfully",
+          "green"
+        );
+
+        setTimeout(() => {
+          this.exportPDFLoading = false;
+        }, 4000);
+      } catch (e) {
+        console.error("export error");
+        this.exportPDFLoading = false;
+        this.notification(fileName + " Export Failed. Please try again", "red");
+      }
+    },
+
     dataTableLoadingIndicator() {
       console.log("USER COUNT - MOUNTED", this.Users.length);
       if (this.Users.length >= 0) {
@@ -1559,19 +1848,15 @@ export default {
             .put(this.url.users + obj.id, obj)
             .then((result) => {
               console.log("update console", result);
-              this.onClear();
-              this.snackbar = {
-                show: true,
-                message: "User has been updated successfully",
-                color: "green",
-              };
+              this.closeForm();
+              this.notification("User has been updated successfully", "green");
             })
             .catch((err) => {
-              this.snackbar = {
-                show: true,
-                message: "Something went wrong on update... please try again",
-                color: "red",
-              };
+              this.notification(
+                "Something went wrong on update... please try again",
+                "red"
+              );
+
               this.$gl.Unauthorized(err.response.status);
             });
         } else {
@@ -1581,19 +1866,15 @@ export default {
             .then((result) => {
               console.log(result);
               this.onInitialize();
-              this.onClear();
-              this.snackbar = {
-                show: true,
-                message: "User has been added successfully",
-                color: "green",
-              };
+              this.closeForm();
+
+              this.notification("User has been added successfully", "green");
             })
             .catch((err) => {
-              this.snackbar = {
-                show: true,
-                message: "Something went wrong on save... please try again",
-                color: "red",
-              };
+              this.notification(
+                "Something went wrong on save... please try again",
+                "red"
+              );
             });
         }
       });
@@ -1609,7 +1890,18 @@ export default {
         "gender",
         "role",
       ];
+      this.pdfTitles = [
+        "id",
+        "name",
+        "email",
+        "company",
+        "phone",
+        "address",
+        "gender",
+        "role",
+      ];
       this.selectedExcelTitle = this.excelTitles;
+      this.selectedPDFTitle = this.excelTitles;
     },
     onInitialize() {
       this.Users.splice(0);
@@ -1637,7 +1929,6 @@ export default {
           response.data.users.data.forEach((element) => {
             this.Users.push(element);
           });
-          this.onInitializeExportColumns();
         })
         .catch((err) => {
           if (err.response) {
@@ -1748,7 +2039,7 @@ export default {
     },
     onDeleteItem(e) {
       this.formDeleteModel = true;
-      this.editedItem = Object.assign(e); 
+      this.editedItem = Object.assign(e);
     },
     onDeleteConfirm() {
       console.log("delete", this.editedIndex);
@@ -1827,48 +2118,15 @@ export default {
       });
     },
     closeForm() {
-      this.formAddmModel = false;
-    },
-    onClear() {
       this.$nextTick(() => {
         this.formAddmModel = false;
-        this.$refs.form.reset();
-        this.editedItem = Object.assign({
-          id: "",
-          name: "",
-          email: "",
-          phone: "",
-          address: "",
-          nic: "",
-          gender: "",
-          company: "",
-          attempts: "5",
-          access: "",
-          accessUrl: "",
-          role: "",
-          status: "",
-          profilePic: [],
-          profileImg: [],
-          dob: "",
-          city: "",
-          location: "",
-          zipCode: "",
-          accountNumber: "",
-          userType: "",
-          openingBalance: "",
-          Balance: "",
-          CreditLimit: "",
-          basicSalary: "",
-          language: "",
-          mothlyTargetAmount: "",
-          mothlyTargetPercentage: "",
-          profileUploadShow: true,
-          profileViewerShow: false,
-          profileEditShow: false,
-        });
         this.editedIndex = -1;
+        this.$refs.form.reset();
+        this.editedItem = Object.assign({});
+        // this.privillage = Object.assign({});
       });
     },
+
     onNewDialog() {
       this.formAddmModel = true;
       this.accessClearIndex = 0;
@@ -1944,6 +2202,13 @@ export default {
       this.appAccess = access[4];
 
       this.user = Object.assign(user);
+    },
+    notification(m, c) {
+      this.snackbar = {
+        show: true,
+        message: m,
+        color: c,
+      };
     },
   },
 };
