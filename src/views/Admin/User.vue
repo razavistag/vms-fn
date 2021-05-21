@@ -377,24 +377,17 @@
               <span>DASHBOARD</span>
             </v-col>
             <v-col cols="12" sm="6" md="6" class="  d-flex align-center">
-              <ValidationProvider
-                rules="required"
-                name="Accessible Operation"
-                v-slot="{ errors }"
-              >
-                <v-select
-                  :items="accessOptions"
-                  v-model="privillage.dashboard"
-                  :label="errors[0] ? errors[0] : 'Access'"
-                  :error-messages="errors"
-                  hide-details=""
-                  prefix="*"
-                  clearable
-                  dense
-                  item-text="option"
-                  item-value="val"
-                ></v-select>
-              </ValidationProvider>
+              <v-select
+                :items="accessOptions"
+                v-model="privillage.dashboard"
+                :label="'Access'"
+                hide-details=""
+                prefix="*"
+                clearable
+                dense
+                item-text="option"
+                item-value="val"
+              ></v-select>
             </v-col>
 
             <!-- PROJECTS PRIVILAGE -->
@@ -402,24 +395,17 @@
               <span>PROJECTS</span>
             </v-col>
             <v-col cols="12" sm="6" md="6" class="  d-flex align-center">
-              <ValidationProvider
-                rules="required"
-                name="Accessible Operation"
-                v-slot="{ errors }"
-              >
-                <v-select
-                  :items="accessOptions"
-                  v-model="privillage.project"
-                  :label="errors[0] ? errors[0] : 'Access'"
-                  :error-messages="errors"
-                  hide-details=""
-                  prefix="*"
-                  clearable
-                  dense
-                  item-text="option"
-                  item-value="val"
-                ></v-select>
-              </ValidationProvider>
+              <v-select
+                :items="accessOptions"
+                v-model="privillage.project"
+                :label="'Access'"
+                hide-details=""
+                prefix="*"
+                clearable
+                dense
+                item-text="option"
+                item-value="val"
+              ></v-select>
             </v-col>
 
             <!-- SYSTEM PRIVILAGE -->
@@ -427,24 +413,17 @@
               <span>SYSTEM</span>
             </v-col>
             <v-col cols="12" sm="6" md="6" class="  d-flex align-center">
-              <ValidationProvider
-                rules="required"
-                name="Accessible Operation"
-                v-slot="{ errors }"
-              >
-                <v-select
-                  :items="accessOptions"
-                  v-model="privillage.system"
-                  :label="errors[0] ? errors[0] : 'Access'"
-                  :error-messages="errors"
-                  hide-details=""
-                  prefix="*"
-                  clearable
-                  dense
-                  item-text="option"
-                  item-value="val"
-                ></v-select>
-              </ValidationProvider>
+              <v-select
+                :items="accessOptions"
+                v-model="privillage.system"
+                :label="'Access'"
+                hide-details=""
+                prefix="*"
+                clearable
+                dense
+                item-text="option"
+                item-value="val"
+              ></v-select>
             </v-col>
 
             <!-- TASK PRIVILAGE -->
@@ -452,24 +431,17 @@
               <span>TASK</span>
             </v-col>
             <v-col cols="12" sm="6" md="6" class="  d-flex align-center">
-              <ValidationProvider
-                rules="required"
-                name="Accessible Operation"
-                v-slot="{ errors }"
-              >
-                <v-select
-                  :items="accessOptions"
-                  v-model="privillage.task"
-                  :label="errors[0] ? errors[0] : 'Access'"
-                  :error-messages="errors"
-                  hide-details=""
-                  prefix="*"
-                  clearable
-                  dense
-                  item-text="option"
-                  item-value="val"
-                ></v-select>
-              </ValidationProvider>
+              <v-select
+                :items="accessOptions"
+                v-model="privillage.task"
+                :label="'Access'"
+                hide-details=""
+                prefix="*"
+                clearable
+                dense
+                item-text="option"
+                item-value="val"
+              ></v-select>
             </v-col>
 
             <!-- USER PRIVILAGE -->
@@ -477,24 +449,17 @@
               <span>USER</span>
             </v-col>
             <v-col cols="12" sm="6" md="6" class="  d-flex align-center">
-              <ValidationProvider
-                rules="required"
-                name="Accessible Operation"
-                v-slot="{ errors }"
-              >
-                <v-select
-                  :items="accessOptions"
-                  v-model="privillage.user"
-                  :label="errors[0] ? errors[0] : 'Access'"
-                  :error-messages="errors"
-                  hide-details=""
-                  prefix="*"
-                  clearable
-                  dense
-                  item-text="option"
-                  item-value="val"
-                ></v-select>
-              </ValidationProvider>
+              <v-select
+                :items="accessOptions"
+                v-model="privillage.user"
+                :label="'Access'"
+                hide-details=""
+                prefix="*"
+                clearable
+                dense
+                item-text="option"
+                item-value="val"
+              ></v-select>
             </v-col>
           </v-row>
         </v-card-text>
@@ -1325,6 +1290,7 @@ export default {
 
       defaultItem: {},
       user: {},
+      privillage: {},
 
       Users: [],
       headersList: [],
@@ -1340,13 +1306,6 @@ export default {
         time: 3000,
         message: "",
         color: "",
-      },
-      privillage: {
-        // 0: 0,
-        // 1: 0,
-        // 2: 0,
-        // 3: 0,
-        // 4: 0,
       },
       editedItem: {
         id: "",
@@ -1970,28 +1929,11 @@ export default {
         });
     },
     privillageCancel() {
-      this.privillageModel = false;
-
-      console.log(this.accessClearIndex);
-
-      if (this.accessClearIndex == 1) {
-        this.privillage = {
-          dashboard: 0,
-          project: 0,
-          system: 0,
-          task: 0,
-          user: 0,
-        };
-      }
-      if (this.accessClearIndex == 0) {
-        this.privillage = {
-          0: 0,
-          1: 0,
-          2: 0,
-          3: 0,
-          4: 0,
-        };
-      }
+      this.$nextTick(() => {
+        this.privillageModel = false;
+        this.$refs.form.reset();
+        this.privillage = Object.assign({});
+      });
     },
     privillageSubmit() {
       // modules               ||  access  are indexed
@@ -2118,12 +2060,13 @@ export default {
       });
     },
     closeForm() {
+      this.privillageCancel();
       this.$nextTick(() => {
         this.formAddmModel = false;
         this.editedIndex = -1;
         this.$refs.form.reset();
         this.editedItem = Object.assign({});
-        // this.privillage = Object.assign({});
+        this.privillage = Object.assign({});
       });
     },
 
