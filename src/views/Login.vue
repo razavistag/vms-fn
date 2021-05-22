@@ -221,10 +221,7 @@ export default {
                 "user",
                 JSON.stringify(response.data.user_information)
               );
-              localStorage.setItem(
-                "token_access_url",
-                response.data.user_access_url
-              );
+              
               this.$router
                 .push({
                   path: "dashboard",
