@@ -82,4 +82,10 @@ export default {
   name: "ContactForm",
 };
 </script>
- 
+<style scoped>
+#ContactForm {
+  background-size: cover;
+
+  background: linear-gradient(0deg, rgb(158 192 145), rgb(159 217 224));
+}
+</style>

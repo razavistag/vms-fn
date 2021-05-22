@@ -4,6 +4,7 @@ import global from "../helpers/global";
 
 import Home from "../views/Home.vue";
 import Login from "../views/Login";
+import Register from "../views/Register";
 
 import AdminDashboard from "../views/Admin/Dashboard";
 import Project from "../views/Admin/Project";
@@ -30,6 +31,12 @@ const routes = [
     name: "Login",
     component: Login,
     meta: { autoNavigate: true },
+  },
+  {
+    path: "/register",
+    name: "Register",
+    component: Register,
+    meta: { autoNavigate: false },
   },
   {
     path: "/dashboard",

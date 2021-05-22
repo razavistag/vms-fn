@@ -1156,6 +1156,8 @@
         <img
           :src="'http://localhost:8000/storage/' + editedItem.profilePic"
           v-if="editedItem.profilePic"
+         width="374"
+         height="374"
         />
         <v-img src="../../assets/default_logo.jpeg" v-else></v-img>
 
@@ -1656,7 +1658,7 @@ export default {
       this.exportPDFLoading = true;
 
       try {
-        let userName = JSON.parse(localStorage.getItem("user"));
+        let user = JSON.parse(localStorage.getItem("user"));
         let header = [];
         let data = [];
         let jsonObject = data;
@@ -1669,7 +1671,7 @@ export default {
           putOnlyUsedFonts: true,
           compress: true,
           encryption: {
-            userPassword: userName.phone,
+            userPassword: user.phone,
             ownerPassword: "admin",
             userPermissions: ["print", "modify", "copy", "annot-forms"],
           },
