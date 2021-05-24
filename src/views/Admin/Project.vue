@@ -1234,9 +1234,9 @@
                         <v-list-item-title>
                           {{ k + 1 + "." }} {{ i.members_name }}
                         </v-list-item-title>
-                        <v-list-item-subtitle class="pl-4">
+                        <!-- <v-list-item-subtitle class="pl-4">
                           {{ i.member_role }}
-                        </v-list-item-subtitle>
+                        </v-list-item-subtitle> -->
                       </v-list-item-content>
                     </v-list-item>
                   </v-card>
