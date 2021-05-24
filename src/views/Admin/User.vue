@@ -1460,7 +1460,7 @@ export default {
           value: "actions",
           sortable: false,
           width: "10%",
-          align: "end",
+          align: "center",
           class: "dark--text",
         },
       ],

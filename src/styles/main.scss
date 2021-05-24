@@ -81,6 +81,52 @@
   height: 40px !important ;
 }
 
+// #dt_table_users table thead tr {
+//   th:nth-child(1) {
+//     min-width: 1px !important;
+//     width: 1px !important;
+//     padding-left: 3px !important;
+//     padding-right: 0px !important;
+//   }
+//   th:nth-child(2) {
+//     min-width: 1px !important;
+//     width: 1px !important;
+//     min-width: 350px !important;
+//   }
+
+//   th:nth-child(3) {
+//     min-width: 1px !important;
+//     width: 1px !important;
+//     min-width: 250px !important;
+//   }
+//   th:nth-child(4) {
+//     min-width: 1px !important;
+//     width: 1px !important;
+//     min-width: 150px !important;
+//   }
+//   th:nth-child(5) {
+//     min-width: 1px !important;
+//     width: 1px !important;
+//     min-width: 350px !important;
+//   }
+//   th:nth-child(6) {
+//     min-width: 1px !important;
+//     width: 1px !important;
+//     min-width: 100px !important;
+//   }
+//   th:nth-child(7) {
+//     min-width: 1px !important;
+//     width: 1px !important;
+//     min-width: 100px !important;
+//   }
+//   th:nth-child(8) {
+//     min-width: 1px !important;
+//     width: 1px !important;
+//     min-width: 110px !important;
+//     background-color: blue;
+//   }
+// }
+
 #dt_table table thead tr {
   th:nth-child(1) {
     min-width: 1px !important;
@@ -118,11 +164,8 @@
     padding-right: 0px !important;
     width: 105px !important;
     min-width: 120px !important;
-
-    // min-width: 17px !important;
     justify-content: center;
     align-items: center;
-    // background: green;
   }
   th:nth-child(7) {
     padding-left: 0px !important;

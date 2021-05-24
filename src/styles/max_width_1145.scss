@@ -1,11 +1,59 @@
 /* min Large laptop size */
 @media screen and (max-width: 1145px) {
-    /* View - Projects.vue */
-    #dt_table table thead tr th:nth-child(6) {
+  /* View - Projects.vue table */
+  #dt_table table thead tr {
+    th:nth-child(6) {
       min-width: 100px;
     }
-  
-    #dt_table table thead tr th:nth-child(11) {
+
+    th:nth-child(11) {
       min-width: 150px;
     }
   }
+
+  #dt_table_users table thead tr {
+    th:nth-child(3) {
+      min-width: 190px !important;
+      width: 1px !important;
+      padding-left: 0px !important;
+      padding-right: 0px !important;
+      
+    }
+    th:nth-child(4) {
+      min-width: 120px !important;
+      width: 1px !important;
+      padding-left: 0px !important;
+      padding-right: 0px !important;
+      
+    }
+    th:nth-child(5) {
+      min-width: 140px !important;
+      width: 1px !important;
+      padding-left: 0px !important;
+      padding-right: 0px !important;
+      
+    }
+    th:nth-child(6) {
+      min-width: 70px !important;
+      width: 1px !important;
+      padding-left: 0px !important;
+      padding-right: 0px !important;
+      
+    }
+     th:nth-child(7) {
+      min-width: 100px !important;
+      width: 1px !important;
+      padding-left: 0px !important;
+      padding-right: 0px !important;
+      
+    }
+    th:nth-child(8) {
+      min-width: 105px !important;
+      width: 1px !important;
+      padding-left: 0px !important;
+      padding-right: 0px !important;
+      
+      text-align: start;
+    }
+  }
+}
