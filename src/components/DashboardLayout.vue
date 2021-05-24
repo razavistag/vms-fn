@@ -266,20 +266,22 @@ export default {
       localStorage.setItem("Lang", e);
       window.location.reload();
     },
+    removeStorage() {
+      localStorage.removeItem("token");
+      localStorage.removeItem("token_access");
+      localStorage.removeItem("paginateKey");
+      localStorage.removeItem("user_pk");
+      localStorage.removeItem("fullScreen");
+      localStorage.removeItem("user");
+      localStorage.removeItem("user_active_columns");
+    },
     logout() {
       console.log("loggedout");
       let url = "/logout";
       this.$http
         .get(url)
         .then((response) => {
-          console.log(response.data);
-          console.log(response);
-          localStorage.removeItem("token");
-
-          localStorage.removeItem("token_access");
-          // this.$router.push({
-          //   path: "login",
-          // });
+          this.removeStorage();
           this.$router.go({
             path: "login",
           });

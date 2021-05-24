@@ -1,78 +1,93 @@
 /* Extra Large Laptop*/
 @media screen and (max-width: 1440px) {
-    #dt-view-action-button {
-      font-size: 11px !important;
+  #dt-view-action-button {
+    font-size: 11px !important;
+  }
+  #dt-edit-action-button {
+    font-size: 11px !important;
+  }
+  #dt-trash-action-button {
+    font-size: 11px !important;
+  }
+  #dt_table table thead tr {
+    th:nth-child(1) {
+      min-width: 10px !important;
+      width: 1px !important;
+      padding-left: 0px !important;
+      padding-right: 0px !important;
     }
-    #dt-edit-action-button {
-      font-size: 11px !important;
+
+    th:nth-child(2) {
+      min-width: 1px !important;
+      width: 1px !important;
+      min-width: 40px !important;
     }
-    #dt-trash-action-button {
-      font-size: 11px !important;
+
+    th:nth-child(3) {
+      min-width: 1px !important;
+      width: 1px !important;
+      min-width: 170px !important;
     }
-    #dt_table table thead tr {
-      th:nth-child(1) {
-        min-width: 10px !important;
-        width: 1px !important;
-        padding-left: 0px !important;
-        padding-right: 0px !important;
-      }
-  
-      th:nth-child(2) {
-        min-width: 1px !important;
-        width: 1px !important;
-        min-width: 40px !important;
-      }
-  
-      th:nth-child(3) {
-        min-width: 1px !important;
-        width: 1px !important;
-        min-width: 170px !important;
-      }
-  
-      th:nth-child(4) {
-        padding-left: 0px !important;
-        padding-right: 0px !important;
-        width: 5px !important;
-      }
-  
-      th:nth-child(5) {
-        padding-left: 0px !important;
-        padding-right: 0px !important;
-        width: 5px !important;
-        min-width: 10px !important;
-      }
-      th:nth-child(6) {
-        padding-left: 0px !important;
-        padding-right: 0px !important;
-        width: 35px !important;
-        min-width: 100px !important;
-      }
-      th:nth-child(7) {
-        padding-left: 0px !important;
-        padding-right: 0px !important;
-        width: 35px !important;
-        min-width: 119px !important;
-      }
-      th:nth-child(8) {
-        padding-left: 0px !important;
-        padding-right: 0px !important;
-        width: 35px !important;
-        min-width: 60px !important;
-        text-align: center !important;
-      }
-      th:nth-child(9) {
-        padding-left: 0px !important;
-        padding-right: 0px !important;
-        width: 35px !important;
-        min-width: 40px !important;
-        text-align: center !important;
-      }
-      th:nth-child(10) {
-        padding-left: 0px !important;
-        padding-right: 0px !important;
-        width: 35px !important;
-        min-width: 110px !important;
-        text-align: center !important;
-      }
+
+    th:nth-child(4) {
+      padding-left: 0px !important;
+      padding-right: 0px !important;
+      width: 5px !important;
+    }
+
+    th:nth-child(5) {
+      padding-left: 0px !important;
+      padding-right: 0px !important;
+      width: 5px !important;
+      min-width: 10px !important;
+    }
+    th:nth-child(6) {
+      padding-left: 0px !important;
+      padding-right: 0px !important;
+      width: 35px !important;
+      min-width: 100px !important;
+    }
+    th:nth-child(7) {
+      padding-left: 0px !important;
+      padding-right: 0px !important;
+      width: 35px !important;
+      min-width: 119px !important;
+    }
+    th:nth-child(8) {
+      padding-left: 0px !important;
+      padding-right: 0px !important;
+      width: 35px !important;
+      min-width: 60px !important;
+      text-align: center !important;
+    }
+    th:nth-child(9) {
+      padding-left: 0px !important;
+      padding-right: 0px !important;
+      width: 35px !important;
+      min-width: 40px !important;
+      text-align: center !important;
+    }
+    th:nth-child(10) {
+      padding-left: 0px !important;
+      padding-right: 0px !important;
+      width: 35px !important;
+      min-width: 110px !important;
+      text-align: center !important;
     }
   }
+
+  #dt_table_users table thead tr {
+    th:nth-child(1) {
+      padding-left: 0px !important;
+      padding-right: 0px !important;
+      width: 5px !important;
+      min-width: 10px !important;
+    }
+    th:nth-child(2) {
+      padding-left: 0px !important;
+      padding-right: 0px !important;
+      width: 200px !important;
+      min-width: 10px !important;
+    }
+  }
+}

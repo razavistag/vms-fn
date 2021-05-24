@@ -1,403 +1,152 @@
 <template>
-  <div id="Login">
-    <!-- App bar Component -->
+  <div id="Login" class=" ">
+    <!-- App bar Component class="red d-flex flex-row align-center"-->
     <Appbar />
-    <div id="wrapLogin">
-      <v-container class="lighten-5">
-        <v-row class="mb-6" no-gutters>
-          <v-col md="4" offset-md="4">
-            <v-card class="pa-2" v-if="Activate_Signin" flat outlined tile>
-              <v-card-title>
-                <v-tabs>
-                  <v-tab @click="ActivateSingIn">Sign In</v-tab>
-                  <v-tab @click="ActivateRegister">Register</v-tab>
-                </v-tabs>
 
-                <!-- <h3>Sign In</h3> -->
-              </v-card-title>
-              <v-card-text>
-                <ValidationObserver ref="form">
-                  <v-row>
-                    <v-col md="12" cols="12" class="  pa-0 mt-4 pl-4 pr-8">
-                      <ValidationProvider
-                        rules="required|email"
-                        name="Email"
-                        v-slot="{ errors }"
-                      >
-                        <v-text-field
-                          outlined
-                          dense
-                          id="loginEmail"
-                          v-model="email"
-                          hide-details=""
-                          :label="errors[0] ? errors[0] : 'Email'"
-                          :error-messages="errors"
-                        >
-                          <template v-slot:prepend>
-                            <v-icon>mdi-account</v-icon>
-                          </template>
-                        </v-text-field>
-                      </ValidationProvider>
-                    </v-col>
-
-                    <v-col md="12" cols="12" class="  pa-0 mt-4 pl-4  pr-8">
-                      <ValidationProvider
-                        rules="required|min:4"
-                        name="Password"
-                        v-slot="{ errors }"
-                      >
-                        <v-text-field
-                          outlined
-                          dense
-                          id="loginPassword"
-                          type="password"
-                          v-model="password"
-                          :error-messages="errors"
-                          :label="errors[0] ? errors[0] : 'Password'"
-                          hide-details=""
-                        >
-                          <template v-slot:prepend>
-                            <v-icon>mdi-form-textbox-password</v-icon>
-                          </template>
-                        </v-text-field>
-                      </ValidationProvider>
-                    </v-col>
-
-                    <v-col
-                      md="12"
-                      cols="12"
-                      class="pa-0  ma-0  mt-3 pl-12 d-flex flex-row "
+    <v-row align="center" justify="center">
+      <v-col md="6" cols="12" class=" ">
+        <v-row align="center" justify="center">
+          <v-container>
+            <v-row justify="center" class="  ma-0 pa-0 pb-0">
+              <v-col md="6" class="ma-0 pa-0  ">
+                <v-col md="12" cols="12" class="pa-0  ">
+                  <h3>LOGIN TO <strong>VMS</strong></h3>
+                </v-col>
+                <v-col md="12" cols="12" class="  ma-0 pa-0 ">
+                  <p class="blue-grey--text">
+                    Lorem ipsum dolor sit amet elit. Sapiente sit aut eos
+                    consectetur adipisicing.Lorem ipsum dolor sit amet elit.
+                    Sapiente sit aut eos consectetur adipisicing.
+                  </p>
+                </v-col>
+              </v-col>
+            </v-row>
+            <ValidationObserver ref="form">
+              <v-row justify="center" class="  ma-0 pa-0 pb-0">
+                <v-col md="6">
+                  <v-col md="12" sm="12" cols="12" class="  ">
+                    <ValidationProvider
+                      rules="required|email"
+                      name="Email"
+                      v-slot="{ errors }"
                     >
-                      <v-checkbox
-                        id="loginRememberCheckBox"
-                        class="d-flex justify-center align-center"
-                        v-model="rememberMe"
-                      >
-                        Remember Me
-                      </v-checkbox>
-
-                      <v-btn color="blue" text tile class=" ml-6">
-                        Forget Password
-                      </v-btn>
-                    </v-col>
-
-                    <v-col
-                      md="12"
-                      cols="12"
-                      class="  pt-0 pb-0  ma-0  mt-3 pl-8 pr-8 "
-                    >
-                      <P class="red--text"> {{ message }}</P>
-                      <v-btn
-                        block
-                        color="success"
-                        @click="LoginSubmit"
-                        id="loginSubmitBtn"
-                      >
-                        Login
-                      </v-btn>
-                    </v-col>
-                  </v-row>
-
-                  <v-row class="pl-8 pt-3" justify="center">
-                    <v-col md="2" sm="2" cols="3" class=" ">
-                      <v-btn icon>
-                        <v-icon>fab fa-google-plus-g</v-icon>
-                      </v-btn>
-                    </v-col>
-                    <v-col md="2" sm="2" cols="3" class=" ">
-                      <v-btn icon @click="FacbookApi">
-                        <v-icon>fab fa-facebook</v-icon>
-                      </v-btn>
-                    </v-col>
-                    <v-col md="2" sm="2" cols="3" class=" ">
-                      <v-btn icon>
-                        <v-icon>fab fa-twitter-square</v-icon>
-                      </v-btn>
-                    </v-col>
-                  </v-row>
-                  <v-row class="justify-center">
-                    <v-col><Footer /></v-col>
-                  </v-row>
-                </ValidationObserver>
-              </v-card-text>
-            </v-card>
-            <v-card class="pa-2" v-else>
-              <v-card-title>
-                <v-tabs>
-                  <v-tab @click="ActivateSingIn">Sign In</v-tab>
-                  <v-tab @click="ActivateRegister">Register</v-tab>
-                </v-tabs>
-
-                <!-- <h3>Sign In</h3> -->
-              </v-card-title>
-
-              <v-card-text>
-                <ValidationObserver ref="Registerform">
-                  <v-row>
-                    <!-- name -->
-                    <v-col md="12" cols="12" class="  pa-0 mt-4 pl-4 pr-8">
-                      <ValidationProvider
-                        rules="required|min:4"
-                        name="User Name"
-                        v-slot="{ errors }"
-                      >
-                        <v-text-field
-                          outlined
-                          dense
-                          v-model="RegisterForm.name"
-                          hide-details=""
-                          :label="errors[0] ? errors[0] : 'User Name'"
-                          :error-messages="errors"
-                        >
-                          <template v-slot:prepend>
-                            <v-icon>mdi-account</v-icon>
-                          </template>
-                        </v-text-field>
-                      </ValidationProvider>
-                    </v-col>
-
-                    <!-- company -->
-                    <v-col md="12" cols="12" class="  pa-0 mt-4 pl-4 pr-8">
-                      <ValidationProvider
-                        rules="required|min:2"
-                        name="Company Name"
-                        v-slot="{ errors }"
-                      >
-                        <v-text-field
-                          outlined
-                          dense
-                          v-model="RegisterForm.companyName"
-                          hide-details=""
-                          :label="errors[0] ? errors[0] : 'Company Name'"
-                          :error-messages="errors"
-                        >
-                          <template v-slot:prepend>
-                            <v-icon>mdi-map-marker</v-icon>
-                          </template>
-                        </v-text-field>
-                      </ValidationProvider>
-                    </v-col>
-
-                    <!-- Email -->
-                    <v-col md="12" cols="12" class="  pa-0 mt-4 pl-4 pr-8">
-                      <ValidationProvider
-                        rules="required|email"
-                        name="Email"
-                        v-slot="{ errors }"
-                      >
-                        <v-text-field
-                          outlined
-                          dense
-                          v-model="RegisterForm.email"
-                          hide-details=""
-                          :label="errors[0] ? errors[0] : 'Email'"
-                          :error-messages="errors"
-                        >
-                          <template v-slot:prepend>
-                            <v-icon>mdi-email</v-icon>
-                          </template>
-                        </v-text-field>
-                      </ValidationProvider>
-                    </v-col>
-
-                    <!-- phone -->
-                    <v-col md="12" cols="12" class="  pa-0 mt-4 pl-4 pr-8">
-                      <ValidationProvider
-                        rules="required|numeric|min:9|max:9"
-                        name="Phone"
-                        v-slot="{ errors }"
-                      >
-                        <v-text-field
-                          outlined
-                          dense
-                          prefix="+94"
-                          v-model="RegisterForm.phone"
-                          hide-details=""
-                          :label="errors[0] ? errors[0] : 'Phone'"
-                          :error-messages="errors"
-                        >
-                          <template v-slot:prepend>
-                            <v-icon>mdi-phone</v-icon>
-                          </template>
-                        </v-text-field>
-                      </ValidationProvider>
-                    </v-col>
-
-                    <!-- nic -->
-                    <v-col md="12" cols="12" class="  pa-0 mt-4 pl-4 pr-8">
-                      <ValidationProvider
-                        rules="required"
-                        name="NIC"
-                        v-slot="{ errors }"
-                      >
-                        <v-text-field
-                          outlined
-                          dense
-                          v-model="RegisterForm.nic"
-                          hide-details=""
-                          :label="errors[0] ? errors[0] : 'NIC Number'"
-                          :error-messages="errors"
-                        >
-                          <template v-slot:prepend>
-                            <v-icon>mdi-card-account-details</v-icon>
-                          </template>
-                        </v-text-field>
-                      </ValidationProvider>
-                    </v-col>
-                    <!-- phone -->
-                    <v-col md="12" cols="12" class="  pa-0 mt-4 pl-4 pr-8">
-                      <ValidationProvider
-                        rules="required|numeric|min:9|max:9"
-                        name="Phone"
-                        v-slot="{ errors }"
-                      >
-                        <v-text-field
-                          outlined
-                          dense
-                          prefix="+94"
-                          v-model="RegisterForm.phone"
-                          hide-details=""
-                          :label="errors[0] ? errors[0] : 'Phone'"
-                          :error-messages="errors"
-                        >
-                          <template v-slot:prepend>
-                            <v-icon>mdi-phone</v-icon>
-                          </template>
-                        </v-text-field>
-                      </ValidationProvider>
-                    </v-col>
-
-                    <!-- gender -->
-                    <v-col md="12" cols="12" class="  pa-0 mt-4 pl-4 pr-8">
-                      <ValidationProvider
-                        rules="required"
-                        name="Gender"
-                        v-slot="{ errors }"
-                      >
-                        <v-select
-                          :items="genderItems"
-                          v-model="RegisterForm.gender"
-                          outlined
-                          dense
-                          hide-details=""
-                          :label="errors[0] ? errors[0] : 'Gender'"
-                          :error-messages="errors"
-                        >
-                          <template v-slot:prepend>
-                            <v-icon>mdi-gender-female</v-icon>
-                          </template>
-                        </v-select>
-                      </ValidationProvider>
-                    </v-col>
-
-                    <!-- address -->
-                    <v-col md="12" cols="12" class="  pa-0 mt-4 pl-4 pr-8">
-                      <ValidationProvider
-                        rules="required|min:5"
-                        name="Address"
-                        v-slot="{ errors }"
-                      >
-                        <!-- <v-text-field
+                      <v-text-field
                         outlined
                         dense
-                        v-model="RegisterForm.address"
+                        id="loginEmail"
+                        v-model="email"
                         hide-details=""
-                        :label="errors[0] ? errors[0] : 'Address'"
+                        :label="errors[0] ? errors[0] : 'Email'"
                         :error-messages="errors"
                       >
-                        <template v-slot:prepend>
-                          <v-icon>mdi-map-marker</v-icon>
+                        <template v-slot:prepend-inner>
+                          <v-icon>mdi-account</v-icon>
                         </template>
-                      </v-text-field> -->
+                      </v-text-field>
+                    </ValidationProvider>
+                  </v-col>
 
-                        <v-textarea
-                          name="input-4-1"
-                          outlined
-                          dense
-                          v-model="RegisterForm.address"
-                          hide-details=""
-                          :label="errors[0] ? errors[0] : 'Address'"
-                          :error-messages="errors"
-                          rows="2"
-                          row-height="5"
-                        >
-                          <template v-slot:prepend>
-                            <v-icon>mdi-map-marker</v-icon>
-                          </template>
-                        </v-textarea>
-                      </ValidationProvider>
-                    </v-col>
-
-                    <!-- Password -->
-                    <v-col md="12" cols="12" class="  pa-0 mt-4 pl-4 pr-8">
-                      <ValidationProvider
-                        rules="required|min:5"
-                        name="Password"
-                        v-slot="{ errors }"
-                      >
-                        <v-text-field
-                          outlined
-                          type="password"
-                          dense
-                          v-model="RegisterForm.password"
-                          hide-details=""
-                          :label="errors[0] ? errors[0] : 'Password'"
-                          :error-messages="errors"
-                        >
-                          <template v-slot:prepend>
-                            <v-icon>mdi-form-textbox-password</v-icon>
-                          </template>
-                        </v-text-field>
-                      </ValidationProvider>
-                    </v-col>
-
-                    <!-- Password Confirm-->
-                    <v-col md="12" cols="12" class="  pa-0 mt-4 pl-4 pr-8">
-                      <ValidationProvider
-                        rules="required|min:5"
-                        name="confirm"
-                        v-slot="{ errors }"
-                      >
-                        <v-text-field
-                          outlined
-                          type="password"
-                          dense
-                          v-model="RegisterForm.passwordConfirm"
-                          hide-details=""
-                          :label="errors[0] ? errors[0] : 'Confirm Password'"
-                          :error-messages="errors"
-                        >
-                          <template v-slot:prepend>
-                            <v-icon>mdi-form-textbox-password</v-icon>
-                          </template>
-                        </v-text-field>
-                      </ValidationProvider>
-                    </v-col>
-
-                    <v-col
-                      md="12"
-                      cols="12"
-                      class="  pt-0 pb-0  ma-0  mt-3 pl-12 pr-8 "
+                  <v-col md="12" sm="12" cols="12" class="  ">
+                    <ValidationProvider
+                      rules="required|min:4"
+                      name="Password"
+                      v-slot="{ errors }"
                     >
-                      <v-btn block color="success" @click="register">
-                        Register
-                      </v-btn>
-                    </v-col>
-                  </v-row>
-                </ValidationObserver>
-              </v-card-text>
-            </v-card>
-          </v-col>
+                      <v-text-field
+                        outlined
+                        dense
+                        id="loginPassword"
+                        type="password"
+                        v-model="password"
+                        :error-messages="errors"
+                        :label="errors[0] ? errors[0] : 'Password'"
+                        hide-details=""
+                      >
+                        <template v-slot:prepend-inner>
+                          <v-icon>mdi-form-textbox-password</v-icon>
+                        </template>
+                      </v-text-field>
+                    </ValidationProvider>
+                  </v-col>
+
+                  <v-col
+                    md="12"
+                    sm="6"
+                    cols="12"
+                    class=" d-flex flex-row justify-space-between pa-0"
+                  >
+                    <v-checkbox
+                      id="loginRememberCheckBox"
+                      class=" ml-3 mt-1  ma-0"
+                      v-model="rememberMe"
+                      label="Remember Me"
+                    >
+                    </v-checkbox>
+
+                    <v-btn color="blue" text depressed tile class="ma-0 ml-0">
+                      Forget Password
+                    </v-btn>
+                  </v-col>
+
+                  <v-col md="12" sm="12" cols="12" class="   ma-0 pa-0 pl-4 ">
+                    <v-btn
+                      to="/register"
+                      color="blue"
+                      text
+                      depressed
+                      tile
+                      class="ma-0   pa-0"
+                      height="10"
+                    >
+                      create a new account
+                    </v-btn>
+                  </v-col>
+                  <v-col
+                    md="12"
+                    sm="12"
+                    cols="12"
+                    class=" pa-0  ma-0 pl-4 pr-2 "
+                  >
+                    <v-btn
+                      block
+                      color="success"
+                      @click="LoginSubmit"
+                      id="loginSubmitBtn"
+                    >
+                      Login
+                    </v-btn>
+                  </v-col>
+                </v-col>
+              </v-row>
+            </ValidationObserver>
+          </v-container>
         </v-row>
-      </v-container>
-    </div>
+      </v-col>
+      <v-col md="6" cols="12" class="sideSection">
+        <div class="bgImage"></div>
+      </v-col>
+    </v-row>
+    <!-- NOTIFICATION -->
+    <v-snackbar
+      v-model="snackbar.show"
+      :timeout="snackbar.time"
+      :color="snackbar.color"
+      top
+      outlined
+      left
+    >
+      <v-icon small color="red" left v-if="snackbar.color == 'red'">
+        mdi-close-circle
+      </v-icon>
+      <v-icon small color="green" left v-else>mdi-check-circle</v-icon>
+      {{ snackbar.message }}
+    </v-snackbar>
   </div>
 </template>
 
 <script>
 import Footer from "../components/Footer";
 import Appbar from "../components/Appbar";
-import axios from "axios";
 import { ValidationObserver, ValidationProvider } from "vee-validate";
 
 export default {
@@ -410,37 +159,22 @@ export default {
   },
   data() {
     return {
-      tab_login: false,
-      tab_register: false,
       email: "admin@gmail.com",
       password: "password",
 
-      // email: "",
-      // password: "",
+      // email: "althaf@gmail.com",
+      // password: "saasdd",
       rememberMe: false,
-      Activate_Signin: true,
-      Activate_Register: true,
-      RegisterForm: {
-        name: "althaf",
-        companyName: "vista",
-        email: "althaf@gmail.com",
-        phone: "777123456",
-        nic: "5897486521V",
-        gender: "MALE",
-        address: "200, Akurana, Kandy",
-        password: "password",
-        passwordConfirm: "password",
+
+      snackbar: {
+        show: false,
+        time: 3000,
+        message: "",
+        color: "",
       },
-      genderItems: ["MALE", "FEMALE", "OTHERS"],
-      message: "",
     };
   },
   methods: {
-    tabLogin() {
-      // console.log(0);
-      this.tab_login = true;
-      // console.log(true);
-    },
     mockAxiosGetFunction() {
       this.$http.get("/projects?page=1").then((res) => {
         // console.log("test_get_projects", res);
@@ -458,7 +192,6 @@ export default {
     LoginSubmit() {
       this.$refs.form.validate().then((success) => {
         if (!success) {
-          // console.log("empty");
           return;
         }
 
@@ -470,12 +203,9 @@ export default {
         this.$http
           .post(uri, login)
           .then((response) => {
-            // console.log(response.data);
-            // console.log(response.data.message);
             this.message = response.data.message;
 
             if (this.rememberMe == true) {
-              // console.log("remember true");
               localStorage.setItem("Remember", true);
             }
 
@@ -491,112 +221,54 @@ export default {
                 "user",
                 JSON.stringify(response.data.user_information)
               );
-              localStorage.setItem(
-                "token_access_url",
-                response.data.user_access_url
-              );
+              
               this.$router
                 .push({
                   path: "dashboard",
                 })
                 .catch((e) => {
-                  // console.log("catch on admin dashboard error", e);
+                  console.log("catch on admin dashboard error", e);
                 });
+            }
 
-              // this.$nextTick(() => {
-              //   this.$refs.form.reset();
-              //   console.log("cleared rest");
-              // });
+            let pendingError = "Pending Account Registeration";
+            if (response.data.message == pendingError) {
+              this.notification(pendingError, "red");
             }
           })
-          .catch((response) => {
-            console.log(response);
+          .catch((err) => {
+            console.log(err);
             this.message = "ACCOUNT NOT FOUND";
-
-            // console.log("access denied");
+            if (err.response) {
+              console.log(err.response.data.message);
+              this.notification(err.response.data.message, "red");
+            }
           });
 
         this.$nextTick(() => {
           this.$refs.form.reset();
-          // console.log("cleared next");
         });
       });
     },
 
-    ActivateSingIn() {
-      this.Activate_Signin = true;
-      this.Activate_Register = false;
-    },
-
-    ActivateRegister() {
-      this.Activate_Signin = false;
-      this.Activate_Register = true;
-    },
-
-    register() {
-      console.log("register triggered");
-
-      this.$refs.Registerform.validate().then((success) => {
-        if (!success) {
-          return;
-        }
-
-        const register = {
-          name: this.RegisterForm.name,
-          company: this.RegisterForm.companyName,
-          email: this.RegisterForm.email,
-          phone: this.RegisterForm.phone,
-          nic: this.RegisterForm.nic,
-          gender: this.RegisterForm.gender,
-          address: this.RegisterForm.address,
-          password: this.RegisterForm.password,
-          passwordConfirm: this.RegisterForm.passwordConfirm,
-        };
-        let url = "/register";
-
-        this.$http
-          .post(url, register)
-          .then((response) => {
-            console.log(response);
-            this.ActivateSingIn();
-          })
-          .catch((response) => {
-            console.log(response);
-          });
-
-        this.$nextTick(() => {
-          this.$refs.Registerform.reset();
-          console.log("cleared");
-        });
-
-        // this.$router.push({ path: "system_login" });
-      });
-    },
-
-    FacbookApi() {
-      let url = "auth/facebook";
-      this.$http
-        .get(url)
-        .then((response) => {
-          console.log(response);
-        })
-        .catch((response) => {
-          console.log("response");
-          console.log("response");
-        });
+    notification(m, c) {
+      this.snackbar = {
+        show: true,
+        message: m,
+        color: c,
+      };
     },
   },
 };
 </script>
 
 <style scoped>
-#wrapLogin {
+.bgImage {
   background-size: cover;
+  background-position-x: -10em;
   background-repeat: no-repeat;
-  height: 760px;
+  height: 89vh;
   width: 100%;
-  font-family: "Numans", sans-serif;
-  padding-top: 80px;
   background-image: url("../assets/login_bg.jpg");
 }
 </style>

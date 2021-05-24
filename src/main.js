@@ -36,7 +36,6 @@ const base = axios.create({
   baseURL: "http://localhost:8000/",
   // baseURL: "http://127.0.0.1:8000/",
   // baseURL: "http://13.58.106.113:334/api",
-  // baseURL: "https://13.58.106.113/api",
 });
 
 Vue.prototype.$http = base;
