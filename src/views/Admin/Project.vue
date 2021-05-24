@@ -4,7 +4,7 @@
     <DashboardLayout />
     <v-card color="pa-0" tile flat>
       <v-data-table
-        :headers="showHeaders"
+        :headers="headers"
         :items="projects"
         :fixed-header="true"
         :loading="dataTableLoading"
@@ -78,6 +78,97 @@
               <!-- on complete -->
               {{ $t("status.onComplete") }}
             </v-chip>
+
+            <!-- SELECT OPTION FOR EXPORT TO EXCEL -->
+            <v-menu bottom right :close-on-content-click="false">
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn icon small v-bind="attrs" v-on="on">
+                  <v-icon small>mdi-file-export</v-icon>
+                </v-btn>
+              </template>
+
+              <v-list>
+                <v-list-item-content
+                  v-for="(item, i) in excelTitles"
+                  :key="i"
+                  dense
+                  class="pl-4 pr-4 pt-0 pb-0 ma-0"
+                >
+                  <v-checkbox
+                    class="pa-0 ma-0  "
+                    hide-details=""
+                    v-model="selectedExcelTitle"
+                    :label="item"
+                    :value="item"
+                  ></v-checkbox>
+                </v-list-item-content>
+
+                <v-btn
+                  small
+                  @click="exportToExcel"
+                  :color="DTbtnColor"
+                  dark
+                  class="ma-4"
+                  :loading="exportExecelLoading"
+                >
+                  EXPORT EXCEL
+                </v-btn>
+              </v-list>
+            </v-menu>
+
+            <!-- SELECT OPTION FOR EXPORT TO PDF -->
+            <v-menu bottom right :close-on-content-click="false">
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn icon small v-bind="attrs" v-on="on">
+                  <v-icon small>mdi-file-pdf</v-icon>
+                </v-btn>
+              </template>
+
+              <v-list>
+                <v-list-item-content
+                  v-for="(item, i) in pdfTitles"
+                  :key="i"
+                  dense
+                  class="pl-4 pr-4 pt-0 pb-0 ma-0"
+                >
+                  <v-checkbox
+                    class="pa-0 ma-0  "
+                    hide-details=""
+                    v-model="selectedPDFTitle"
+                    :label="item"
+                    :value="item"
+                  ></v-checkbox>
+                </v-list-item-content>
+
+                <v-list dense>
+                  <v-subheader>Choose Layout</v-subheader>
+                  <v-radio-group
+                    v-model="pdfLayout"
+                    mandatory
+                    class="ma-0 ml-1 mr-1"
+                  >
+                    <v-radio label="landscape" value="l"></v-radio>
+                    <v-radio label="portrait" value="p"></v-radio>
+                  </v-radio-group>
+                </v-list>
+
+                <v-btn
+                  small
+                  @click="exportToPdf"
+                  :color="DTbtnColor"
+                  :loading="exportPDFLoading"
+                  dark
+                  class="mb-4 ml-4 mr-4"
+                >
+                  EXPORT PDF
+                </v-btn>
+              </v-list>
+            </v-menu>
+
+            <!-- COPY TO Clipboard -->
+            <v-btn icon small @click="onClipboard">
+              <v-icon small>mdi-clipboard-edit-outline</v-icon>
+            </v-btn>
             <v-spacer></v-spacer>
 
             <!-- SEARCH -->
@@ -98,7 +189,7 @@
 
             <!-- REFRESH BUTTONS -->
             <v-btn
-              color="indigo lighten-1"
+              :color="DTbtnColor"
               class=" ma-1 text-center"
               id="v_toolbar_refresh_btn"
               outlined
@@ -117,34 +208,11 @@
               </span>
             </v-btn>
 
-            <!-- -------------------------------- -->
-
-            <!-- HIDE COLUMNS without button -->
-
-            <!-- <v-select
-                            style="maxWidth: 280px;"
-                            v-model="selectedHeaders"
-                            :items="headers"
-                            multiple
-                            return-object
-                            class=""
-                            hide-details=""
-                            dense    
-                            :menu-props="{ maxHeight: '400', top: true, offsetY: true }"
-                          >
-                            <template v-slot:selection="{ item, index }">
-                              <v-chip v-if="index < 2" x-small>
-                                <span>{{ item.text }}</span> </v-chip>  <span v-if="index === 2" class="grey--text caption">  (+{{ selectedHeaders.length - 2 }} others) Display Columns
-             </span>
-</template>
-          </v-select> -->
-            <!-- -------------------------------- -->
-
-            <!-- HIDE COLUMNS with button-->
+            <!--HIDE COLUMNS-->
             <v-menu top :close-on-content-click="false">
               <template v-slot:activator="{ on, attrs }">
                 <v-btn
-                  color="indigo lighten-1"
+                  :color="DTbtnColor"
                   class=" ma-1"
                   outlined
                   small
@@ -155,43 +223,34 @@
                   <v-icon left dark> mdi-eye </v-icon>
 
                   <span class="v_toolbar_display_column_text">
-                    <!-- DISPLAY COLUMNS -->
                     {{ $t("button.displayColumns") }}
                   </span>
                 </v-btn>
               </template>
-
-              <v-list flat>
-                <v-list-item class="fixed">
-                  <v-select
-                    v-model="selectedHeaders"
-                    :items="headers"
-                    label="Display Columns"
-                    multiple
-                    return-object
-                    class=""
+              <v-list>
+                <v-list-item-content
+                  v-for="(item, i) in headersList"
+                  :key="i"
+                  dense
+                  class="pl-4 pr-4 pt-0 pb-0 ma-0"
+                >
+                  <v-checkbox
+                    class="pa-0 ma-0  "
                     hide-details=""
-                    dense
-                    :menu-props="{ maxHeight: '400', top: true, offsetY: true }"
-                  >
-                    <template v-slot:selection="{ item, index }">
-                      <v-chip v-if="index < 2" x-small>
-                        <span>{{ item.text }}</span>
-                      </v-chip>
-
-                      <span v-if="index === 2" class="grey--text caption">
-                        (+{{ selectedHeaders.length - 2 }} others)
-                      </span>
-                    </template>
-                  </v-select>
-                </v-list-item>
+                    v-model="selectedHeaders"
+                    :label="item.text"
+                    :value="item.value"
+                    multiple
+                    @change="onChangeColumn"
+                  ></v-checkbox>
+                </v-list-item-content>
               </v-list>
             </v-menu>
 
             <!-- ADD BUTTONS -->
 
             <v-btn
-              color="indigo lighten-1"
+              :color="DTbtnColor"
               class=" ma-1"
               outlined
               small
@@ -629,25 +688,34 @@
               </v-card>
             </v-dialog>
 
-            <!-- delete dialog -->
-            <v-dialog v-model="dialogDelete" max-width="800px">
+            <!-- DELETE MODEL FORM -->
+            <v-dialog v-model="formDeleteModel" max-width="550" persistent>
               <v-card>
-                <v-card-title class="headline">
-                  Are you sure you want to delete this project
-                  <span class="font-weight-bold pl-3">
-                    {{ editedItem.title }}
-                  </span>
-                  ?
+                <v-card-title :class="ModelHeaderColor">
+                  DELETE CONFIRMATION
+
+                  <v-spacer></v-spacer>
+                  <v-icon @click="formDeleteModel = false">mdi-close</v-icon>
                 </v-card-title>
+
+                <v-card-text class="pa-3">
+                  ARE YOU SURE YOUR WANT TO DELETE
+                  <strong>{{ editedItem.title }}</strong> ?
+                </v-card-text>
+
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="blue darken-1" text @click="closeDelete">
-                    Cancel
+                  <v-btn
+                    color="blue darken-1"
+                    text
+                    @click="formDeleteModel = false"
+                  >
+                    CANCEL
                   </v-btn>
-                  <v-btn color="blue darken-1" text @click="deleteItemConfirm">
-                    OK
+
+                  <v-btn color="red darken-1" text @click="onDeleteConfirm">
+                    DELETE
                   </v-btn>
-                  <v-spacer></v-spacer>
                 </v-card-actions>
               </v-card>
             </v-dialog>
@@ -1226,14 +1294,31 @@
         </v-card-text>
       </v-card>
     </v-dialog>
+    <!-- NOTIFICATION -->
+    <v-snackbar
+      v-model="snackbar.show"
+      :timeout="snackbar.time"
+      :color="snackbar.color"
+      top
+      outlined
+      right
+    >
+      <v-icon small color="red" left v-if="snackbar.color == 'red'">
+        mdi-close-circle
+      </v-icon>
+      <v-icon small color="green" left v-else>mdi-check-circle</v-icon>
+      {{ snackbar.message }}
+    </v-snackbar>
   </div>
 </template>
 
 <script>
 import DashboardLayout from "../../components/DashboardLayout";
 import { ValidationObserver, ValidationProvider } from "vee-validate";
+import { json2excel, excel2json } from "js2excel";
 import { VueEditor } from "vue2-editor";
 import moment from "moment";
+import { jsPDF } from "jspdf";
 export default {
   name: "Projects",
   components: {
@@ -1243,9 +1328,15 @@ export default {
     VueEditor,
   },
   data: () => ({
+    headersList: [],
+    DTbtnColor: "indigo lighten-1 ",
+    ModelHeaderColor: "indigo lighten-4",
+
     moment: moment,
     search: "",
     permissions: [],
+    excelTitles: [],
+    selectedExcelTitle: [],
 
     page: {},
     avatar: {},
@@ -1262,18 +1353,26 @@ export default {
 
     dataTableFullscreen: false,
     dataTableLoading: true,
+    exportExecelLoading: false,
+    exportPDFLoading: false,
     viewDialog: false,
     dialog: false,
-    dialogDelete: false,
+    formDeleteModel: false,
     picker1: false,
     picker2: false,
     superAdmin: false,
+    pdfLayout: null,
 
     appAccess: 0, //ACCESS PERMISSION FOR Users
 
     editedIndex: -1,
     existData: -1,
-
+    snackbar: {
+      show: false,
+      time: 3000,
+      message: "",
+      color: "",
+    },
     editorToolBar: [
       ["bold", "italic", "underline"],
       [{ list: "ordered" }, { list: "bullet" }],
@@ -1311,21 +1410,18 @@ export default {
         align: "start",
         sortable: true,
         value: "title",
-        class: " ",
       },
       {
         text: "starting date",
         value: "startingdate",
         // width: "8%",
         align: "center",
-        class: " ",
       },
       {
         text: "deadline",
         value: "deadline",
         // width: "7%",
         align: "center",
-        class: " ",
       },
 
       {
@@ -1333,7 +1429,6 @@ export default {
         value: "duration",
         // width: "6%",
         align: "center",
-        class: "",
       },
 
       {
@@ -1341,14 +1436,12 @@ export default {
         value: "incharge_name",
         // width: "10%",
         align: "center",
-        class: " ",
       },
       {
         text: "version",
         value: "projectVersion",
         // width: "7%",
         align: "end",
-        class: " ",
       },
 
       {
@@ -1356,7 +1449,6 @@ export default {
         value: "cost",
         // width: "10%",
         align: "end",
-        class: " ",
       },
 
       {
@@ -1408,7 +1500,7 @@ export default {
     },
     pagination: {
       current: 1,
-      localCurrentPage: parseInt(localStorage.getItem("paginateKey")),
+      localCurrentPage: parseInt(localStorage.getItem("project_pk")),
       total: 1,
     },
     dtPagination: {
@@ -1442,25 +1534,251 @@ export default {
     dialog(val) {
       val || this.close();
     },
-    dialogDelete(val) {
+    formDeleteModel(val) {
       val || this.closeDelete();
     },
   },
 
   created() {
-    // this.initialize();
-    this.paginateData();
-    this.headers = Object.values(this.headersMap);
-    this.selectedHeaders = this.headers;
+    this.onInitialize();
+    this.datatableColumnVisibility();
   },
   beforeMount() {
     this.onAccessPermission();
+    this.onInitializeExportColumns();
   },
   mounted() {
-    localStorage.setItem("paginateKey", 1);
+    localStorage.setItem("project_pk", 1);
   },
 
   methods: {
+    datatableColumnVisibility() {
+      let x = JSON.parse(localStorage.getItem("project_active_columns"));
+      this.headersList.push(
+        {
+          text: "logo",
+          value: "logo",
+        },
+        {
+          text: "project",
+          value: "title",
+        },
+        {
+          text: "starting date",
+          value: "startingdate",
+        },
+        {
+          text: "deadline",
+          value: "deadline",
+        },
+        {
+          text: "duration",
+          value: "duration",
+        },
+        {
+          text: "Incharge",
+          value: "incharge_name",
+        },
+        {
+          text: "version",
+          value: "projectVersion",
+        },
+        {
+          text: "cost",
+          value: "cost",
+        }
+      );
+
+      if (x == null) {
+        let obj = this.headersMap;
+        let result = obj.map((col) => col.value);
+        localStorage.setItem("project_active_columns", JSON.stringify(result));
+
+        result.forEach((element) => {
+          this.selectedHeaders.push(element);
+        });
+        this.headersMap.forEach((element) => {
+          this.headers.push(element);
+        });
+      } else {
+        x.forEach((element) => {
+          this.selectedHeaders.push(element);
+        });
+
+        let headersMap = this.headersMap;
+        let selected_arr = x;
+        let filtered = headersMap.filter(({ value }) =>
+          selected_arr.includes(value)
+        );
+
+        this.headers.splice(0);
+        filtered.forEach((element) => {
+          this.headers.push(element);
+        });
+      }
+    },
+    onChangeColumn(e) {
+      this.headers.splice(0);
+      localStorage.setItem("project_active_columns", JSON.stringify(e));
+      let headersMap = this.headersMap;
+      let selected_arr = e;
+      let filtered = headersMap.filter(({ value }) =>
+        selected_arr.includes(value)
+      );
+
+      filtered.forEach((element) => {
+        this.headers.push(element);
+      });
+
+      console.log("onChangeColumn", e);
+    },
+    onClipboard() {
+      let jsonObject = JSON.stringify(this.projects);
+      navigator.clipboard.writeText(jsonObject);
+    },
+    exportToExcel() {
+      this.exportExecelLoading = true;
+      let objects = [];
+      this.projects.forEach((element) => {
+        objects.push(element);
+      });
+
+      let jsonObject = objects;
+      let selectedArray = this.selectedExcelTitle;
+      let filteredJsonObject = jsonObject.map(function(entry) {
+        return selectedArray.reduce(function(res, key) {
+          res[key] = entry[key];
+          return res;
+        }, {});
+      });
+
+      let data = filteredJsonObject;
+      let fileName = this.moment().unix() + "_projects_file";
+      try {
+        json2excel({
+          data,
+          name: fileName,
+          formateDate: "yyyy/mm/dd",
+        });
+        this.notification(
+          fileName + " has been exported successfully",
+          "green"
+        );
+
+        setTimeout(() => {
+          this.exportExecelLoading = false;
+        }, 4000);
+      } catch (e) {
+        console.error("export error");
+        this.exportExecelLoading = false;
+        this.notification(fileName + " Export Failed. Please try again", "red");
+      }
+    },
+    exportToPdf() {
+      this.exportPDFLoading = true;
+      let fileName = this.moment().unix() + "_projetcs_file";
+
+      try {
+        let user = JSON.parse(localStorage.getItem("user"));
+        let header = [];
+        let data = [];
+        let jsonObject = data;
+        let selectedArray = this.selectedPDFTitle;
+
+        const pdf = new jsPDF({
+          orientation: this.pdfLayout,
+          unit: "mm",
+          format: "a4",
+          putOnlyUsedFonts: true,
+          compress: true,
+          // encryption: {
+          //   userPassword: user.phone,
+          //   ownerPassword: "admin",
+          //   userPermissions: ["print", "modify", "copy", "annot-forms"],
+          // },
+        });
+
+        this.selectedPDFTitle.forEach((element, key) => {
+          header.push(element);
+        });
+        this.projects.forEach((element) => {
+          data.push({
+            id: element.id,
+            cost: element.cost.toString(),
+            projectVersion: element.projectVersion,
+            incharge_name: element.incharge_name,
+            duration: element.duration.toString(),
+            deadline: element.deadline,
+            logo: element.logo,
+            title: element.title,
+            startingdate: element.startingdate,
+          });
+        });
+
+        let filteredData = jsonObject.map(function(entry) {
+          return selectedArray.reduce(function(res, key) {
+            res[key] = entry[key];
+            return res;
+          }, {});
+        });
+
+        let headerConfig = header.map((key) => ({
+          name: key,
+          prompt: key,
+          width: 47,
+          align: "center",
+          padding: 0,
+        }));
+
+        let ColumnConfig = {
+          headerBackgroundColor: "#c5cae9",
+          fontSize: 10,
+          autoSize: false,
+        };
+
+        pdf.table(5, 5, filteredData, headerConfig, ColumnConfig);
+        pdf.autoPrint({ variant: "non-conform" });
+        pdf.save(fileName + ".pdf");
+
+        this.notification(" has been exported successfully", "green");
+
+        setTimeout(() => {
+          this.exportPDFLoading = false;
+        }, 4000);
+      } catch (e) {
+        console.error("export error", e);
+        this.exportPDFLoading = false;
+        this.notification(fileName + " Export Failed. Please try again", "red");
+      }
+    },
+    onInitializeExportColumns() {
+      this.excelTitles = [
+        "id",
+        "cost",
+        "projectVersion",
+        "incharge_name",
+        "duration",
+        "deadline",
+        "logo",
+        "title",
+        "startingdate",
+      ];
+      this.pdfTitles = [
+        "id",
+        "cost",
+        "projectVersion",
+        "incharge_name",
+        "duration",
+        "deadline",
+        "logo",
+        "title",
+        "startingdate",
+      ];
+
+      // let columns = [];
+      this.selectedExcelTitle = this.excelTitles;
+      this.selectedPDFTitle = this.pdfTitles;
+    },
     expandTable() {
       var elem = document.getElementById("dt_table");
       if (elem.requestFullscreen) {
@@ -1545,17 +1863,17 @@ export default {
     },
     refresh() {
       // this.initialize();
-      this.paginateData();
+      this.onInitialize();
     },
     onPageChange(e) {
       // console.log(e)
-      localStorage.setItem("paginateKey", e);
-      this.paginateData();
+      localStorage.setItem("project_pk", e);
+      this.onInitialize();
     },
-    paginateData() {
+    onInitialize() {
       this.dataTableLoading = true;
       this.$http
-        .get("projects?page=" + localStorage.getItem("paginateKey"))
+        .get("projects?page=" + localStorage.getItem("project_pk"))
         .then((res) => {
           console.log("ppp", res.data.projects.data);
           // if ( res.data.projects.data.length < 1) {
@@ -1616,10 +1934,13 @@ export default {
           });
           this.dataTableLoading = false;
         })
-        .catch((response) => {
+        .catch((err) => {
           console.log("catch ");
           this.dataTableLoading = false;
           this.existData = 1;
+          if (err.response) {
+            this.$gl.Unauthorized(err.response.status);
+          }
         });
     },
     onSearch(e) {
@@ -1665,7 +1986,7 @@ export default {
           } else {
             console.log("no data");
             this.projects.splice(0);
-            this.paginateData();
+            this.onInitialize();
             this.dataTableLoading = false;
             this.existData = 1;
           }
@@ -1673,7 +1994,7 @@ export default {
       } else {
         console.log("dont");
         this.projects.splice(0);
-        this.paginateData();
+        this.onInitialize();
       }
     },
     dateDiffInDays(date1, date2) {
@@ -1761,7 +2082,7 @@ export default {
       this.$http
         .get(url)
         .then((response) => {
-          console.log("get", response.data.data[0].incharge_name);
+          console.log("getzxc", response.data);
           this.selectedIncharge.push({
             member_id: response.data.data[0].incharge_id,
             members_name: response.data.data[0].incharge_name,
@@ -1803,18 +2124,20 @@ export default {
     deleteItem(item) {
       this.editedIndex = this.projects.indexOf(item);
       this.editedItem = Object.assign({}, item);
-      this.dialogDelete = true;
+      this.formDeleteModel = true;
+      console.log(this.editedItem);
     },
 
-    deleteItemConfirm() {
+    onDeleteConfirm() {
       this.projects.splice(this.editedIndex, 1);
       let url = "projects/" + this.editedItem.id;
       this.$http
         .delete(url)
         .then((response) => {
           console.log(response.data);
+          this.notification(response.data.message, "green");
           // this.initialize();
-          this.paginateData();
+          this.onInitialize();
         })
         .catch((response) => {
           console.log("Error Fround. Project Not Saved");
@@ -1837,7 +2160,7 @@ export default {
     },
 
     closeDelete() {
-      this.dialogDelete = false;
+      this.formDeleteModel = false;
       this.$nextTick(() => {
         this.editedItem = Object.assign({}, this.defaultItem);
         this.editedIndex = -1;
@@ -1883,9 +2206,10 @@ export default {
           this.$http
             .put(url, update)
             .then((response) => {
-              console.log(response.data);
-              // this.initialize();
-              this.paginateData();
+              console.log("aaaa", response.data);
+              this.notification(response.data.message, "green");
+
+              this.onInitialize();
             })
             .catch((response) => {
               console.log("Error Fround. Project Not Saved");
@@ -1932,8 +2256,9 @@ export default {
             .post(url, save)
             .then((response) => {
               console.log(response.data);
-              // this.initialize();
-              this.paginateData();
+              this.notification(response.data.message, "green");
+
+              this.onInitialize();
             })
             .catch((response) => {
               console.log("Error Fround. Project Not Saved");
@@ -1963,6 +2288,13 @@ export default {
     onAccessPermission() {
       let access = JSON.parse(localStorage.getItem("token_access"));
       this.appAccess = access[1];
+    },
+    notification(m, c) {
+      this.snackbar = {
+        show: true,
+        message: m,
+        color: c,
+      };
     },
   },
 };

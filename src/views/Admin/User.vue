@@ -1115,7 +1115,12 @@
           <v-btn color="blue darken-1" text @click="closeForm">
             Cancel
           </v-btn>
-          <v-btn color="blue darken-1" text @click="save">
+          <v-btn
+            color="blue darken-1"
+            text
+            @click="save"
+            :loading="submitLoading"
+          >
             {{ submitBtn }}
           </v-btn>
         </v-card-actions>
@@ -1156,8 +1161,8 @@
         <img
           :src="'http://localhost:8000/storage/' + editedItem.profilePic"
           v-if="editedItem.profilePic"
-         width="374"
-         height="374"
+          width="374"
+          height="374"
         />
         <v-img src="../../assets/default_logo.jpeg" v-else></v-img>
 
@@ -1267,6 +1272,9 @@ export default {
         delete: "users/",
       },
       dataTableLoading: true,
+      exportExecelLoading: false,
+      exportPDFLoading: false,
+      submitLoading: false,
       dataTableFullscreen: false,
       formAddmModel: false,
       formDeleteModel: false,
@@ -1274,8 +1282,6 @@ export default {
       viewModel: false,
       dobDatePicker: false,
       superAdmin: false,
-      exportExecelLoading: false,
-      exportPDFLoading: false,
       pdfLayout: null,
 
       DTbtnColor: "indigo lighten-1 ",
@@ -1656,6 +1662,7 @@ export default {
 
     exportToPdf() {
       this.exportPDFLoading = true;
+      let fileName = this.moment().unix() + "_file";
 
       try {
         let user = JSON.parse(localStorage.getItem("user"));
@@ -1731,8 +1738,6 @@ export default {
           autoSize: false,
         };
 
-        let fileName = this.moment().unix() + "_file";
-
         pdf.table(5, 5, filteredData, headerConfig, ColumnConfig);
         pdf.autoPrint({ variant: "non-conform" });
         pdf.save(fileName + ".pdf");
@@ -1769,6 +1774,7 @@ export default {
         if (!success) {
           return;
         }
+        this.submitLoading = true;
         let access = this.privillageSubmit();
 
         const obj = {
@@ -1809,6 +1815,8 @@ export default {
             .put(this.url.users + obj.id, obj)
             .then((result) => {
               console.log("update console", result);
+              this.submitLoading = false;
+
               this.closeForm();
               this.notification("User has been updated successfully", "green");
             })
@@ -1828,6 +1836,7 @@ export default {
               console.log(result);
               this.onInitialize();
               this.closeForm();
+              this.submitLoading = false;
 
               this.notification("User has been added successfully", "green");
             })
