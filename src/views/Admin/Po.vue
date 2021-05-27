@@ -303,16 +303,31 @@
             x-small
             dark
             title="Attachments"
+            v-if="item.attachments"
+            @click="onAttachment(item)"
           >
             mdi-attachment mdi-rotate-90
           </v-icon>
+
+          <v-icon
+            class="pa-2 teal darken-1"
+            id="dt-attchment-action-button"
+            x-small
+            dark
+            title="No Attachments found"
+            v-else
+          >
+            mdi-attachment mdi-rotate-90 mdi-dark
+          </v-icon>
+          
+
           <v-icon
             class="pa-2  ml-1 blue darken-1"
             id="dt-view-action-button"
             x-small
             dark
             title="View Projects"
-            @click="onView(item)"
+            @click="onEditItem(item, 'view')"
           >
             mdi-eye
           </v-icon>
@@ -323,7 +338,7 @@
             x-small
             dark
             title="Edit Projects"
-            @click="onEditItem(item)"
+            @click="onEditItem(item, 'edit')"
             v-show="appAccess >= 3"
           >
             mdi-pencil
@@ -402,7 +417,7 @@
           <v-icon @click="closeForm">mdi-close</v-icon>
         </v-card-title>
 
-        <!-- FORM BODY -->
+        <!-- MODEL BODY -->
         <v-card-text class="ma-0 pa-3 d-flex">
           <ValidationObserver ref="form">
             <v-row
@@ -879,13 +894,21 @@
                     color="blue-grey"
                     @click:close="removeAttachment(k, index)"
                   >
+                    <v-icon
+                      left
+                      small
+                      v-if="editedIndex != -1"
+                      @click="viewEditAttachment(i.name)"
+                    >
+                      mdi-table-eye
+                    </v-icon>
                     {{ i.name }}
                   </v-chip>
                 </div>
               </v-col>
 
               <!-- OVERLAY -->
-              <v-overlay :value="overlay" absolute>
+              <v-overlay :value="overlay">
                 <v-progress-circular
                   indeterminate
                   size="64"
@@ -940,6 +963,423 @@
       </v-card>
     </v-dialog>
 
+    <!-- VIEWMODEL -->
+    <v-dialog
+      v-model="formViewModel"
+      max-width="1400px"
+      persistent
+      content-class="po-form-dialog"
+      scrollable
+    >
+      <v-card tile flat>
+        <DialogCardLoading />
+        <v-card-title :class="ModelHeaderColor">
+          <span class="headline blue-grey--text text--darken-3 d-flex">
+            <v-icon left color="">mdi-timeline-text</v-icon>
+            PO VIEW
+          </span>
+          <v-spacer></v-spacer>
+          <v-icon @click="formViewModel = false">mdi-close</v-icon>
+        </v-card-title>
+
+        <!-- MODEL BODY -->
+        <v-card-text class="ma-0 pa-3 d-flex">
+          <v-row
+            class="ma-0 pa-0  mt-5 poViewFormStyle"
+            v-for="(i, k) in formList"
+            :key="k"
+          >
+            <!-- ST DATE -->
+            <v-col
+              md="3"
+              sm="3"
+              cols="12"
+              class="po_user_col_border d-flex flex-column align-start d-flex flex-column align-start"
+            >
+              <div>
+                <v-icon small left>mdi-calendar</v-icon>
+                <strong> ST DATE </strong>
+              </div>
+              <div class="ml-7">
+                {{ i.stDate }}
+              </div>
+            </v-col>
+
+            <!-- AGENT NAME -->
+            <v-col
+              md="3"
+              sm="3"
+              cols="12"
+              class="po_user_col_border d-flex flex-column align-start"
+            >
+              <div>
+                <v-icon small left>mdi-clipboard-account</v-icon>
+                <strong> AGENT NAME -</strong>
+              </div>
+              <div class="ml-7">
+                {{ i.userSelectedList.name }}
+              </div>
+            </v-col>
+
+            <!-- AGENT EMAIL -->
+            <v-col
+              md="3"
+              sm="3"
+              cols="12"
+              class="po_user_col_border d-flex flex-column align-start "
+            >
+              <div>
+                <v-icon small left>mdi-email-outline</v-icon>
+                <strong> AGENT EMAIL -</strong>
+              </div>
+              <div class="ml-7">
+                {{ i.userSelectedList.email }}
+              </div>
+            </v-col>
+
+            <!-- VENDOR NAME -->
+            <v-col
+              md="3"
+              sm="3"
+              cols="12"
+              class="po_user_col_border d-flex flex-column align-start "
+            >
+              <div>
+                <v-icon small left>mdi-clipboard-account</v-icon>
+                <strong> VENDOR NAME -</strong>
+              </div>
+              <div class="ml-7">
+                {{ i.vendorSelectedList.name }}
+              </div>
+            </v-col>
+
+            <!-- VENDOR EMAIL -->
+            <v-col
+              md="3"
+              sm="3"
+              cols="12"
+              class="po_user_col_border d-flex flex-column align-start "
+            >
+              <div>
+                <v-icon small left>mdi-email-outline</v-icon>
+                <strong> VENDOR EMAIL -</strong>
+              </div>
+              <div class="ml-7">
+                {{ i.vendorSelectedList.email }}
+              </div>
+            </v-col>
+
+            <!-- CUSTOMER NAME -->
+            <v-col
+              md="3"
+              sm="3"
+              cols="12"
+              class="po_user_col_border d-flex flex-column align-start "
+            >
+              <div>
+                <v-icon small left>mdi-clipboard-account</v-icon>
+                <strong> CUSTOMER NAME -</strong>
+              </div>
+              <div class="ml-7">
+                {{ i.customerSelectedList.name }}
+              </div>
+            </v-col>
+
+            <!-- CUSTOMER EMAIL -->
+            <v-col
+              md="3"
+              sm="3"
+              cols="12"
+              class="po_user_col_border d-flex flex-column align-start "
+            >
+              <div>
+                <v-icon small left>mdi-email-outline</v-icon>
+                <strong> CUSTOMER EMAIL -</strong>
+              </div>
+              <div class="ml-7">
+                {{ i.customerSelectedList.email }}
+              </div>
+            </v-col>
+
+            <!-- REQUESTEDBY NAME -->
+            <v-col
+              md="3"
+              sm="3"
+              cols="12"
+              class="po_user_col_border d-flex flex-column align-start "
+            >
+              <div>
+                <v-icon small left>mdi-clipboard-account</v-icon>
+                <strong> REQUESTED NAME -</strong>
+              </div>
+              <div class="ml-7">
+                {{ i.requestedBySelectedList.name }}
+              </div>
+            </v-col>
+
+            <!-- REQUESTEDBY EMAIL -->
+            <v-col
+              md="3"
+              sm="3"
+              cols="12"
+              class="po_user_col_border d-flex flex-column align-start "
+            >
+              <div>
+                <v-icon small left>mdi-email-outline</v-icon>
+                <strong> REQUESTED EMAIL -</strong>
+              </div>
+              <div class="ml-7">
+                {{ i.requestedBySelectedList.email }}
+              </div>
+            </v-col>
+
+            <!-- COPMANY -->
+            <v-col
+              md="3"
+              sm="3"
+              cols="12"
+              class="po_user_col_border d-flex flex-column align-start "
+            >
+              <div>
+                <v-icon small left>mdi-office-building-outline</v-icon>
+                <strong> COPMANY -</strong>
+              </div>
+              <div class="ml-7">
+                {{ i.companySelectedList.company }}
+              </div>
+            </v-col>
+
+            <!-- EMPTY -->
+            <v-col md="3" sm="3" cols="12" class=""> </v-col>
+            <!-- EMPTY -->
+            <v-col md="3" sm="3" cols="12" class=" "> </v-col>
+
+            <!-- PRIORITY -->
+            <v-col
+              md="3"
+              sm="3"
+              cols="12"
+              class="po_user_col_border d-flex flex-row align-start "
+            >
+              <div>
+                <v-icon small left>mdi-priority-high</v-icon>
+                <strong> PRIORITY -</strong>
+              </div>
+              <div class="ml-7">
+                {{
+                  i.priority.index == 1
+                    ? "CRITICAL"
+                    : i.priority.index == 2
+                    ? "HIGH"
+                    : i.priority.index == 3
+                    ? "MEDIUM"
+                    : i.priority.index == 4
+                    ? "LOW"
+                    : null
+                }}
+              </div>
+            </v-col>
+
+            <!-- CUS PO NUMBER -->
+            <v-col
+              md="3"
+              sm="3"
+              cols="12"
+              class="po_user_col_border d-flex flex-row align-start "
+            >
+              <div>
+                <v-icon small left>mdi-drag</v-icon>
+                <strong> CUS PO NUMBER -</strong>
+              </div>
+              <div class="ml-7">
+                {{ i.cus_po_number }}
+              </div>
+            </v-col>
+
+            <!--   PO NUMBER -->
+            <v-col
+              md="3"
+              sm="3"
+              cols="12"
+              class="po_user_col_border d-flex flex-row align-start "
+            >
+              <div>
+                <v-icon small left>mdi-drag</v-icon>
+                <strong> PO NUMBER -</strong>
+              </div>
+              <div class="ml-7">
+                {{ i.po_number }}
+              </div>
+            </v-col>
+
+            <!--  CO NUMBER -->
+            <v-col
+              md="3"
+              sm="3"
+              cols="12"
+              class="po_user_col_border d-flex flex-row align-start "
+            >
+              <div>
+                <v-icon small left>mdi-drag</v-icon>
+                <strong> CO NUMBER -</strong>
+              </div>
+              <div class="ml-7">
+                {{ i.control_number }}
+              </div>
+            </v-col>
+
+            <!--  STYLE -->
+            <v-col
+              md="3"
+              sm="3"
+              cols="12"
+              class="po_user_col_border d-flex flex-row align-start "
+            >
+              <div>
+                <v-icon small left>mdi-drag</v-icon>
+                <strong>STYLE -</strong>
+              </div>
+              <div class="ml-7">
+                {{ i.style }}
+              </div>
+            </v-col>
+
+            <!--  NOS -->
+            <v-col
+              md="3"
+              sm="3"
+              cols="12"
+              class="po_user_col_border d-flex flex-row align-start "
+            >
+              <div>
+                <v-icon small left>mdi-drag</v-icon>
+                <strong>NOS -</strong>
+              </div>
+              <div class="ml-7">
+                {{ i.nos }}
+              </div>
+            </v-col>
+
+            <!--  QTY -->
+            <v-col
+              md="3"
+              sm="3"
+              cols="12"
+              class="po_user_col_border d-flex flex-row align-start "
+            >
+              <div>
+                <v-icon small left>mdi-drag</v-icon>
+                <strong>QTY -</strong>
+              </div>
+              <div class="ml-7">
+                {{ i.qty }}
+              </div>
+            </v-col>
+
+            <!--  TOTAL -->
+            <v-col
+              md="3"
+              sm="3"
+              cols="12"
+              class="po_user_col_border d-flex flex-row align-start "
+            >
+              <div>
+                <v-icon small left>mdi-drag</v-icon>
+                <strong>TOTAL -</strong>
+              </div>
+
+              <div class="ml-7">
+                {{ i.total }}
+              </div>
+            </v-col>
+          </v-row>
+        </v-card-text>
+
+        <v-card-text class="ma-0 pa-3 d-flex">
+          <v-row
+            class="ma-0 pa-0  mt-5 poViewFormStyle"
+            v-for="(i, k) in formList"
+            :key="k"
+          >
+            <!--  ATTCHMENTS -->
+            <v-col md="3" sm="3" cols="12" class="po_user_col_border d-flex  ">
+              <v-icon small left>mdi-drag</v-icon>
+              <strong>ATTCHMENTS</strong>
+            </v-col>
+
+            <!--  ATTCHMENTS -->
+            <v-col
+              md="3"
+              sm="3"
+              cols="12"
+              class="po_user_col_border d-flex "
+              v-for="(i, k) in i.attachments"
+              :key="k"
+            >
+              <v-icon small left @click="viewEditAttachment(i.name)"
+                >mdi-table-eye</v-icon
+              >
+              <strong>{{ i.name }}</strong>
+            </v-col>
+          </v-row>
+        </v-card-text>
+
+        <v-card-actions class="fixed-bottom"> </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!--SEPERATE ATTACHMENT MODEL -->
+    <v-dialog
+      v-model="seperateAttachmentModel"
+      max-width="550"
+      persistent
+      content-class="poAttachmentFormDialog"
+      scrollable
+    >
+      <v-card tile flat>
+        <DialogCardLoading />
+        <v-card-title :class="ModelHeaderColor">
+          <span class="headline blue-grey--text text--darken-3 d-flex">
+            <v-icon left color="">mdi-attachment mdi-rotate-90 </v-icon>
+            ATTACHMENTS
+          </span>
+          <v-spacer></v-spacer>
+          <v-icon @click="seperateAttachmentModel = false">mdi-close</v-icon>
+        </v-card-title>
+
+        <!-- MODEL BODY -->
+        <v-card-text class="ma-0 pa-3">
+          <v-list subheader two-line>
+            <v-list-item v-for="(i, key) in viewAttachmentList" :key="key">
+              <v-list-item-avatar size="40">
+                <v-icon class="grey lighten-1" dark small>
+                  mdi-file-tree
+                </v-icon>
+              </v-list-item-avatar>
+
+              <v-list-item-content>
+                <v-list-item-title v-text="i"></v-list-item-title>
+              </v-list-item-content>
+
+              <v-list-item-action>
+                <v-btn icon>
+                  <v-icon
+                    color="grey lighten-1"
+                    small
+                    @click="viewEditAttachment(i)"
+                  >
+                    mdi-format-horizontal-align-right
+                  </v-icon>
+                </v-btn>
+              </v-list-item-action>
+            </v-list-item>
+          </v-list>
+        </v-card-text>
+
+        <v-card-actions class="fixed-bottom"> </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <!-- NOTIFICATION -->
     <v-snackbar
       v-model="snackbar.show"
@@ -988,6 +1428,8 @@ export default {
       pdfLayout: null,
       submitLoading: false,
       formAddmModel: false,
+      seperateAttachmentModel: false,
+      formViewModel: false,
       stDatePicker: false,
       overlay: false,
 
@@ -1019,6 +1461,7 @@ export default {
       requestedUserList: [],
       companyUserList: [],
       formList: [],
+      viewAttachmentList: [],
 
       currentUser: {},
       editedItem: {
@@ -1297,6 +1740,7 @@ export default {
               total_value: e.total_value,
               status: e.status,
               co_num: e.control_number.toString(),
+              attachments: JSON.parse(e.attachment_auto_id),
               priority:
                 e.priority == 1
                   ? "CRITICAL"
@@ -1320,6 +1764,12 @@ export default {
     },
     onNewDialog() {
       this.formAddmModel = true;
+      this.formList.splice(0);
+      this.companyUserList.splice(0);
+      this.requestedUserList.splice(0);
+      this.customerUserList.splice(0);
+      this.vendorUserList.splice(0);
+      this.agentUserList.splice(0);
       this.formList.push({
         AxiosProgressCount: 0,
         AxiosSuccess: false,
@@ -1332,7 +1782,7 @@ export default {
         customerSelectedList: "",
         requestedBySelectedList: "",
         companySelectedList: "",
-        priority: "",
+        priority: [],
         cus_po_number: "",
         po_number: "",
         control_number: "",
@@ -1342,6 +1792,7 @@ export default {
         total: "",
         attachments: [],
       });
+
       // this.overlay = true;
     },
     closeForm() {
@@ -1351,6 +1802,18 @@ export default {
         this.$refs.form.reset();
         this.formList.splice(0);
         this.editedItem = Object.assign({});
+        // SELECTED AGENT LIST
+        this.agentUserList.splice(0);
+
+        // SELECTED VENDOR LIST
+        this.vendorUserList.splice(0);
+
+        // SELECTED CUSTOMER LIST
+        this.customerUserList.splice(0);
+        // SELECTED REQUESTEDBY LIST
+        this.requestedUserList.splice(0);
+        // SELECTED COPMANY LIST
+        this.companyUserList.splice(0);
       });
     },
     addNewPO(e) {
@@ -1387,36 +1850,48 @@ export default {
       this.formList.splice(e, 1);
     },
     onAttachmentSelected(e, k) {
-      // console.log("e", e);
-      // console.log("k", k);
       this.formList[k].attachments = Object.assign(e, {});
-      // console.log(this.formList);
     },
     removeAttachment(x, y) {
       // console.log(x, y);
       this.formList[x].attachments.splice(y, 1);
     },
-    StoreMulti(arr, i) {
+    viewEditAttachment(i) {
+      console.log(i);
+      window.open(
+        "http://localhost:8000/storage/PO_attachments/" + i,
+        "_blank"
+      );
+    },
+    axiosMultiPost(arr, i, m) {
       var element = arr[i];
-      // this.overlay = true;
-
-      // console.log("arr", arr);
-      // console.log("i", i);
-      // console.log("element", element);
-
-      // console.log("multi", element);
+      console.log("arr", arr);
+      console.log("i", i);
+      console.log("element", element);
 
       const fd = new FormData();
+      const config = {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        onUploadProgress: (progressEvent) =>
+          (element.AxiosProgressCount =
+            Math.round((progressEvent.loaded / progressEvent.total) * 100) +
+            " % Uploaded"),
+      };
+      // fd.append("agent_code", element.attachments);
+      // fd.append("vendor_code", element.attachments);
+      // fd.append("company_auto_id", element.attachments);
+
+      fd.append("id", element.id);
       fd.append("po_date", moment(element.stDate).format("X"));
       fd.append("po_request_date", moment().format("X"));
       fd.append("vendor_auto_id", element.vendorSelectedList.id);
-      // fd.append("vendor_code", element.attachments);
       fd.append("vendor_email", element.vendorSelectedList.email);
       fd.append("vendor", element.vendorSelectedList.name);
       fd.append("agent_auto_id", element.userSelectedList.id);
       fd.append("agent", element.userSelectedList.name);
       fd.append("agent_email", element.userSelectedList.email);
-      // fd.append("agent_code", element.attachments);
       fd.append("customer_auto_id", element.customerSelectedList.id);
       fd.append("customer", element.customerSelectedList.name);
       fd.append("customer_email", element.customerSelectedList.email);
@@ -1428,59 +1903,77 @@ export default {
       fd.append("qty", element.qty);
       fd.append("number_of_style", element.nos);
       fd.append("total_value", element.total);
-      // fd.append("company_auto_id", element.attachments);
       fd.append("company", element.companySelectedList.company);
       fd.append("cus_po_number", element.cus_po_number);
       fd.append("style", element.style);
-      fd.append("priority", element.priority);
       fd.append("status", 1);
-      // fd.append("attachment[]", element.attachments);
       fd.append("control_number", element.control_number);
+      if (element.priority instanceof Object) {
+        fd.append("priority", element.priority.index);
+      } else {
+        fd.append("priority", element.priority);
+      }
       if (!element.attachments.length < 1) {
         element.attachments.forEach((element) => {
-          fd.append("attachment[]", element, element.name);
+          if (element instanceof File) {
+            fd.append("attachment_auto_id[]", element, element.name);
+          } else {
+            fd.append("attachment_auto_id[]", element.name);
+          }
         });
       }
-      this.$http
-        .post("po", fd, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-          onUploadProgress: (progressEvent) =>
-            (element.AxiosProgressCount =
-              Math.round((progressEvent.loaded / progressEvent.total) * 100) +
-              " % Uploaded"),
-        })
-        .then((res) => {
-          // console.log(res.data);
-          if (i < arr.length - 1) {
-            this.StoreMulti(arr, ++i);
-            // console.log("true inside then");
-          } else {
-            this.onInitialize();
-            this.addNewPO();
-            // console.log("else inside then");
-          }
-          if (res.data.status == 200) {
+      if (m == "store") {
+        this.$http
+          .post("po", fd, config)
+          .then((res) => {
+            if (i < arr.length - 1) {
+              this.axiosMultiPost(arr, ++i, "store");
+            } else {
+              this.onInitialize();
+              this.closeForm();
+              this.overlay = false;
+              this.notification("PO are successfully added", "green");
+            }
+            if (res.data.status == 200) {
+              element.AxiosSuccess = true;
+              element.AxiosProgressCount = 0;
+              element.AxiosSuccessMessage = res.data.message;
+              element.AxiosSuccessResponse = res.data.status;
+            }
+          })
+          .catch((err) => {
+            this.overlay = false;
             element.AxiosSuccess = true;
             element.AxiosProgressCount = 0;
-            element.AxiosSuccessMessage = res.data.message;
-            element.AxiosSuccessResponse = res.data.status;
-          }
-          this.overlay = false;
-        })
-        .catch((err) => {
-          // console.log(err.response.data);
-          element.AxiosSuccess = true;
-          element.AxiosProgressCount = 0;
-          element.AxiosSuccessResponse = 500;
+            element.AxiosSuccessResponse = 500;
+            element.AxiosSuccessMessage = "Please try again";
+          });
+      } else {
+        fd.append("_method", "put");
+        this.$http
+          .post(this.url.po + "/" + element.id, fd, config)
+          .then((res) => {
+            if (res.data.status == 200) {
+              element.AxiosSuccess = true;
+              element.AxiosProgressCount = 0;
+              element.AxiosSuccessMessage = res.data.message;
+              element.AxiosSuccessResponse = res.data.status;
+            }
 
-          element.AxiosSuccessMessage = "Please try again";
-          this.overlay = false;
-        })
-        .finally((e) => {
-          // console.log("final");
-        });
+            this.onInitialize();
+            this.closeForm();
+            this.overlay = false;
+            this.notification("PO has been updated successfully", "green");
+          })
+          .catch((err) => {
+            this.overlay = false;
+
+            element.AxiosSuccess = true;
+            element.AxiosProgressCount = 0;
+            element.AxiosSuccessResponse = 500;
+            element.AxiosSuccessMessage = "Please try again";
+          });
+      }
     },
     save() {
       this.$refs.form.validate().then((success) => {
@@ -1488,13 +1981,144 @@ export default {
           return;
         }
 
-        this.StoreMulti(this.formList, 0);
-        // console.log("save", this.formList);
+        this.overlay = true;
+        if (this.editedIndex == -1) {
+          this.axiosMultiPost(this.formList, 0, "store");
+        } else {
+          this.axiosMultiPost(this.formList, 0, "update");
+        }
       });
     },
-    onEditItem(e) {
+
+    onAttachment(e) {
+      this.viewAttachmentList.splice(0);
+      this.$http
+        .get(this.url.po + "/getAttachments/" + e.id)
+        .then((response) => {
+          let i = response.data.objects;
+          console.log(i);
+          JSON.parse(i.attachment_auto_id).forEach((element) => {
+            this.viewAttachmentList.push(element.replace(/["']/g, ""));
+          });
+          this.seperateAttachmentModel = true;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    onEditItem(e, type) {
+      this.formList.splice(0);
+      this.companyUserList.splice(0);
+      this.requestedUserList.splice(0);
+      this.customerUserList.splice(0);
+      this.vendorUserList.splice(0);
+      this.agentUserList.splice(0);
+
       this.editedIndex = this.pos.indexOf(e);
-      this.formAddmModel = true;
+
+      this.$http.get(this.url.po + "/edit/" + e.id).then((response) => {
+        let i = response.data.objects;
+
+        let attachmentArr = [];
+        if (i.attachment_auto_id != null) {
+          JSON.parse(i.attachment_auto_id).forEach((element) => {
+            console.log(
+              "attachment removed symbol -> ",
+              element.replace(/["']/g, "")
+            );
+            attachmentArr.push({
+              name: element.replace(/["']/g, ""),
+            });
+          });
+        }
+
+        // SELECTED AGENT LIST
+        this.agentUserList.push({
+          id: i.agent_auto_id,
+          name: i.agent,
+          email: i.agent_email,
+        });
+
+        // SELECTED VENDOR LIST
+        this.vendorUserList.push({
+          id: i.vendor_auto_id,
+          name: i.vendor,
+          email: i.vendor_email,
+        });
+
+        // SELECTED CUSTOMER LIST
+        this.customerUserList.push({
+          id: i.customer_auto_id,
+          name: i.customer,
+          email: i.customer_email,
+        });
+        // SELECTED REQUESTEDBY LIST
+        this.requestedUserList.push({
+          id: i.receiver_auto_id,
+          name: i.receiver,
+          email: i.receiver_email,
+        });
+        // SELECTED COPMANY LIST
+        this.companyUserList.push({
+          company: i.company,
+        });
+
+        this.formList.push({
+          AxiosProgressCount: 0,
+          AxiosSuccess: false,
+          AxiosSuccessMessage: "",
+          AxiosSuccessResponse: null,
+          stDatePicker: false,
+          stDate: moment(i.po_date * 1000)
+            .add(1, "d")
+            .toISOString()
+            .substr(0, 10),
+          userSelectedList: {
+            id: i.agent_auto_id,
+            name: i.agent,
+            email: i.agent_email,
+          },
+          vendorSelectedList: {
+            id: i.vendor_auto_id,
+            name: i.vendor,
+            email: i.vendor_email,
+          },
+          customerSelectedList: {
+            id: i.customer_auto_id,
+            name: i.customer,
+            email: i.customer_email,
+          },
+          requestedBySelectedList: {
+            id: i.receiver_auto_id,
+            name: i.receiver,
+            email: i.receiver_email,
+          },
+          companySelectedList: {
+            company: i.company,
+          },
+          priority: {
+            index: parseInt(i.priority),
+          },
+          id: i.id,
+          cus_po_number: i.cus_po_number,
+          po_number: i.po_number,
+          control_number: i.control_number,
+          style: i.style,
+          nos: i.number_of_style,
+          qty: i.qty,
+          total: i.total_value,
+          attachments: attachmentArr,
+        });
+
+        if (type == "edit") {
+          this.formAddmModel = true;
+        } else {
+          this.formViewModel = true;
+        }
+        console.log("on Edit from Response -> ", i);
+      });
+
+      console.log("on Edit from Local -> ", e);
     },
     onDeleteItem(e) {
       this.formDeleteModel = true;
