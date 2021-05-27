@@ -10,7 +10,12 @@
         <v-icon small>mdi-menu</v-icon>
       </v-btn>
       <!-- Dashboard -->
-      {{ $t("dashboard.title") }}
+      <!-- {{ $t("dashboard.title") }} --  -->
+
+      <v-icon small left class="ml-4">mdi-calendar-month</v-icon>
+
+      {{ date }}
+
       <v-spacer></v-spacer>
 
       <v-btn small icon color="white" dark title="Choose Theme">
@@ -177,6 +182,9 @@ export default {
       user: {},
       items: [],
       fullscreen: false,
+      interval: null,
+      time: null,
+      date: null,
     };
   },
   beforeMount() {
@@ -186,13 +194,23 @@ export default {
     this.checkFullScreen();
     this.userInfomration();
   },
+  created() {
+    let current = new Date();
+
+    this.date =
+      current.getDate() +
+      "/" +
+      current.getMonth() +
+      "/" +
+      current.getFullYear();
+  },
 
   methods: {
     userInfomration() {
       let i = JSON.parse(localStorage.getItem("user"));
       this.user = Object.assign(i);
 
-      console.log(this.user);
+      // console.log(this.user);
     },
     checkingRoutes() {
       // modules   are indexed
@@ -201,9 +219,10 @@ export default {
       // 2 - system
       // 3 - task
       // 4 - user
+      // 5 - po
       let token_access = JSON.parse(localStorage.getItem("token_access"));
       if (token_access[0] != 0) {
-        console.log("dashboard");
+        // console.log("dashboard");
         this.items.push({
           id: 0,
           title: this.$t("menu.dashboard"),
@@ -212,7 +231,7 @@ export default {
         });
       }
       if (token_access[1] != 0) {
-        console.log("project");
+        // console.log("project");
         this.items.push({
           id: 1,
           title: this.$t("menu.projects"),
@@ -221,7 +240,7 @@ export default {
         });
       }
       if (token_access[2] != 0) {
-        console.log("system");
+        // console.log("system");
         this.items.push({
           id: 2,
           title: this.$t("menu.systems"),
@@ -230,7 +249,7 @@ export default {
         });
       }
       if (token_access[3] != 0) {
-        console.log("task");
+        // console.log("task");
         this.items.push({
           id: 3,
           title: this.$t("menu.tasks"),
@@ -239,7 +258,7 @@ export default {
         });
       }
       if (token_access[4] != 0) {
-        console.log("user");
+        // console.log("user");
         this.items.push({
           id: 3,
           title: this.$t("menu.users"),
@@ -247,20 +266,23 @@ export default {
           to: "users",
         });
       }
-    },
-    redirectToLogin() {
-      let getToken = JSON.parse(localStorage.getItem("token"));
-      console.log("get token", getToken);
-      if (getToken == null) {
-        this.$router
-          .push({
-            path: "login",
-          })
-          .catch((e) => {
-            console.log("catch on admin dashboard error", e);
-          });
+      if (token_access[5] != 0) {
+        // console.log("po");
+        this.items.push({
+          id: 5,
+          title: this.$t("menu.po"),
+          icon: "mdi-alpha-p-circle",
+          to: "/po",
+        });
       }
+
+      // ordering menu
+      let order = [0, 5, 1, 2, 3, 4];
+      this.items.sort(function(x, y) {
+        return order.indexOf(x.id) - order.indexOf(y.id);
+      });
     },
+
     languageChange(e) {
       console.log(e);
       localStorage.setItem("Lang", e);

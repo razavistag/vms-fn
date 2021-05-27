@@ -7,6 +7,7 @@ import Login from "../views/Login";
 import Register from "../views/Register";
 
 import AdminDashboard from "../views/Admin/Dashboard";
+import po from "../views/Admin/Po.vue";
 import Project from "../views/Admin/Project";
 import System from "../views/Admin/System";
 import Task from "../views/Admin/Task";
@@ -19,7 +20,7 @@ Vue.use(VueRouter);
 // 2 - system
 // 3 - task
 // 4 - user
-// const access = JSON.parse(localStorage.getItem("token_access"));
+// 5 - po
 const routes = [
   {
     path: "/",
@@ -99,6 +100,22 @@ const routes = [
     meta: { AuthRequired: true },
     beforeEnter: (to, from, next) => {
       let auth = global.AccessCheck("users");
+      if (auth == 1) {
+        next();
+      } else {
+        next({
+          path: "/dashboard",
+        });
+      }
+    },
+  },
+  {
+    path: "/po",
+    name: "po",
+    component: po,
+    meta: { AuthRequired: true },
+    beforeEnter: (to, from, next) => {
+      let auth = global.AccessCheck("po");
       if (auth == 1) {
         next();
       } else {

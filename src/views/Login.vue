@@ -83,7 +83,7 @@
                     >
                     </v-checkbox>
 
-                    <v-btn color="blue" text depressed tile class="ma-0 ml-0">
+                    <v-btn plain color="blue" class="ma-0 ml-0">
                       Forget Password
                     </v-btn>
                   </v-col>
@@ -92,9 +92,7 @@
                     <v-btn
                       to="/register"
                       color="blue"
-                      text
-                      depressed
-                      tile
+                      plain
                       class="ma-0   pa-0"
                       height="10"
                     >
@@ -221,7 +219,7 @@ export default {
                 "user",
                 JSON.stringify(response.data.user_information)
               );
-              
+
               this.$router
                 .push({
                   path: "dashboard",

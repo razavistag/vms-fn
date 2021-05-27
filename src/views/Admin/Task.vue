@@ -18,7 +18,7 @@
       >
         <template v-slot:top>
           <v-toolbar flat id="toolbar">
-            <v-toolbar-title class="h6" id="v_table_title">
+            <v-toolbar-title class="h6" id="v_table_title_size">
               <v-icon
                 small
                 left
@@ -132,7 +132,7 @@
               v-shortkey="['alt', 'n']"
               @shortkey="newDialog()"
               @click="newDialog"
-              v-show="appAccess >= 2"
+             
             >
               <v-icon left dark class=""> mdi-plus </v-icon>
 

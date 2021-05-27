@@ -18,6 +18,7 @@ export default {
 
   AccessCheck(i) {
     let access = JSON.parse(localStorage.getItem("token_access"));
+
     if (i == "project") {
       if (access[1] != 0) {
         return 1;
@@ -50,6 +51,39 @@ export default {
       }
     }
 
-    return 567;
+    if (i == "po") {
+      if (access[5] != 0) {
+        return 1;
+      } else {
+        return 0;
+      }
+    }
+  },
+
+  ///* Safari *//* IE11 *//* Chrome */
+  onFullscreenDataTable(elem) {
+    var elem = document.getElementById(elem);
+    if (elem.requestFullscreen) {
+      elem.requestFullscreen();
+      return true;
+    } else if (elem.webkitRequestFullscreen) {
+      elem.webkitRequestFullscreen();
+      return true;
+    } else if (elem.msRequestFullscreen) {
+      elem.msRequestFullscreen();
+      return true;
+    }
+  },
+  onExitFullScreenDataTable() {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+      return true;
+    } else if (document.webkitExitFullscreen) {
+      document.webkitExitFullscreen();
+      return true;
+    } else if (document.msExitFullscreen) {
+      document.msExitFullscreen();
+      return true;
+    }
   },
 };

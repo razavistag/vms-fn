@@ -25,7 +25,7 @@
 
         <template v-slot:top>
           <v-toolbar flat id="toolbar">
-            <v-toolbar-title class="h6" id="v_table_title">
+            <v-toolbar-title class="h6" id="v_table_title_size">
               <v-icon
                 small
                 left
@@ -1554,40 +1554,11 @@ export default {
   methods: {
     datatableColumnVisibility() {
       let x = JSON.parse(localStorage.getItem("project_active_columns"));
-      this.headersList.push(
-        {
-          text: "logo",
-          value: "logo",
-        },
-        {
-          text: "project",
-          value: "title",
-        },
-        {
-          text: "starting date",
-          value: "startingdate",
-        },
-        {
-          text: "deadline",
-          value: "deadline",
-        },
-        {
-          text: "duration",
-          value: "duration",
-        },
-        {
-          text: "Incharge",
-          value: "incharge_name",
-        },
-        {
-          text: "version",
-          value: "projectVersion",
-        },
-        {
-          text: "cost",
-          value: "cost",
-        }
-      );
+      let y = this.headersMap.slice(1, -1);
+
+      y.forEach((element) => {
+        this.headersList.push(element);
+      });
 
       if (x == null) {
         let obj = this.headersMap;

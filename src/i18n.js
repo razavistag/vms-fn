@@ -14,6 +14,8 @@ export default new VueI18n({
         addSystems: "Add Systems",
  
         addUsers: "Add Users",
+
+        addpo: "Add PO",
  
       },
 
@@ -26,11 +28,12 @@ export default new VueI18n({
 
       // SIDEBAR NAVIGATION
       menu: {
-        dashboard: "Dashboard ",
-        projects: "Projects",
-        systems: "Systems",
-        tasks: "Tasks",
-        users: "Users",
+        dashboard: "DASHBOARD",
+        projects: "PROJECTS",
+        systems: "SYSTEMS",
+        tasks: "TASKS",
+        users: "USERS",
+        po: "PO",
       },
 
       // DASHBOARD PAGE
@@ -76,6 +79,11 @@ export default new VueI18n({
       // USERS PAGE
       users: {
         title: "Users",
+      },
+      
+      // PO PAGE
+      po: {
+        title: "PO ",
       },
     },
  
