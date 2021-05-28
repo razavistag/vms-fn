@@ -233,3 +233,22 @@
   border-width: .5px;
   background-color: #eceff1;
 }
+.task-form-dialog{
+  align-self: flex-start;
+  position: relative;
+  top: 100px;
+  border-radius: 0px;
+}
+.TaskAttachmentFormDialog {
+  align-self: flex-start;
+
+  position: relative;
+  top: 50px;
+  border-radius: 0px;
+}
+.task_user_col_border {
+  // border: 1px solid #607d8b;
+  border: 1px solid rgba(191, 189, 189, 0.2);
+  border-width: .5px;
+  background-color: #eceff1;
+}

@@ -10,13 +10,14 @@ export default new VueI18n({
         refresh: "Refresh",
         displayColumns: "Display Columns",
         addProjects: "Add Projects",
- 
+
         addSystems: "Add Systems",
- 
+
         addUsers: "Add Users",
 
         addpo: "Add PO",
- 
+
+        addTask: "Add Task",
       },
 
       // STATUS
@@ -57,7 +58,6 @@ export default new VueI18n({
         },
       },
 
- 
       // SYSTEM PAGE
       systems: {
         title: "Systems",
@@ -74,20 +74,22 @@ export default new VueI18n({
         },
       },
 
- 
- 
+      //  TASK PAGE
+      task: {
+        title: "Tasks",
+      },
+
       // USERS PAGE
       users: {
         title: "Users",
       },
-      
+
       // PO PAGE
       po: {
         title: "PO ",
       },
     },
- 
+
     spanish: {},
- 
   },
 });
