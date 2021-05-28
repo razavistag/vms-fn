@@ -285,7 +285,8 @@
           <v-icon
             id="dt-view-action-button"
             x-small
-            class="mr-2 blue darken-1  pa-1 shrink   white--text rounded"
+            dark
+            class="mr-1 blue darken-1  pa-2"
             title="View Projects"
             @click="onView(item)"
           >
@@ -295,7 +296,8 @@
             id="dt-edit-action-button"
             x-small
             title="Edit Projects"
-            class="mr-2 orange darken-1 pa-1 white--text rounded"
+            dark
+            class="mr-1 orange darken-1 pa-2 "
             @click="onEditItem(item)"
             v-show="appAccess >= 3"
           >
@@ -306,7 +308,8 @@
             id="dt-trash-action-button"
             x-small
             title="Delete Projects"
-            class="red darken-1 pa-1 white--text rounded"
+            dark
+            class="red darken-1 red darken-1 pa-2 "
             @click="onDeleteItem(item)"
             v-show="appAccess >= 4"
           >
@@ -2043,7 +2046,6 @@ export default {
         this.$refs.form.reset();
         this.editedItem = Object.assign({});
         this.privillage = Object.assign({});
-        
       });
     },
 

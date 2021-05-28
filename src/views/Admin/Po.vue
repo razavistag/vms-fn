@@ -348,8 +348,8 @@
             id="dt-trash-action-button"
             x-small
             dark
-            title="Delete Projects"
             class="pa-2 ml-1 red darken-1"
+            title="Delete Projects"
             @click="onDeleteItem(item)"
             v-show="appAccess >= 4"
           >

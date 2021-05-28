@@ -837,7 +837,8 @@
           <v-icon
             id="dt-view-action-button"
             small
-            class="mr-2 blue darken-1  pa-1 shrink   white--text rounded"
+            dark
+            class="mr-1 blue darken-1  pa-1"
             title="View Projects"
             @click="viewForm(item)"
           >
@@ -847,8 +848,9 @@
           <v-icon
             id="dt-edit-action-button"
             small
+            dark
             title="Edit Projects"
-            class="mr-2 orange darken-1 pa-1 white--text rounded"
+            class="mr-1 orange darken-1 pa-1"
             @click="editItem(item)"
             v-show="appAccess >= 3"
           >
@@ -860,7 +862,8 @@
             id="dt-trash-action-button"
             small
             title="Delete Projects"
-            class="red darken-1 pa-1 white--text rounded"
+            dark
+            class="red darken-1 pa-1"
             @click="deleteItem(item)"
             v-show="appAccess >= 4"
           >
