@@ -25,7 +25,7 @@
 
         <template v-slot:top>
           <v-toolbar flat id="toolbar">
-            <v-toolbar-title class="h6" id="v_table_title">
+            <v-toolbar-title class="h6" id="v_table_title_size">
               <v-icon
                 small
                 left
@@ -837,7 +837,8 @@
           <v-icon
             id="dt-view-action-button"
             small
-            class="mr-2 blue darken-1  pa-1 shrink   white--text rounded"
+            dark
+            class="mr-1 blue darken-1  pa-1"
             title="View Projects"
             @click="viewForm(item)"
           >
@@ -847,8 +848,9 @@
           <v-icon
             id="dt-edit-action-button"
             small
+            dark
             title="Edit Projects"
-            class="mr-2 orange darken-1 pa-1 white--text rounded"
+            class="mr-1 orange darken-1 pa-1"
             @click="editItem(item)"
             v-show="appAccess >= 3"
           >
@@ -860,7 +862,8 @@
             id="dt-trash-action-button"
             small
             title="Delete Projects"
-            class="red darken-1 pa-1 white--text rounded"
+            dark
+            class="red darken-1 pa-1"
             @click="deleteItem(item)"
             v-show="appAccess >= 4"
           >
@@ -1554,40 +1557,11 @@ export default {
   methods: {
     datatableColumnVisibility() {
       let x = JSON.parse(localStorage.getItem("project_active_columns"));
-      this.headersList.push(
-        {
-          text: "logo",
-          value: "logo",
-        },
-        {
-          text: "project",
-          value: "title",
-        },
-        {
-          text: "starting date",
-          value: "startingdate",
-        },
-        {
-          text: "deadline",
-          value: "deadline",
-        },
-        {
-          text: "duration",
-          value: "duration",
-        },
-        {
-          text: "Incharge",
-          value: "incharge_name",
-        },
-        {
-          text: "version",
-          value: "projectVersion",
-        },
-        {
-          text: "cost",
-          value: "cost",
-        }
-      );
+      let y = this.headersMap.slice(1, -1);
+
+      y.forEach((element) => {
+        this.headersList.push(element);
+      });
 
       if (x == null) {
         let obj = this.headersMap;

@@ -285,7 +285,8 @@
           <v-icon
             id="dt-view-action-button"
             x-small
-            class="mr-2 blue darken-1  pa-1 shrink   white--text rounded"
+            dark
+            class="mr-1 blue darken-1  pa-2"
             title="View Projects"
             @click="onView(item)"
           >
@@ -295,7 +296,8 @@
             id="dt-edit-action-button"
             x-small
             title="Edit Projects"
-            class="mr-2 orange darken-1 pa-1 white--text rounded"
+            dark
+            class="mr-1 orange darken-1 pa-2 "
             @click="onEditItem(item)"
             v-show="appAccess >= 3"
           >
@@ -306,7 +308,8 @@
             id="dt-trash-action-button"
             x-small
             title="Delete Projects"
-            class="red darken-1 pa-1 white--text rounded"
+            dark
+            class="red darken-1 red darken-1 pa-2 "
             @click="onDeleteItem(item)"
             v-show="appAccess >= 4"
           >
@@ -483,10 +486,12 @@
       content-class="user-form-dialog"
       scrollable
     >
-      <v-card>
+      <v-card tile flat>
+        <DialogCardLoading />
+
         <v-card-title :class="ModelHeaderColor">
-          <span class="headline ">
-            {{ formTitle }}
+          <span class="headline blue-grey--text text--darken-3 d-flex">
+            <v-icon left color="">mdi-account-plus</v-icon> {{ formTitle }}
             <span v-if="editedIndex != -1">
               {{ editedItem.name }}
             </span>
@@ -1252,6 +1257,7 @@
 
 <script>
 import DashboardLayout from "../../components/DashboardLayout";
+import DialogCardLoading from "../../components/DialogCardLoading";
 import { ValidationObserver, ValidationProvider } from "vee-validate";
 import moment from "moment";
 import { json2excel, excel2json } from "js2excel";
@@ -1283,9 +1289,10 @@ export default {
       dobDatePicker: false,
       superAdmin: false,
       pdfLayout: null,
+      cancelAxios: true,
 
       DTbtnColor: "indigo lighten-1 ",
-      ModelHeaderColor: "indigo lighten-4",
+      ModelHeaderColor: "blue-grey lighten-5",
 
       appAccess: 0, //ACCESS PERMISSION FOR Users
       existData: -1,
@@ -1474,6 +1481,7 @@ export default {
   },
   components: {
     DashboardLayout,
+    DialogCardLoading,
     ValidationObserver,
     ValidationProvider,
   },
@@ -1506,51 +1514,11 @@ export default {
     },
     datatableColumnVisibility() {
       let x = JSON.parse(localStorage.getItem("user_active_columns"));
-      this.headersList.push(
-        {
-          text: "Name",
-          align: "center",
-          sortable: true,
-          value: "name",
-          align: "start",
-        },
-        {
-          text: "Company",
-          align: "center",
-          sortable: true,
-          value: "company",
-          align: "start",
-        },
-        {
-          text: "Phone",
-          align: "center",
-          sortable: true,
-          value: "phone",
-          align: "start",
-        },
-        {
-          text: "Address",
-          align: "center",
-          sortable: true,
-          value: "address",
-          align: "start",
-        },
-        {
-          text: "Gender",
-          align: "center",
-          sortable: true,
-          value: "gender",
-          align: "start",
-        },
-        {
-          text: "Role",
-          align: "center",
-          sortable: true,
-          value: "role",
-          align: "start",
-        }
-      );
+      let y = this.headersMap.slice(1, -1);
 
+      y.forEach((element) => {
+        this.headersList.push(element);
+      });
       if (x == null) {
         let obj = this.headersMap;
         let result = obj.map((col) => col.value);

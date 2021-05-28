@@ -2,12 +2,19 @@
 @media screen and (max-width: 1440px) {
   #dt-view-action-button {
     font-size: 11px !important;
+    padding: 5px !important;
   }
   #dt-edit-action-button {
     font-size: 11px !important;
+    padding: 5px !important;
   }
   #dt-trash-action-button {
     font-size: 11px !important;
+    padding: 5px !important;
+  }
+  #dt-attchment-action-button {
+    font-size: 11px !important;
+    padding: 5px !important;
   }
   #dt_table table thead tr {
     th:nth-child(1) {
@@ -88,6 +95,15 @@
       padding-right: 0px !important;
       width: 200px !important;
       min-width: 10px !important;
+    }
+  }
+  #dt_table_podashboard table thead tr {
+    th:nth-child(12) {
+      padding-left: 0px !important;
+      padding-right: 0px !important;
+      width: 100px !important;
+      min-width: 130px !important;
+    
     }
   }
 }
