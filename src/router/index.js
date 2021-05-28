@@ -12,6 +12,7 @@ import Project from "../views/Admin/Project";
 import System from "../views/Admin/System";
 import Task from "../views/Admin/Task";
 import User from "../views/Admin/User";
+import Order from "../views/Admin/Order.vue";
 
 Vue.use(VueRouter);
 // modules   are indexed
@@ -21,6 +22,7 @@ Vue.use(VueRouter);
 // 3 - task
 // 4 - user
 // 5 - po
+// 6 - order
 const routes = [
   {
     path: "/",
@@ -116,6 +118,22 @@ const routes = [
     meta: { AuthRequired: true },
     beforeEnter: (to, from, next) => {
       let auth = global.AccessCheck("po");
+      if (auth == 1) {
+        next();
+      } else {
+        next({
+          path: "/dashboard",
+        });
+      }
+    },
+  },
+  {
+    path: "/order",
+    name: "Order",
+    component: Order,
+    meta: { AuthRequired: true },
+    beforeEnter: (to, from, next) => {
+      let auth = global.AccessCheck("order");
       if (auth == 1) {
         next();
       } else {

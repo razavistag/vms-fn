@@ -35,6 +35,7 @@ export default new VueI18n({
         tasks: "TASKS",
         users: "USERS",
         po: "PO",
+        order: "ORDER",
       },
 
       // DASHBOARD PAGE
