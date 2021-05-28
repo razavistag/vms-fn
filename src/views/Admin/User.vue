@@ -15,7 +15,7 @@
           prevIcon: '',
           nextIcon: '',
         }"
-        loading-text="Fetching Project Data"
+        loading-text="Fetching Data"
         height="85vh"
         id="dt_table_users"
         class="elevation-0"
