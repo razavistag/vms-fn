@@ -235,7 +235,7 @@
               v-show="appAccess >= 2"
             >
               <v-icon left dark class=""> mdi-plus </v-icon>
-              <span class="v_toolbar_add_project_text">
+              <span class="v_toolbar_add_button_text">
                 {{ $t("button.addpo") }}
               </span>
             </v-btn>
