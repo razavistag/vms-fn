@@ -984,7 +984,7 @@ export default {
     formViewModel: false,
 
     existData: -1,
-    appAccess: 0, //ACCESS PERMISSION FOR po
+    appAccess: 0, //ACCESS PERMISSION FOR TASK
     editedIndex: -1,
 
     DTbtnColor: "indigo lighten-1 ",
@@ -1117,7 +1117,7 @@ export default {
         text: "Actions",
         value: "actions",
         sortable: false,
-        width: "10%",
+        width: "14%",
         align: "end",
         class: "dark--text",
       },
@@ -1492,7 +1492,7 @@ export default {
         })
         .catch((response) => {
           // console.log("Error Fround. Attachment Not Deleted");
-          this.notification("Error Fround. PO Not Deleted", "red");
+          this.notification("Error Fround.   Not Deleted", "red");
         });
 
       this.formList[x].attachments.splice(y, 1);
@@ -1531,7 +1531,33 @@ export default {
         // this.getAssigneeList.splice(0);
       });
     },
-    onSearch(e) {},
+    onSearch(e) {
+      this.dataTableLoading = true;
+      if (this.search.length > 0) {
+        this.$http.get(this.url.task + "/getTaskList/" + e).then((response) => {
+          // console.log(response.data);
+          let i = response.data.objects;
+          this.task.splice(0);
+          i.forEach((e) => {
+            this.task.push({
+              id: e.id,
+              task: e.title,
+              project: e.project.title,
+              system: e.system.domain,
+              tested_by: e.tester_to.name,
+              priority: e.priority,
+              status: e.status,
+              attachments: e.attachment,
+            });
+          }, 4000);
+          this.dataTableLoading = false;
+        });
+      } else {
+        this.task.splice(0);
+        this.onInitialize(localStorage.getItem("task_pk"));
+        this.dataTableLoading = false;
+      }
+    },
     onDeleteItem(e) {
       this.formDeleteModel = true;
       this.editedItem = Object.assign(e);
@@ -1546,8 +1572,8 @@ export default {
           this.formDeleteModel = false;
         })
         .catch((response) => {
-          // console.log("Error Fround. PO Not Deleted");
-          this.notification("Error Fround. PO Not Deleted", "red");
+          // console.log("Error Fround.   Not Deleted");
+          this.notification("Error Fround.   Not Deleted", "red");
         });
     },
     onChangeColumn(e) {
@@ -1564,21 +1590,9 @@ export default {
       });
     },
     onInitializeExportColumns() {
-      this.excelTitles = ["TASK", "PROJECT", "SYSTEM", "TESTED BY", "PRIORITY"];
+      this.excelTitles = [];
 
-      this.pdfTitles = [
-        "PO DATE",
-        "AGENT",
-        "VENDOR",
-        "PO NUMBER",
-        "CUSTOMER",
-        "CUSTOMER PO NUMBER",
-        "NUMBER OF STYLE",
-        "QTY",
-        "TOTAL",
-        "STATUS",
-        "PRIORITY",
-      ];
+      this.pdfTitles = [];
 
       this.selectedExcelTitle = this.excelTitles;
       this.selectedPDFTitle = this.excelTitles;
@@ -1597,7 +1611,7 @@ export default {
       if (x == null) {
         let obj = this.headersMap;
         let result = obj.map((col) => col.value);
-        localStorage.setItem("po_active_columns", JSON.stringify(result));
+        localStorage.setItem("task_active_columns", JSON.stringify(result));
 
         result.forEach((element) => {
           this.selectedHeaders.push(element);
