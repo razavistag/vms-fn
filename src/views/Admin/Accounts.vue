@@ -1143,6 +1143,16 @@ export default {
       this.$refs.searchbar_ref.$refs.input.focus();
     },
 
+    onExpandTable(e) {
+      if (e == "e") {
+        let x = this.$gl.onFullscreenDataTable("dt_table_accounts");
+        if (x) this.dataTableFullscreen = true;
+      } else {
+        let x = this.$gl.onExitFullScreenDataTable();
+        if (x) this.dataTableFullscreen = false;
+      }
+    },
+
     notification(m, c) {
       this.snackbar = {
         show: true,
