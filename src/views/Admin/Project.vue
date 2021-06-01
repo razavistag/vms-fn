@@ -17,7 +17,7 @@
         height="85vh"
         class="elevation-0"
         dense
-        loading-text="Fetching Project Data"
+        loading-text="Fetching Data"
         disable-pagination
         style="z-index:1000;"
       >

@@ -58,6 +58,13 @@ export default {
         return 0;
       }
     }
+    if (i == "order") {
+      if (access[6] != 0) {
+        return 1;
+      } else {
+        return 0;
+      }
+    }
   },
 
   ///* Safari *//* IE11 *//* Chrome */

@@ -220,6 +220,7 @@ export default {
       // 3 - task
       // 4 - user
       // 5 - po
+      // 6 - order
       let token_access = JSON.parse(localStorage.getItem("token_access"));
       if (token_access[0] != 0) {
         // console.log("dashboard");
@@ -273,6 +274,15 @@ export default {
           title: this.$t("menu.po"),
           icon: "mdi-alpha-p-circle",
           to: "/po",
+        });
+      }
+       if (token_access[6] != 0) {
+        // console.log("po");
+        this.items.push({
+          id: 5,
+          title: this.$t("menu.order"),
+          icon: "mdi-checkbox-multiple-blank-circle-outline",
+          to: "/order",
         });
       }
 
