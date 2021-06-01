@@ -73,6 +73,13 @@ export default {
         return 0;
       }
     }
+    if (i == "holiday") {
+      if (access[8] != 0) {
+        return 1;
+      } else {
+        return 0;
+      }
+    }
   },
 
   ///* Safari *//* IE11 *//* Chrome */
