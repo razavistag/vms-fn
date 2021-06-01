@@ -278,7 +278,6 @@ export default {
         });
       }
       if (token_access[6] != 0) {
-        // console.log("po");
         this.items.push({
           id: 6,
           title: this.$t("menu.order"),
@@ -287,7 +286,6 @@ export default {
         });
       }
       if (token_access[7] != 0) {
-        // console.log("po");
         this.items.push({
           id: 7,
           title: this.$t("menu.account"),
@@ -295,9 +293,17 @@ export default {
           to: "/account",
         });
       }
+      if (token_access[8] != 0) {
+        this.items.push({
+          id: 8,
+          title: this.$t("menu.holiday"),
+          icon: "mdi-calendar-check-outline",
+          to: "/holiday",
+        });
+      }
 
       // ordering menu
-      let order = [0,5,6,1,2,3,7,4];
+      let order = [0, 5, 6, 1, 2, 3, 8, 7, 4];
       this.items.sort(function(x, y) {
         return order.indexOf(x.id) - order.indexOf(y.id);
       });

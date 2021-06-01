@@ -39,6 +39,7 @@ export default new VueI18n({
         po: "PO",
         order: "ORDER",
         account: "ACCOUNTS",
+        holiday: "HOLIDAYS",
       },
 
       // DASHBOARD PAGE
@@ -92,15 +93,20 @@ export default new VueI18n({
       po: {
         title: "PO ",
       },
-      
+
       // ORDER PAGE
       order: {
         title: "ORDER ",
       },
-      
+
       // ACCOUNT PAGE
       account: {
         title: "ACCOUNTS",
+      },
+
+      // HOLIDAY PAGE
+      holiday: {
+        title: "HOLIDAYS",
       },
     },
 

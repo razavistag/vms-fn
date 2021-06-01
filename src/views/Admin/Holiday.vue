@@ -49,7 +49,7 @@
 
               <!-- TABLE TITLE  -->
               <span v-animate-css="'fadeIn'">
-                {{ $t("account.title") }}
+                {{ $t("holiday.title") }}
               </span>
             </v-toolbar-title>
 
@@ -58,6 +58,11 @@
             <!-- COPY TO Clipboard -->
             <v-btn icon small @click="onClipboard">
               <v-icon small>mdi-clipboard-edit-outline</v-icon>
+            </v-btn>
+
+            <!-- CALANDER VIEW -->
+            <v-btn icon small @click="calanderView = true">
+              <v-icon small>mdi-calendar-multiple-check</v-icon>
             </v-btn>
 
             <v-spacer></v-spacer>
@@ -156,10 +161,22 @@
           </v-toolbar>
         </template>
 
-        <!-- CUSTOM COLUMN -->
-        <!-- <template v-slot:[`item.coumnName`]="{ item }">
-          {{ item.coumnName }}
-        </template> -->
+        <!-- COLUMN ID -->
+        <template v-slot:[`item.id`]="{ item, index }">
+          <div
+            class="d-flex index_id_column"
+            :title="item.holiday_status == '0' ? 'PENDING' : 'ACTIVE'"
+          >
+            <v-sheet
+              :color="item.holiday_status == '0' ? 'orange' : 'green'"
+              class="ma-0 pa-0"
+              height="30"
+              width="3"
+            ></v-sheet>
+
+            <span class="ma-1">{{ index + 1 }}</span>
+          </div>
+        </template>
 
         <!-- TABLE ACTIONS -->
         <template v-slot:[`item.actions`]="{ item }">
@@ -260,24 +277,130 @@
         </v-card-title>
 
         <!-- MODEL BODY -->
-        <v-card-text class="ma-0 pa-3 d-flex">
+        <v-card-text class="ma-0 pa-3  ">
           <ValidationObserver ref="form">
             <v-row class="ma-0 pa-0  mt-5 ">
-              <!-- CUSTOM TEXT FIELD -->
-              <v-col md="12" sm="6" cols="12" class="">
+              <!--TITLE -->
+              <v-col md="3" sm="6" cols="12" class="">
                 <ValidationProvider
                   rules="required"
-                  name="CUSTOM TEXT FIELD"
+                  name="HOLIDAY TITLE"
                   v-slot="{ errors }"
                 >
                   <v-text-field
-                    v-model="editedItem.custom"
-                    :label="errors[0] ? errors[0] : 'CUSTOM TEXT FIELD'"
+                    v-model="editedItem.holiday_title"
+                    :label="errors[0] ? errors[0] : 'HOLIDAY TITLE'"
                     :error-messages="errors"
                     dense
                     hide-details=""
                   >
                   </v-text-field>
+                </ValidationProvider>
+              </v-col>
+
+              <!-- TYPE -->
+              <v-col md="2" sm="6" cols="12" class="">
+                <ValidationProvider
+                  rules="required"
+                  name="HOLIDAY TYPE"
+                  v-slot="{ errors }"
+                >
+                  <v-select
+                    :items="holidayTypeOptions"
+                    v-model="editedItem.holiday_type"
+                    :label="errors[0] ? errors[0] : 'HOLIDAY TYPE'"
+                    :error-messages="errors"
+                    hide-details=""
+                    clearable
+                    dense
+                    item-text="option"
+                    item-value="index"
+                  ></v-select>
+                </ValidationProvider>
+              </v-col>
+
+              <!-- IS REPERAT -->
+              <v-col md="2" sm="6" cols="12" class="">
+                <ValidationProvider
+                  rules="required"
+                  name="REPEAT"
+                  v-slot="{ errors }"
+                >
+                  <v-select
+                    :items="repeatOptions"
+                    v-model="editedItem.is_repeat"
+                    :label="errors[0] ? errors[0] : 'REPEAT'"
+                    :error-messages="errors"
+                    hide-details=""
+                    clearable
+                    dense
+                    item-text="option"
+                    item-value="index"
+                  ></v-select>
+                </ValidationProvider>
+              </v-col>
+
+              <!--   DATE -->
+              <v-col md="2" sm="6" cols="6">
+                <ValidationProvider
+                  rules="required"
+                  name="DATE"
+                  v-slot="{ errors }"
+                >
+                  <v-menu
+                    v-model="datePicker"
+                    :close-on-content-click="false"
+                    :nudge-right="40"
+                    transition="scale-transition"
+                    offset-y
+                    min-width="auto"
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <ValidationProvider
+                        rules="required"
+                        name="DATE"
+                        v-slot="{ errors }"
+                      >
+                        <v-text-field
+                          v-model="editedItem.holiday_date"
+                          :label="errors[0] ? errors[0] : 'DATE'"
+                          :error-messages="errors"
+                          hide-details=""
+                          dense
+                          readonly
+                          v-bind="attrs"
+                          v-on="on"
+                        ></v-text-field>
+                      </ValidationProvider>
+                    </template>
+                    <v-date-picker
+                      v-model="editedItem.holiday_date"
+                      dateFormat="mm-YYYY"
+                      :color="DTbtnColor"
+                      @input="datePicker = false"
+                    ></v-date-picker>
+                  </v-menu>
+                </ValidationProvider>
+              </v-col>
+
+              <!-- STATUS -->
+              <v-col md="2" sm="6" cols="12" class="">
+                <ValidationProvider
+                  rules="required"
+                  name="STATUS"
+                  v-slot="{ errors }"
+                >
+                  <v-select
+                    :items="statusOption"
+                    v-model="editedItem.holiday_status"
+                    :label="errors[0] ? errors[0] : 'STATUS'"
+                    :error-messages="errors"
+                    hide-details=""
+                    clearable
+                    dense
+                    item-text="option"
+                    item-value="index"
+                  ></v-select>
                 </ValidationProvider>
               </v-col>
             </v-row>
@@ -298,6 +421,77 @@
             {{ submitBtn }}
           </v-btn>
         </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- VIEW MODEL -->
+    <v-dialog v-model="formViewModel" max-width="374" scrollable>
+      <v-card class=" " max-width="374">
+        <v-card-title class="  d-flex">
+          <v-sheet
+            :color="editedItem.account_status == '0' ? 'orange' : 'green'"
+            class=" "
+            height="30"
+            width="3"
+          ></v-sheet>
+
+          <p class="ma-2">{{ editedItem.holiday_title }}</p>
+        </v-card-title>
+
+        <v-card-text class="ma-0  ">
+          <div class="d-flex justify-space-between">
+            <p><v-icon left small>mdi-calendar-check</v-icon> HOLIDAY DATE</p>
+            <p>
+              {{ editedItem.holiday_date }}
+            </p>
+          </div>
+
+          <div class="d-flex justify-space-between">
+            <p><v-icon left small>mdi-call-merge</v-icon> TYPE</p>
+            <p>
+              {{
+                editedItem.holiday_type == 1 ? "HALF DAY OFF" : "FULL DAY OFF"
+              }}
+            </p>
+          </div>
+
+          <div class="d-flex justify-space-between">
+            <p><v-icon left small>mdi-repeat</v-icon> IS REPEAT</p>
+            <p>{{ editedItem.is_repeat == 0 ? "NO" : "YES" }}</p>
+          </div>
+        </v-card-text>
+
+        <v-divider class="mx-4"></v-divider>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn :color="DTbtnColor" text @click="formViewModel = false">
+            CANCEL
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- CALANDER VIEW MODEL -->
+    <v-dialog v-model="calanderView" max-width="374" fullscreen scrollable>
+      <v-card class=" " flat tile max-width="374">
+        <v-card-title>
+          HOLIDAY CALANDER
+          <v-spacer></v-spacer>
+          <v-icon left small @click="calanderView = false">mdi-close</v-icon>
+        </v-card-title>
+        <v-card-text class="ma-0  ">
+          <div class="d-flex justify-space-between">
+            <p><v-icon left small>mdi-calendar-check</v-icon> HOLIDAY DATE</p>
+            <p>
+              {{ editedItem.holiday_date }}
+            </p>
+          </div>
+        </v-card-text>
+
+        <v-divider class="mx-4"></v-divider>
+
+         
       </v-card>
     </v-dialog>
 
@@ -365,7 +559,7 @@ export default {
   data() {
     return {
       url: {
-        baseURL: "Holiday",
+        baseURL: "holiday",
       },
 
       dataTableLoading: true,
@@ -377,14 +571,16 @@ export default {
       submitLoading: false,
       formAddmModel: false,
       formViewModel: false,
+      datePicker: false,
+      calanderView: false,
 
       existData: -1,
       appAccess: 0, //ACCESS PERMISSION
       editedIndex: -1,
 
       moment: moment,
-      pageKey: "accounts_pk",
-      activeColumns: "accounts_active_columns",
+      pageKey: "holiday_pk",
+      activeColumns: "holiday_active_columns",
       DTbtnColor: "indigo lighten-1 ",
       ModelHeaderColor: "blue-grey lighten-5",
       search: "",
@@ -398,6 +594,20 @@ export default {
       selectedExcelTitle: [],
       selectedPDFTitle: [],
 
+      holidayTypeOptions: [
+        { option: "HALF DAY OFF", index: 1 },
+        { option: "FULL DAY OFF", index: 2 },
+      ],
+      repeatOptions: [
+        { option: "YES", index: 1 },
+        { option: "NO", index: 0 },
+      ],
+
+      statusOption: [
+        { option: "ACTIVE", index: 1 },
+        { option: "PENDING", index: 0 },
+      ],
+
       currentUser: {},
       editedItem: {},
       snackbar: {
@@ -408,7 +618,7 @@ export default {
       },
       pagination: {
         current: 1,
-        localCurrentPage: parseInt(localStorage.getItem("po_pk")),
+        localCurrentPage: parseInt(localStorage.getItem("holiday_pk")),
         total: 1,
       },
       dtPagination: {
@@ -435,10 +645,24 @@ export default {
         },
 
         {
-          text: "NAME",
+          text: "Date",
           align: "center",
           sortable: true,
-          value: "account_name",
+          value: "holiday_date",
+          align: "start",
+        },
+        {
+          text: "TITLE",
+          align: "center",
+          sortable: true,
+          value: "holiday_title",
+          align: "start",
+        },
+        {
+          text: "TYPE",
+          align: "center",
+          sortable: true,
+          value: "holiday_type",
           align: "start",
         },
 
@@ -467,7 +691,7 @@ export default {
 
   computed: {
     formTitle() {
-      return this.editedIndex === -1 ? "NEW " : "Edit ";
+      return this.editedIndex === -1 ? "NEW HOLIDAY" : "Edit HOLIDAY";
     },
     submitBtn() {
       return this.editedIndex === -1 ? "SAVE" : "UPDATE";
@@ -481,7 +705,7 @@ export default {
         .get(this.url.baseURL + "?page=" + e)
         .then((response) => {
           let i = response.data;
-          console.log("onInitialize Account", i);
+          console.log("onInitialize Holiday", i);
           this.dataTableLoading = false;
           this.dtPagination = {
             first_page_url: i.objects.first_page_url,
@@ -501,10 +725,7 @@ export default {
           this.pagination.total = i.objects.last_page;
 
           i.objects.data.forEach((e) => {
-            this.itemData.push({
-              id: e.id,
-              account_name: e.account_name,
-            });
+            this.itemData.push(e);
           });
         })
         .catch((err) => {
@@ -538,17 +759,26 @@ export default {
 
         const obj = {
           id: this.editedItem.id,
-          name: this.editedItem.name,
+          holiday_date: this.editedItem.holiday_date,
+          holiday_status: this.editedItem.holiday_status,
+          holiday_title: this.editedItem.holiday_title,
+          holiday_type: this.editedItem.holiday_type,
+          holiday_type: this.editedItem.holiday_type,
+          is_repeat: this.editedItem.is_repeat,
         };
 
         if (this.editedIndex > -1) {
-          // UPDATE USER
+          // UPDATE
           this.$http
-            .put(this.url.baseURL + obj.id, obj)
+            .put(this.url.baseURL + "/" + obj.id, obj)
             .then((response) => {
               this.submitLoading = false;
+              this.onInitialize();
               this.closeForm();
-              this.notification("User has been updated successfully", "green");
+              this.notification(
+                "Recode has been updated successfully",
+                "green"
+              );
             })
             .catch((err) => {
               this.submitLoading = false;
@@ -557,14 +787,14 @@ export default {
               this.$gl.Unauthorized(err.response.status);
             });
         } else {
-          // STORE USER
+          // STORE
           this.$http
             .post(this.url.baseURL, obj)
             .then((response) => {
               this.onInitialize();
               this.closeForm();
               this.submitLoading = false;
-              this.notification("User has been added successfully", "green");
+              this.notification("Recode has been added successfully", "green");
             })
             .catch((err) => {
               this.submitLoading = false;
@@ -576,13 +806,14 @@ export default {
     },
 
     onEditItem(e, type) {
+      this.editedItem = Object.assign({});
       this.editedIndex = this.itemData.indexOf(e);
 
       this.$http
         .get(this.url.baseURL + "/getEditItem/" + e.id)
         .then((response) => {
           let i = response.data.objects;
-          this.editedItem.push(i);
+          this.editedItem = Object.assign(i);
         });
 
       if (type == "edit") {
@@ -628,8 +859,8 @@ export default {
             this.dataTableLoading = false;
           });
       } else {
-        this.onInitialize(this.pageKey);
         this.itemData.splice(0);
+        this.onInitialize(this.pageKey);
         this.dataTableLoading = false;
       }
     },
@@ -712,6 +943,16 @@ export default {
 
     focusSearchKey() {
       this.$refs.searchbar_ref.$refs.input.focus();
+    },
+
+    onExpandTable(e) {
+      if (e == "e") {
+        let x = this.$gl.onFullscreenDataTable("dt_table_holiday");
+        if (x) this.dataTableFullscreen = true;
+      } else {
+        let x = this.$gl.onExitFullScreenDataTable();
+        if (x) this.dataTableFullscreen = false;
+      }
     },
 
     notification(m, c) {

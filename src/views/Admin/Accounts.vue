@@ -658,7 +658,7 @@ export default {
       },
       pagination: {
         current: 1,
-        localCurrentPage: parseInt(localStorage.getItem("po_pk")),
+        localCurrentPage: parseInt(localStorage.getItem("accounts_pk")),
         total: 1,
       },
       dtPagination: {
