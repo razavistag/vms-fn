@@ -55,13 +55,99 @@
 
             <v-divider class="mx-4" inset vertical></v-divider>
 
+            <!-- SELECT OPTION FOR EXPORT TO EXCEL -->
+            <v-menu bottom right :close-on-content-click="false">
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn icon small v-bind="attrs" v-on="on">
+                  <v-icon small>mdi-file-export</v-icon>
+                </v-btn>
+              </template>
+
+              <v-list>
+                <v-list-item-content
+                  v-for="(item, i) in excelTitles"
+                  :key="i"
+                  dense
+                  class="pl-4 pr-4 pt-0 pb-0 ma-0"
+                >
+                  <v-checkbox
+                    class="pa-0 ma-0  "
+                    hide-details=""
+                    v-model="selectedExcelTitle"
+                    :label="item"
+                    :value="item"
+                  ></v-checkbox>
+                </v-list-item-content>
+
+                <v-btn
+                  small
+                  @click="exportToExcel"
+                  :color="DTbtnColor"
+                  dark
+                  class="ma-4"
+                  :loading="exportExecelLoading"
+                >
+                  EXPORT EXCEL
+                </v-btn>
+              </v-list>
+            </v-menu>
+
+            <!-- SELECT OPTION FOR EXPORT TO PDF -->
+            <v-menu bottom right :close-on-content-click="false">
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn icon small v-bind="attrs" v-on="on">
+                  <v-icon small>mdi-file-pdf</v-icon>
+                </v-btn>
+              </template>
+
+              <v-list>
+                <v-list-item-content
+                  v-for="(item, i) in pdfTitles"
+                  :key="i"
+                  dense
+                  class="pl-4 pr-4 pt-0 pb-0 ma-0"
+                >
+                  <v-checkbox
+                    class="pa-0 ma-0  "
+                    hide-details=""
+                    v-model="selectedPDFTitle"
+                    :label="item"
+                    :value="item"
+                  ></v-checkbox>
+                </v-list-item-content>
+
+                <v-list dense>
+                  <v-subheader>Choose Layout</v-subheader>
+                  <v-radio-group
+                    v-model="pdfLayout"
+                    mandatory
+                    class="ma-0 ml-1 mr-1"
+                  >
+                    <v-radio label="landscape" value="l"></v-radio>
+                    <v-radio label="portrait" value="p"></v-radio>
+                  </v-radio-group>
+                </v-list>
+
+                <v-btn
+                  small
+                  @click="exportToPdf"
+                  :color="DTbtnColor"
+                  :loading="exportPDFLoading"
+                  dark
+                  class="mb-4 ml-4 mr-4"
+                >
+                  EXPORT PDF
+                </v-btn>
+              </v-list>
+            </v-menu>
+
             <!-- COPY TO Clipboard -->
             <v-btn icon small @click="onClipboard">
               <v-icon small>mdi-clipboard-edit-outline</v-icon>
             </v-btn>
 
             <!-- CALANDER VIEW -->
-            <v-btn icon small @click="calanderView = true">
+            <v-btn icon small @click="updateRange">
               <v-icon small>mdi-calendar-multiple-check</v-icon>
             </v-btn>
 
@@ -475,23 +561,107 @@
     <!-- CALANDER VIEW MODEL -->
     <v-dialog v-model="calanderView" max-width="374" fullscreen scrollable>
       <v-card class=" " flat tile max-width="374">
-        <v-card-title>
-          HOLIDAY CALANDER
+        <DialogCardLoading />
+        <v-card-title :class="ModelHeaderColor">
+          <span class="headline blue-grey--text text--darken-3 d-flex">
+            HOLIDAY CALENDAR
+          </span>
           <v-spacer></v-spacer>
-          <v-icon left small @click="calanderView = false">mdi-close</v-icon>
+          <v-icon @click="calanderView = false">mdi-close</v-icon>
         </v-card-title>
-        <v-card-text class="ma-0  ">
+        <v-card-text class=" ma-2 ">
           <div class="d-flex justify-space-between">
-            <p><v-icon left small>mdi-calendar-check</v-icon> HOLIDAY DATE</p>
-            <p>
-              {{ editedItem.holiday_date }}
-            </p>
+            <v-row class="fill-height">
+              <v-col>
+                <v-sheet height="64">
+                  <v-toolbar flat>
+                    <v-btn
+                      outlined
+                      class="mr-4"
+                      color="grey darken-2"
+                      @click="setToday"
+                    >
+                      Today
+                    </v-btn>
+                    <v-btn fab text small color="grey darken-2" @click="prev">
+                      <v-icon small>
+                        mdi-chevron-left
+                      </v-icon>
+                    </v-btn>
+                    <v-btn fab text small color="grey darken-2" @click="next">
+                      <v-icon small>
+                        mdi-chevron-right
+                      </v-icon>
+                    </v-btn>
+                    <v-toolbar-title v-if="$refs.calendar">
+                      {{ $refs.calendar.title }}
+                    </v-toolbar-title>
+                    <v-spacer></v-spacer>
+                    <v-menu bottom right>
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn
+                          outlined
+                          color="grey darken-2"
+                          v-bind="attrs"
+                          v-on="on"
+                        >
+                          <span>{{ typeToLabel[type] }}</span>
+                          <v-icon right>
+                            mdi-menu-down
+                          </v-icon>
+                        </v-btn>
+                      </template>
+                      <v-list>
+                        <v-list-item @click="type = 'day'">
+                          <v-list-item-title>Day</v-list-item-title>
+                        </v-list-item>
+                        <v-list-item @click="type = 'week'">
+                          <v-list-item-title>Week</v-list-item-title>
+                        </v-list-item>
+                        <v-list-item @click="type = 'month'">
+                          <v-list-item-title>Month</v-list-item-title>
+                        </v-list-item>
+                        <v-list-item @click="type = '4day'">
+                          <v-list-item-title>4 days</v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu>
+                  </v-toolbar>
+                </v-sheet>
+                <v-sheet height="600">
+                  <v-calendar
+                    ref="calendar"
+                    v-model="focus"
+                    color="primary"
+                    :events="events"
+                    :event-color="getEventColor"
+                    :type="type"
+                    @click:event="showEvent"
+                    @click:more="viewDay"
+                    @click:date="viewDay"
+                    @change="updateRange"
+                  ></v-calendar>
+                  <v-menu
+                    v-model="selectedOpen"
+                    :close-on-content-click="false"
+                    :activator="selectedElement"
+                    offset-x
+                  >
+                    <v-card color="grey lighten-4" min-width="350px" flat>
+                      <v-toolbar :color="selectedEvent.color" dark>
+                        <v-toolbar-title
+                          v-html="selectedEvent.name"
+                        ></v-toolbar-title>
+                      </v-toolbar>
+                    </v-card>
+                  </v-menu>
+                </v-sheet>
+              </v-col>
+            </v-row>
           </div>
         </v-card-text>
 
         <v-divider class="mx-4"></v-divider>
-
-         
       </v-card>
     </v-dialog>
 
@@ -670,11 +840,35 @@ export default {
           text: "Actions",
           value: "actions",
           sortable: false,
-          width: "10%",
+          width: "15%",
           align: "center",
           class: "dark--text",
         },
       ],
+
+      //   v-calander
+      focus: "",
+      type: "month",
+      typeToLabel: {
+        month: "Month",
+        week: "Week",
+        day: "Day",
+        "4day": "4 Days",
+      },
+      selectedEvent: {},
+      selectedElement: null,
+      selectedOpen: false,
+      events: [],
+      colors: [
+        "blue",
+        "indigo",
+        "deep-purple",
+        "cyan",
+        "green",
+        "orange",
+        "grey darken-1",
+      ],
+      holidayTitle: [],
     };
   },
   created() {
@@ -688,7 +882,9 @@ export default {
     this.onAccessPermission();
     this.onInitializeExportColumns();
   },
-
+  mounted() {
+    // this.$refs.calendar.checkChange();
+  },
   computed: {
     formTitle() {
       return this.editedIndex === -1 ? "NEW HOLIDAY" : "Edit HOLIDAY";
@@ -726,6 +922,7 @@ export default {
 
           i.objects.data.forEach((e) => {
             this.itemData.push(e);
+            this.holidayTitle.push(e.holiday_title);
           });
         })
         .catch((err) => {
@@ -762,7 +959,6 @@ export default {
           holiday_date: this.editedItem.holiday_date,
           holiday_status: this.editedItem.holiday_status,
           holiday_title: this.editedItem.holiday_title,
-          holiday_type: this.editedItem.holiday_type,
           holiday_type: this.editedItem.holiday_type,
           is_repeat: this.editedItem.is_repeat,
         };
@@ -869,12 +1065,133 @@ export default {
       this.onInitialize();
     },
 
+    exportToExcel() {
+      this.exportExecelLoading = true;
+      let objects = [];
+      this.itemData.forEach((element) => {
+        objects.push({
+          DATE: element.holiday_date,
+          TITLE: element.holiday_title,
+          TYPE: element.holiday_type,
+          REPEAT: element.is_repeat,
+          STATUS: element.holiday_status == 0 ? "PENDING" : "ACTIVE",
+        });
+      });
+
+      let jsonObject = objects;
+      let selectedArray = this.selectedExcelTitle;
+      let filteredJsonObject = jsonObject.map(function(entry) {
+        return selectedArray.reduce(function(res, key) {
+          res[key] = entry[key];
+          return res;
+        }, {});
+      });
+
+      let data = filteredJsonObject;
+      let fileName = this.moment().unix() + "_file";
+      try {
+        json2excel({
+          data,
+          name: fileName,
+          formateDate: "yyyy/mm/dd",
+        });
+        this.notification(
+          fileName + " has been exported successfully",
+          "green"
+        );
+
+        setTimeout(() => {
+          this.exportExecelLoading = false;
+        }, 4000);
+      } catch (e) {
+        console.error("export error");
+        this.exportExecelLoading = false;
+        this.notification(fileName + " Export Failed. Please try again", "red");
+      }
+    },
+
+    exportToPdf() {
+      this.exportPDFLoading = true;
+      let fileName = this.moment().unix() + "_file";
+
+      try {
+        let user = JSON.parse(localStorage.getItem("user"));
+        let header = [];
+        let data = [];
+        let jsonObject = data;
+        let selectedArray = this.selectedPDFTitle;
+
+        const pdf = new jsPDF({
+          orientation: this.pdfLayout,
+          unit: "mm",
+          format: "a4",
+          putOnlyUsedFonts: true,
+          compress: true,
+          //   encryption: {
+          //     userPassword: user.phone,
+          //     ownerPassword: "admin",
+          //     userPermissions: ["print", "modify", "copy", "annot-forms"],
+          //   },
+        });
+
+        this.selectedPDFTitle.forEach((element, key) => {
+          header.push(element);
+        });
+        this.itemData.forEach((element) => {
+          data.push({
+            DATE: element.holiday_date,
+            TITLE: element.holiday_title,
+            TYPE: element.holiday_type,
+            REPEAT: element.is_repeat,
+            STATUS: element.holiday_status == 0 ? "PENDING" : "ACTIVE",
+          });
+        });
+
+        let filteredData = jsonObject.map(function(entry) {
+          return selectedArray.reduce(function(res, key) {
+            res[key] = entry[key];
+            return res;
+          }, {});
+        });
+
+        let headerConfig = header.map((key) => ({
+          name: key,
+          prompt: key,
+          width: this.pdfLayout == "l" ? 94 : 64,
+          align: "center",
+          padding: 0,
+        }));
+
+        let ColumnConfig = {
+          headerBackgroundColor: "#c5cae9",
+          fontSize: 10,
+          autoSize: false,
+        };
+
+        pdf.table(5, 5, filteredData, headerConfig, ColumnConfig);
+        // pdf.autoPrint({ variant: "non-conform" });
+        pdf.save(fileName + ".pdf");
+
+        this.notification(
+          fileName + " has been exported successfully",
+          "green"
+        );
+
+        setTimeout(() => {
+          this.exportPDFLoading = false;
+        }, 4000);
+      } catch (e) {
+        console.error("export error", e);
+        this.exportPDFLoading = false;
+        this.notification(fileName + " Export Failed. Please try again", "red");
+      }
+    },
+
     onInitializeExportColumns() {
       // DEFINE COLUMNS FOR EXPORT OPTIONS
-      this.excelTitles = ["COLUMN 1", "COLUMN 2"];
+      this.excelTitles = ["DATE", "TITLE", "REPEAT", "STATUS"];
 
-      this.pdfTitles = ["COLUMN 1", "COLUMN 2"];
-
+      this.pdfTitles = ["DATE", "TITLE", "REPEAT", "STATUS"];
       this.selectedExcelTitle = this.excelTitles;
       this.selectedPDFTitle = this.excelTitles;
     },
@@ -961,6 +1278,58 @@ export default {
         message: m,
         color: c,
       };
+    },
+
+    // v-calander function
+    viewDay({ date }) {
+      this.focus = date;
+      this.type = "day";
+    },
+    getEventColor(event) {
+      return event.color;
+    },
+    setToday() {
+      this.focus = "";
+    },
+    prev() {
+      this.$refs.calendar.prev();
+    },
+    next() {
+      this.$refs.calendar.next();
+    },
+    showEvent({ nativeEvent, event }) {
+      const open = () => {
+        this.selectedEvent = event;
+        this.selectedElement = nativeEvent.target;
+        requestAnimationFrame(() =>
+          requestAnimationFrame(() => (this.selectedOpen = true))
+        );
+      };
+
+      if (this.selectedOpen) {
+        this.selectedOpen = false;
+        requestAnimationFrame(() => requestAnimationFrame(() => open()));
+      } else {
+        open();
+      }
+
+      nativeEvent.stopPropagation();
+    },
+    updateRange({ start, end }) {
+      this.calanderView = true;
+      console.log(start, end);
+      const events = [];
+      this.itemData.forEach((element) => {
+        events.push({
+          name: element.holiday_title,
+          start: element.holiday_date,
+          color: this.colors[this.rnd(0, this.colors.length - 1)],
+        });
+      });
+      this.events = events;
+    },
+    rnd(a, b) {
+      return Math.floor((b - a + 1) * Math.random()) + a;
     },
   },
 };

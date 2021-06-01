@@ -727,7 +727,7 @@ export default {
           text: "Actions",
           value: "actions",
           sortable: false,
-          width: "10%",
+          width: "13%",
           align: "center",
           class: "dark--text",
         },
