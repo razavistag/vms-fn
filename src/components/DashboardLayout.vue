@@ -221,6 +221,7 @@ export default {
       // 4 - user
       // 5 - po
       // 6 - order
+      // 7 - accounts
       let token_access = JSON.parse(localStorage.getItem("token_access"));
       if (token_access[0] != 0) {
         // console.log("dashboard");
@@ -261,7 +262,7 @@ export default {
       if (token_access[4] != 0) {
         // console.log("user");
         this.items.push({
-          id: 3,
+          id: 4,
           title: this.$t("menu.users"),
           icon: "mdi-account-cog",
           to: "users",
@@ -276,18 +277,27 @@ export default {
           to: "/po",
         });
       }
-       if (token_access[6] != 0) {
+      if (token_access[6] != 0) {
         // console.log("po");
         this.items.push({
-          id: 5,
+          id: 6,
           title: this.$t("menu.order"),
           icon: "mdi-checkbox-multiple-blank-circle-outline",
           to: "/order",
         });
       }
+      if (token_access[7] != 0) {
+        // console.log("po");
+        this.items.push({
+          id: 7,
+          title: this.$t("menu.account"),
+          icon: "mdi-table-account",
+          to: "/account",
+        });
+      }
 
       // ordering menu
-      let order = [0, 5, 1, 2, 3, 4];
+      let order = [0,5,6,1,2,3,7,4];
       this.items.sort(function(x, y) {
         return order.indexOf(x.id) - order.indexOf(y.id);
       });

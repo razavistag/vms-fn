@@ -260,8 +260,14 @@
   border-radius: 0px;
 }
 
-.view_col_border{
+.view_col_border {
   border: 1px solid rgba(191, 189, 189, 0.2);
   border-width: 0.5px;
   background-color: #eceff1;
+}
+.add-form-dialog {
+  align-self: flex-start;
+  position: relative;
+  top: 80px;
+  border-radius: 0px;
 }

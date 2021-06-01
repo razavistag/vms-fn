@@ -19,6 +19,7 @@ export default new VueI18n({
 
         addTask: "Add Task",
         addOrder: "Add Order",
+        addAccounts: "Add Accounts",
       },
 
       // STATUS
@@ -37,6 +38,7 @@ export default new VueI18n({
         users: "USERS",
         po: "PO",
         order: "ORDER",
+        account: "ACCOUNTS",
       },
 
       // DASHBOARD PAGE
@@ -94,6 +96,11 @@ export default new VueI18n({
       // ORDER PAGE
       order: {
         title: "ORDER ",
+      },
+      
+      // ACCOUNT PAGE
+      account: {
+        title: "ACCOUNTS",
       },
     },
 

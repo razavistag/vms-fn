@@ -65,6 +65,14 @@ export default {
         return 0;
       }
     }
+
+    if (i == "account") {
+      if (access[7] != 0) {
+        return 1;
+      } else {
+        return 0;
+      }
+    }
   },
 
   ///* Safari *//* IE11 *//* Chrome */
