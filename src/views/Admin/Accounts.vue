@@ -55,6 +55,92 @@
 
             <v-divider class="mx-4" inset vertical></v-divider>
 
+            <!-- SELECT OPTION FOR EXPORT TO EXCEL -->
+            <v-menu bottom right :close-on-content-click="false">
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn icon small v-bind="attrs" v-on="on">
+                  <v-icon small>mdi-file-export</v-icon>
+                </v-btn>
+              </template>
+
+              <v-list>
+                <v-list-item-content
+                  v-for="(item, i) in excelTitles"
+                  :key="i"
+                  dense
+                  class="pl-4 pr-4 pt-0 pb-0 ma-0"
+                >
+                  <v-checkbox
+                    class="pa-0 ma-0  "
+                    hide-details=""
+                    v-model="selectedExcelTitle"
+                    :label="item"
+                    :value="item"
+                  ></v-checkbox>
+                </v-list-item-content>
+
+                <v-btn
+                  small
+                  @click="exportToExcel"
+                  :color="DTbtnColor"
+                  dark
+                  class="ma-4"
+                  :loading="exportExecelLoading"
+                >
+                  EXPORT EXCEL
+                </v-btn>
+              </v-list>
+            </v-menu>
+
+            <!-- SELECT OPTION FOR EXPORT TO PDF -->
+            <v-menu bottom right :close-on-content-click="false">
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn icon small v-bind="attrs" v-on="on">
+                  <v-icon small>mdi-file-pdf</v-icon>
+                </v-btn>
+              </template>
+
+              <v-list>
+                <v-list-item-content
+                  v-for="(item, i) in pdfTitles"
+                  :key="i"
+                  dense
+                  class="pl-4 pr-4 pt-0 pb-0 ma-0"
+                >
+                  <v-checkbox
+                    class="pa-0 ma-0  "
+                    hide-details=""
+                    v-model="selectedPDFTitle"
+                    :label="item"
+                    :value="item"
+                  ></v-checkbox>
+                </v-list-item-content>
+
+                <v-list dense>
+                  <v-subheader>Choose Layout</v-subheader>
+                  <v-radio-group
+                    v-model="pdfLayout"
+                    mandatory
+                    class="ma-0 ml-1 mr-1"
+                  >
+                    <v-radio label="landscape" value="l"></v-radio>
+                    <v-radio label="portrait" value="p"></v-radio>
+                  </v-radio-group>
+                </v-list>
+
+                <v-btn
+                  small
+                  @click="exportToPdf"
+                  :color="DTbtnColor"
+                  :loading="exportPDFLoading"
+                  dark
+                  class="mb-4 ml-4 mr-4"
+                >
+                  EXPORT PDF
+                </v-btn>
+              </v-list>
+            </v-menu>
+
             <!-- COPY TO Clipboard -->
             <v-btn icon small @click="onClipboard">
               <v-icon small>mdi-clipboard-edit-outline</v-icon>
@@ -156,10 +242,22 @@
           </v-toolbar>
         </template>
 
-        <!-- CUSTOM COLUMN -->
-        <!-- <template v-slot:[`item.coumnName`]="{ item }">
-          {{ item.coumnName }}
-        </template> -->
+        <!--COLUMN ID -->
+        <template v-slot:[`item.id`]="{ item, index }">
+          <div
+            class="d-flex index_id_column"
+            :title="item.account_status == '0' ? 'PENDING' : 'ACTIVE'"
+          >
+            <v-sheet
+              :color="item.account_status == '0' ? 'orange' : 'green'"
+              class="ma-0 pa-0"
+              height="30"
+              width="3"
+            ></v-sheet>
+
+            <span class="ma-1">{{ index + 1 }}</span>
+          </div>
+        </template>
 
         <!-- TABLE ACTIONS -->
         <template v-slot:[`item.actions`]="{ item }">
@@ -260,24 +358,103 @@
         </v-card-title>
 
         <!-- MODEL BODY -->
-        <v-card-text class="ma-0 pa-3 d-flex">
+        <v-card-text class="ma-0 ">
           <ValidationObserver ref="form">
-            <v-row class="ma-0 pa-0  mt-5 ">
-              <!-- CUSTOM TEXT FIELD -->
-              <v-col md="12" sm="6" cols="12" class="">
+            <v-row class="pl-6 mt-5 ">
+              <!-- NAME -->
+              <v-col md="3" sm="6" cols="12" class="">
                 <ValidationProvider
                   rules="required"
-                  name="CUSTOM TEXT FIELD"
+                  name="NAME"
                   v-slot="{ errors }"
                 >
                   <v-text-field
-                    v-model="editedItem.custom"
-                    :label="errors[0] ? errors[0] : 'CUSTOM TEXT FIELD'"
+                    v-model="editedItem.account_name"
+                    :label="errors[0] ? errors[0] : 'NAME'"
                     :error-messages="errors"
                     dense
+                    clearable
                     hide-details=""
                   >
                   </v-text-field>
+                </ValidationProvider>
+              </v-col>
+
+              <!-- ACCOUNT NUMBER -->
+              <v-col md="3" sm="6" cols="12" class="">
+                <ValidationProvider
+                  rules="required"
+                  name="ACCOUNT NUMBER"
+                  v-slot="{ errors }"
+                >
+                  <v-text-field
+                    v-model="editedItem.account_no"
+                    :label="errors[0] ? errors[0] : 'ACCOUNT NUMBER'"
+                    :error-messages="errors"
+                    dense
+                    clearable
+                    hide-details=""
+                  >
+                  </v-text-field>
+                </ValidationProvider>
+              </v-col>
+
+              <!-- OPENING BALANCE -->
+              <v-col md="2" sm="6" cols="12" class="">
+                <ValidationProvider
+                  rules="required"
+                  name="OPENING BALANCE"
+                  v-slot="{ errors }"
+                >
+                  <v-text-field
+                    v-model="editedItem.account_op_balance"
+                    :label="errors[0] ? errors[0] : 'OPENING BALANCE'"
+                    :error-messages="errors"
+                    dense
+                    clearable
+                    hide-details=""
+                  >
+                  </v-text-field>
+                </ValidationProvider>
+              </v-col>
+
+              <!-- SWIFT CODE -->
+              <v-col md="2" sm="6" cols="12" class="">
+                <ValidationProvider
+                  rules="required"
+                  name="SWIFT CODE"
+                  v-slot="{ errors }"
+                >
+                  <v-text-field
+                    v-model="editedItem.account_swift_code"
+                    :label="errors[0] ? errors[0] : 'SWIFT CODE'"
+                    :error-messages="errors"
+                    dense
+                    clearable
+                    hide-details=""
+                  >
+                  </v-text-field>
+                </ValidationProvider>
+              </v-col>
+
+              <!-- ACCOUNT TYPE -->
+              <v-col md="2" sm="6" cols="12" class="">
+                <ValidationProvider
+                  rules="required"
+                  name="ACCOUNT TYPE"
+                  v-slot="{ errors }"
+                >
+                  <v-select
+                    :items="accountTypeOptions"
+                    v-model="editedItem.account_type"
+                    :label="errors[0] ? errors[0] : 'ACCOUNT TYPE'"
+                    :error-messages="errors"
+                    hide-details=""
+                    clearable
+                    dense
+                    item-text="option"
+                    item-value="index"
+                  ></v-select>
                 </ValidationProvider>
               </v-col>
             </v-row>
@@ -296,6 +473,72 @@
             :loading="submitLoading"
           >
             {{ submitBtn }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- VIEW MODEL -->
+    <v-dialog v-model="formViewModel" max-width="374" scrollable>
+      <v-card class=" " max-width="374">
+        <v-card-title class="  d-flex">
+          <v-sheet
+            :color="editedItem.account_status == '0' ? 'orange' : 'green'"
+            class=" "
+            height="30"
+            width="3"
+          ></v-sheet>
+
+          <p class="ma-2">{{ editedItem.account_name }}</p>
+        </v-card-title>
+
+        <v-card-text class="ma-0  ">
+          <div class="d-flex justify-space-between">
+            <p><v-icon left small>mdi-bank</v-icon> Account Number</p>
+            <p>
+              {{ editedItem.account_no }}
+            </p>
+          </div>
+
+          <div class="d-flex justify-space-between">
+            <p><v-icon left small>mdi-qrcode-edit</v-icon> Swift Code</p>
+            <p>
+              {{ editedItem.account_swift_code }}
+            </p>
+          </div>
+
+          <div class="d-flex justify-space-between">
+            <p>
+              <v-icon left small>mdi-format-list-bulleted-type</v-icon> ACCOUNT
+              TYPE
+            </p>
+            <p>
+              {{
+                editedItem.account_type == 1
+                  ? "Current account"
+                  : editedItem.account_type == 2
+                  ? "Savings account"
+                  : editedItem.account_type == 3
+                  ? "Salary account"
+                  : editedItem.account_type == 4
+                  ? "Fixed deposit account"
+                  : null
+              }}
+            </p>
+          </div>
+
+          <div class="d-flex justify-space-between">
+            <p><v-icon left small>mdi-cash</v-icon> OPENING BALANCE</p>
+            <p>Rs. {{ editedItem.account_op_balance }}</p>
+          </div>
+        </v-card-text>
+
+        <v-divider class="mx-4"></v-divider>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn :color="DTbtnColor" text @click="formViewModel = false">
+            CANCEL
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -398,6 +641,13 @@ export default {
       selectedExcelTitle: [],
       selectedPDFTitle: [],
 
+      accountTypeOptions: [
+        { option: "Current account", index: 1 },
+        { option: "Savings account", index: 2 },
+        { option: "Salary account", index: 3 },
+        { option: "Fixed deposit account", index: 4 },
+      ],
+
       currentUser: {},
       editedItem: {},
       snackbar: {
@@ -441,6 +691,37 @@ export default {
           value: "account_name",
           align: "start",
         },
+        {
+          text: "ACCOUNT NO",
+          align: "center",
+          sortable: true,
+          value: "account_no",
+          align: "start",
+        },
+
+        {
+          text: "OP BALANCE",
+          align: "center",
+          sortable: true,
+          value: "account_op_balance",
+          align: "start",
+        },
+
+        {
+          text: "SWIFT CODE",
+          align: "center",
+          sortable: true,
+          value: "account_swift_code",
+          align: "start",
+        },
+
+        {
+          text: "TYPE",
+          align: "center",
+          sortable: true,
+          value: "account_type",
+          align: "start",
+        },
 
         {
           text: "Actions",
@@ -467,7 +748,7 @@ export default {
 
   computed: {
     formTitle() {
-      return this.editedIndex === -1 ? "NEW " : "Edit ";
+      return this.editedIndex === -1 ? "NEW ACCOUNT" : "Edit ACCOUNT";
     },
     submitBtn() {
       return this.editedIndex === -1 ? "SAVE" : "UPDATE";
@@ -504,6 +785,11 @@ export default {
             this.itemData.push({
               id: e.id,
               account_name: e.account_name,
+              account_no: e.account_no,
+              account_op_balance: e.account_op_balance,
+              account_status: e.account_status,
+              account_swift_code: e.account_swift_code,
+              account_type: e.account_type,
             });
           });
         })
@@ -538,17 +824,27 @@ export default {
 
         const obj = {
           id: this.editedItem.id,
-          name: this.editedItem.name,
+          account_name: this.editedItem.account_name,
+          account_no: this.editedItem.account_no,
+          account_op_balance: this.editedItem.account_op_balance,
+          account_swift_code: this.editedItem.account_swift_code,
+          account_type: this.editedItem.account_type,
+          account_status: 0,
         };
 
         if (this.editedIndex > -1) {
           // UPDATE USER
           this.$http
-            .put(this.url.baseURL + obj.id, obj)
+            .put(this.url.baseURL + "/" + obj.id, obj)
             .then((response) => {
               this.submitLoading = false;
+              this.onInitialize();
+
               this.closeForm();
-              this.notification("User has been updated successfully", "green");
+              this.notification(
+                "Record has been updated successfully",
+                "green"
+              );
             })
             .catch((err) => {
               this.submitLoading = false;
@@ -564,11 +860,10 @@ export default {
               this.onInitialize();
               this.closeForm();
               this.submitLoading = false;
-              this.notification("User has been added successfully", "green");
+              this.notification("Record  has been added successfully", "green");
             })
             .catch((err) => {
               this.submitLoading = false;
-
               this.notification("FAILED TO SAVE", "red");
             });
         }
@@ -582,7 +877,7 @@ export default {
         .get(this.url.baseURL + "/getEditItem/" + e.id)
         .then((response) => {
           let i = response.data.objects;
-          this.editedItem.push(i);
+          this.editedItem = Object.assign(i);
         });
 
       if (type == "edit") {
@@ -619,19 +914,17 @@ export default {
           .get(this.url.baseURL + "/getSearchItem/" + e)
           .then((response) => {
             let i = response.data.objects;
+            console.log(i);
+
             this.itemData.splice(0);
             i.forEach((e) => {
-              this.itemData.push({
-                id: e.id,
-                column1: e.column1,
-                column2: e.column2,
-              });
+              this.itemData.push(e);
             }, 4000);
             this.dataTableLoading = false;
           });
       } else {
-        this.itemData.splice(0);
         this.onInitialize(this.pageKey);
+        this.itemData.splice(0);
         this.dataTableLoading = false;
       }
     },
@@ -640,11 +933,145 @@ export default {
       this.onInitialize();
     },
 
+    exportToExcel() {
+      this.exportExecelLoading = true;
+      let objects = [];
+      this.itemData.forEach((element) => {
+        objects.push({
+          "ACCOUNT NAME": element.account_name,
+          "ACCOUNT NUMBER": element.account_no,
+          "OPENING BALANCE": element.account_op_balance,
+          "SWIFT CODE": element.account_swift_code,
+          "ACCOUNT TYPE": element.account_type,
+        });
+      });
+
+      let jsonObject = objects;
+      let selectedArray = this.selectedExcelTitle;
+      let filteredJsonObject = jsonObject.map(function(entry) {
+        return selectedArray.reduce(function(res, key) {
+          res[key] = entry[key];
+          return res;
+        }, {});
+      });
+
+      let data = filteredJsonObject;
+      let fileName = this.moment().unix() + "_file";
+      try {
+        json2excel({
+          data,
+          name: fileName,
+          formateDate: "yyyy/mm/dd",
+        });
+        this.notification(
+          fileName + " has been exported successfully",
+          "green"
+        );
+
+        setTimeout(() => {
+          this.exportExecelLoading = false;
+        }, 4000);
+      } catch (e) {
+        console.error("export error");
+        this.exportExecelLoading = false;
+        this.notification(fileName + " Export Failed. Please try again", "red");
+      }
+    },
+
+    exportToPdf() {
+      this.exportPDFLoading = true;
+      let fileName = this.moment().unix() + "_file";
+
+      try {
+        let user = JSON.parse(localStorage.getItem("user"));
+        let header = [];
+        let data = [];
+        let jsonObject = data;
+        let selectedArray = this.selectedPDFTitle;
+
+        const pdf = new jsPDF({
+          orientation: this.pdfLayout,
+          unit: "mm",
+          format: "a4",
+          putOnlyUsedFonts: true,
+          compress: true,
+          //   encryption: {
+          //     userPassword: user.phone,
+          //     ownerPassword: "admin",
+          //     userPermissions: ["print", "modify", "copy", "annot-forms"],
+          //   },
+        });
+
+        this.selectedPDFTitle.forEach((element, key) => {
+          header.push(element);
+        });
+        this.itemData.forEach((element) => {
+          data.push({
+            "ACCOUNT NAME": element.account_name,
+            "ACCOUNT NUMBER": element.account_no,
+            "OPENING BALANCE": element.account_op_balance.toString(),
+            "SWIFT CODE": element.account_swift_code,
+            "ACCOUNT TYPE": element.account_type,
+          });
+        });
+
+        let filteredData = jsonObject.map(function(entry) {
+          return selectedArray.reduce(function(res, key) {
+            res[key] = entry[key];
+            return res;
+          }, {});
+        });
+
+        let headerConfig = header.map((key) => ({
+          name: key,
+          prompt: key,
+          width: this.pdfLayout == "l" ? 76 : 52,
+          align: "center",
+          padding: 0,
+        }));
+
+        let ColumnConfig = {
+          headerBackgroundColor: "#c5cae9",
+          fontSize: 10,
+          autoSize: false,
+        };
+
+        pdf.table(5, 5, filteredData, headerConfig, ColumnConfig);
+        // pdf.autoPrint({ variant: "non-conform" });
+        pdf.save(fileName + ".pdf");
+
+        this.notification(
+          fileName + " has been exported successfully",
+          "green"
+        );
+
+        setTimeout(() => {
+          this.exportPDFLoading = false;
+        }, 4000);
+      } catch (e) {
+        console.error("export error", e);
+        this.exportPDFLoading = false;
+        this.notification(fileName + " Export Failed. Please try again", "red");
+      }
+    },
+
     onInitializeExportColumns() {
       // DEFINE COLUMNS FOR EXPORT OPTIONS
-      this.excelTitles = ["COLUMN 1", "COLUMN 2"];
+      this.excelTitles = [
+        "ACCOUNT NAME",
+        "ACCOUNT NUMBER",
+        "SWIFT CODE",
+        "OPENING BALANCE",
+        "ACCOUNT TYPE",
+      ];
 
-      this.pdfTitles = ["COLUMN 1", "COLUMN 2"];
+      this.pdfTitles = [
+        "ACCOUNT NAME",
+        "ACCOUNT NUMBER",
+        "SWIFT CODE",
+        "OPENING BALANCE",
+        "ACCOUNT TYPE",
+      ];
 
       this.selectedExcelTitle = this.excelTitles;
       this.selectedPDFTitle = this.excelTitles;
