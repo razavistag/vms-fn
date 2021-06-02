@@ -222,6 +222,8 @@ export default {
       // 5 - po
       // 6 - order
       // 7 - accounts
+      // 8 - holiday
+      // 9 - location
       let token_access = JSON.parse(localStorage.getItem("token_access"));
       if (token_access[0] != 0) {
         // console.log("dashboard");
@@ -301,9 +303,17 @@ export default {
           to: "/holiday",
         });
       }
+      if (token_access[9] != 0) {
+        this.items.push({
+          id: 8,
+          title: this.$t("menu.location"),
+          icon: "mdi-map-marker",
+          to: "/location",
+        });
+      }
 
       // ordering menu
-      let order = [0, 5, 6, 1, 2, 3, 8, 7, 4];
+      let order = [0, 5, 6, 1, 2, 3, 8, 9, 7, 4];
       this.items.sort(function(x, y) {
         return order.indexOf(x.id) - order.indexOf(y.id);
       });
