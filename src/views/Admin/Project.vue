@@ -839,7 +839,7 @@
             small
             dark
             class="mr-1 blue darken-1  pa-1"
-            title="View Projects"
+            title="View"
             @click="viewForm(item)"
           >
             mdi-eye
@@ -849,7 +849,7 @@
             id="dt-edit-action-button"
             small
             dark
-            title="Edit Projects"
+            title="Edit "
             class="mr-1 orange darken-1 pa-1"
             @click="editItem(item)"
             v-show="appAccess >= 3"
@@ -861,7 +861,7 @@
           <v-icon
             id="dt-trash-action-button"
             small
-            title="Delete Projects"
+             title="Delete "
             dark
             class="red darken-1 pa-1"
             @click="deleteItem(item)"

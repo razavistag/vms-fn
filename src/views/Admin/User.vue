@@ -287,7 +287,7 @@
             x-small
             dark
             class="mr-1 blue darken-1  pa-2"
-            title="View Projects"
+            title="View"
             @click="onView(item)"
           >
             mdi-eye
@@ -295,7 +295,7 @@
           <v-icon
             id="dt-edit-action-button"
             x-small
-            title="Edit Projects"
+            title="Edit "
             dark
             class="mr-1 orange darken-1 pa-2 "
             @click="onEditItem(item)"
@@ -307,7 +307,7 @@
           <v-icon
             id="dt-trash-action-button"
             x-small
-            title="Delete Projects"
+             title="Delete "
             dark
             class="red darken-1 red darken-1 pa-2 "
             @click="onDeleteItem(item)"

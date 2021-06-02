@@ -266,7 +266,7 @@
             id="dt-view-action-button"
             x-small
             dark
-            title="View Projects"
+            title="View"
             @click="onEditItem(item, 'view')"
           >
             mdi-eye
@@ -277,7 +277,7 @@
             class="pa-2 ml-1 orange darken-1"
             x-small
             dark
-            title="Edit Projects"
+            title="Edit "
             @click="onEditItem(item, 'edit')"
             v-show="appAccess >= 3"
           >
@@ -289,7 +289,7 @@
             x-small
             dark
             class="pa-2 ml-1 red darken-1"
-            title="Delete Projects"
+             title="Delete "
             @click="onDeleteItem(item)"
             v-show="appAccess >= 4"
           >
@@ -759,7 +759,7 @@ export default {
     };
   },
   created() {
-    // console.log("initializing Accounts");
+    // console.log("initializing");
     // console.log("----------------------------------------------");
     localStorage.setItem(this.pageKey, 1);
     this.onInitialize(this.pageKey);
