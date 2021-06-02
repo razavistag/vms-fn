@@ -9,17 +9,15 @@ export default new VueI18n({
       button: {
         refresh: "Refresh",
         displayColumns: "Display Columns",
+        
         addProjects: "Add Projects",
-
         addSystems: "Add Systems",
-
         addUsers: "Add Users",
-
         addpo: "Add PO",
-
         addTask: "Add Task",
         addOrder: "Add Order",
         addAccounts: "Add Accounts",
+        addLocation: "Add Location",
       },
 
       // STATUS
@@ -40,6 +38,7 @@ export default new VueI18n({
         order: "ORDER",
         account: "ACCOUNTS",
         holiday: "HOLIDAYS",
+        location: "LOCATION",
       },
 
       // DASHBOARD PAGE
@@ -107,6 +106,11 @@ export default new VueI18n({
       // HOLIDAY PAGE
       holiday: {
         title: "HOLIDAYS",
+      },
+      
+      // LOCATION PAGE
+      location: {
+        title: "LOCATION",
       },
     },
 

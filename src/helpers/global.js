@@ -80,6 +80,13 @@ export default {
         return 0;
       }
     }
+    if (i == "location") {
+      if (access[9] != 0) {
+        return 1;
+      } else {
+        return 0;
+      }
+    }
   },
 
   ///* Safari *//* IE11 *//* Chrome */

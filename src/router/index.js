@@ -15,6 +15,7 @@ import User from "../views/Admin/User";
 import Order from "../views/Admin/Order.vue";
 import Account from "../views/Admin/Accounts.vue";
 import Holiday from "../views/Admin/Holiday.vue";
+import Location from "../views/Admin/Location.vue";
 
 Vue.use(VueRouter);
 // modules   are indexed
@@ -27,6 +28,7 @@ Vue.use(VueRouter);
 // 6 - order
 // 7 - account
 // 8 - Holiday
+// 9 - Location
 const routes = [
   {
     path: "/",
@@ -170,6 +172,22 @@ const routes = [
     meta: { AuthRequired: true },
     beforeEnter: (to, from, next) => {
       let auth = global.AccessCheck("holiday");
+      if (auth == 1) {
+        next();
+      } else {
+        next({
+          path: "/dashboard",
+        });
+      }
+    },
+  },
+  {
+    path: "/location",
+    name: "Location",
+    component: Location,
+    meta: { AuthRequired: true },
+    beforeEnter: (to, from, next) => {
+      let auth = global.AccessCheck("location");
       if (auth == 1) {
         next();
       } else {
