@@ -332,6 +332,20 @@ export default {
       localStorage.removeItem("fullScreen");
       localStorage.removeItem("user");
       localStorage.removeItem("user_active_columns");
+      localStorage.removeItem("location_pk");
+      localStorage.removeItem("location_active_columns");
+      localStorage.removeItem("po_pk");
+      localStorage.removeItem("po_active_columns");
+      localStorage.removeItem("order_pk");
+      localStorage.removeItem("order_active_columns");
+      localStorage.removeItem("project_active_columns");
+      localStorage.removeItem("project_pk");
+      localStorage.removeItem("task_pk");
+      localStorage.removeItem("task_active_columns");
+      localStorage.removeItem("orderholiday_pk_pk");
+      localStorage.removeItem("holiday_active_columns");
+      localStorage.removeItem("accounts_pk");
+      localStorage.removeItem("accounts_active_columns");
     },
     logout() {
       console.log("loggedout");

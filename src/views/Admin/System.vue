@@ -117,7 +117,7 @@
           id="dt-view-action-button"
           small
           class="mr-2 blue darken-1  pa-1 shrink   white--text rounded"
-          title="View Projects"
+          title="View"
           @click="viewSystem(item)"
         >
           mdi-eye
@@ -126,7 +126,7 @@
         <v-icon
           id="dt-edit-action-button"
           small
-          title="Edit Projects"
+          title="Edit "
           class="mr-2 orange darken-1 pa-1 white--text rounded"
           @click="editSystem(item)"
         >
@@ -135,7 +135,7 @@
         <v-icon
           id="dt-trash-action-button"
           small
-          title="Delete Projects"
+           title="Delete "
           class="red darken-1 pa-1 white--text rounded"
           @click="deleteSystem(item)"
         >
