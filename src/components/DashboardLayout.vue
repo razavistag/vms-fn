@@ -311,9 +311,17 @@ export default {
           to: "/location",
         });
       }
+      if (token_access[10] != 0) {
+        this.items.push({
+          id: 8,
+          title: this.$t("menu.recurring"),
+          icon: "mdi-repeat",
+          to: "/recurring",
+        });
+      }
 
       // ordering menu
-      let order = [0, 5, 6, 1, 2, 3, 8, 9, 7, 4];
+      let order = [0, 5, 6, 1, 2, 3, 8, 9, 10, 7, 4];
       this.items.sort(function(x, y) {
         return order.indexOf(x.id) - order.indexOf(y.id);
       });

@@ -87,6 +87,13 @@ export default {
         return 0;
       }
     }
+    if (i == "recurring") {
+      if (access[10] != 0) {
+        return 1;
+      } else {
+        return 0;
+      }
+    }
   },
 
   ///* Safari *//* IE11 *//* Chrome */

@@ -16,6 +16,7 @@ import Order from "../views/Admin/Order.vue";
 import Account from "../views/Admin/Accounts.vue";
 import Holiday from "../views/Admin/Holiday.vue";
 import Location from "../views/Admin/Location.vue";
+import Recurring from "../views/Admin/Recurring.vue";
 
 Vue.use(VueRouter);
 // modules   are indexed
@@ -29,6 +30,7 @@ Vue.use(VueRouter);
 // 7 - account
 // 8 - Holiday
 // 9 - Location
+// 10 - Recurring
 const routes = [
   {
     path: "/",
@@ -188,6 +190,22 @@ const routes = [
     meta: { AuthRequired: true },
     beforeEnter: (to, from, next) => {
       let auth = global.AccessCheck("location");
+      if (auth == 1) {
+        next();
+      } else {
+        next({
+          path: "/dashboard",
+        });
+      }
+    },
+  },
+  {
+    path: "/recurring",
+    name: "Recurring",
+    component: Recurring,
+    meta: { AuthRequired: true },
+    beforeEnter: (to, from, next) => {
+      let auth = global.AccessCheck("recurring");
       if (auth == 1) {
         next();
       } else {

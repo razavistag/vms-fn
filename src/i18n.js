@@ -9,7 +9,7 @@ export default new VueI18n({
       button: {
         refresh: "Refresh",
         displayColumns: "Display Columns",
-        
+
         addProjects: "Add Projects",
         addSystems: "Add Systems",
         addUsers: "Add Users",
@@ -39,6 +39,7 @@ export default new VueI18n({
         account: "ACCOUNTS",
         holiday: "HOLIDAYS",
         location: "LOCATION",
+        recurring: "RECURRING",
       },
 
       // DASHBOARD PAGE
@@ -107,10 +108,15 @@ export default new VueI18n({
       holiday: {
         title: "HOLIDAYS",
       },
-      
+
       // LOCATION PAGE
       location: {
         title: "LOCATION",
+      },
+
+      // RECURRING PAGE
+      recurring: {
+        title: "RECURRING",
       },
     },
 
