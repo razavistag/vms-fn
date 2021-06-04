@@ -18,6 +18,7 @@ export default new VueI18n({
         addOrder: "Add Order",
         addAccounts: "Add Accounts",
         addLocation: "Add Location",
+        addItem: "Add ITEMS",
       },
 
       // STATUS
@@ -40,6 +41,7 @@ export default new VueI18n({
         holiday: "HOLIDAYS",
         location: "LOCATION",
         recurring: "RECURRING",
+        item: "ITEMS",
       },
 
       // DASHBOARD PAGE
@@ -117,6 +119,11 @@ export default new VueI18n({
       // RECURRING PAGE
       recurring: {
         title: "RECURRING",
+      },
+
+      // ITEM PAGE
+      item: {
+        title: "ITEMS",
       },
     },
 

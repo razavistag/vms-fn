@@ -305,7 +305,7 @@ export default {
       }
       if (token_access[9] != 0) {
         this.items.push({
-          id: 8,
+          id: 9,
           title: this.$t("menu.location"),
           icon: "mdi-map-marker",
           to: "/location",
@@ -313,15 +313,23 @@ export default {
       }
       if (token_access[10] != 0) {
         this.items.push({
-          id: 8,
+          id: 10,
           title: this.$t("menu.recurring"),
           icon: "mdi-repeat",
           to: "/recurring",
         });
       }
+      if (token_access[11] != 0) {
+        this.items.push({
+          id: 11,
+          title: this.$t("menu.item"),
+          icon: "mdi-form-select",
+          to: "/item",
+        });
+      }
 
       // ordering menu
-      let order = [0, 5, 6, 1, 2, 3, 8, 9, 10, 7, 4];
+      let order = [0, 5, 6, 11, 1, 2, 3, 8, 9, 10, 7, 4];
       this.items.sort(function(x, y) {
         return order.indexOf(x.id) - order.indexOf(y.id);
       });
