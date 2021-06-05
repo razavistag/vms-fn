@@ -1410,7 +1410,7 @@ export default {
       dataTableFullscreen: false,
       formAddmModel: false,
       formDeleteModel: false,
-      privillageModel: true,
+      privillageModel: false,
       viewModel: false,
       dobDatePicker: false,
       superAdmin: false,
