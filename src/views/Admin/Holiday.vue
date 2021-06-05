@@ -240,7 +240,7 @@
               v-show="appAccess >= 2"
             >
               <v-icon left dark class=""> mdi-plus </v-icon>
-              <span class="v_toolbar_add_project_text">
+              <span class="v_toolbar_add_button_text">
                 {{ $t("button.addAccounts") }}
               </span>
             </v-btn>
@@ -294,7 +294,7 @@
             x-small
             dark
             class="pa-2 ml-1 red darken-1"
-             title="Delete "
+            title="Delete "
             @click="onDeleteItem(item)"
             v-show="appAccess >= 4"
           >
