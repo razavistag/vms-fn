@@ -307,7 +307,7 @@
           <v-icon
             id="dt-trash-action-button"
             x-small
-             title="Delete "
+            title="Delete "
             dark
             class="red darken-1 red darken-1 pa-2 "
             @click="onDeleteItem(item)"
@@ -364,7 +364,7 @@
       content-class="user-privilage-dialog"
       scrollable
     >
-      <v-card>
+      <v-card height="800">
         <v-card-title :class="ModelHeaderColor">
           <span class="headline ">
             PRIVILAGES
@@ -383,6 +383,60 @@
               <v-select
                 :items="accessOptions"
                 v-model="privillage.dashboard"
+                :label="'Access'"
+                hide-details=""
+                prefix="*"
+                clearable
+                dense
+                item-text="option"
+                item-value="val"
+              ></v-select>
+            </v-col>
+
+            <!-- PO PRIVILAGE -->
+            <v-col cols="12" sm="6" md="6" class="  d-flex align-center">
+              <span>PO</span>
+            </v-col>
+            <v-col cols="12" sm="6" md="6" class="  d-flex align-center">
+              <v-select
+                :items="accessOptions"
+                v-model="privillage.po"
+                :label="'Access'"
+                hide-details=""
+                prefix="*"
+                clearable
+                dense
+                item-text="option"
+                item-value="val"
+              ></v-select>
+            </v-col>
+
+            <!-- ORDERS PRIVILAGE -->
+            <v-col cols="12" sm="6" md="6" class="  d-flex align-center">
+              <span>ORDERS</span>
+            </v-col>
+            <v-col cols="12" sm="6" md="6" class="  d-flex align-center">
+              <v-select
+                :items="accessOptions"
+                v-model="privillage.order"
+                :label="'Access'"
+                hide-details=""
+                prefix="*"
+                clearable
+                dense
+                item-text="option"
+                item-value="val"
+              ></v-select>
+            </v-col>
+
+            <!-- ITEMS PRIVILAGE -->
+            <v-col cols="12" sm="6" md="6" class="  d-flex align-center">
+              <span>ITEMS</span>
+            </v-col>
+            <v-col cols="12" sm="6" md="6" class="  d-flex align-center">
+              <v-select
+                :items="accessOptions"
+                v-model="privillage.item"
                 :label="'Access'"
                 hide-details=""
                 prefix="*"
@@ -437,6 +491,78 @@
               <v-select
                 :items="accessOptions"
                 v-model="privillage.task"
+                :label="'Access'"
+                hide-details=""
+                prefix="*"
+                clearable
+                dense
+                item-text="option"
+                item-value="val"
+              ></v-select>
+            </v-col>
+
+            <!-- HOLIDAY PRIVILAGE -->
+            <v-col cols="12" sm="6" md="6" class="  d-flex align-center">
+              <span>HOLIDAY</span>
+            </v-col>
+            <v-col cols="12" sm="6" md="6" class="  d-flex align-center">
+              <v-select
+                :items="accessOptions"
+                v-model="privillage.holiday"
+                :label="'Access'"
+                hide-details=""
+                prefix="*"
+                clearable
+                dense
+                item-text="option"
+                item-value="val"
+              ></v-select>
+            </v-col>
+
+            <!-- LOCATION PRIVILAGE -->
+            <v-col cols="12" sm="6" md="6" class="  d-flex align-center">
+              <span>LOCATION</span>
+            </v-col>
+            <v-col cols="12" sm="6" md="6" class="  d-flex align-center">
+              <v-select
+                :items="accessOptions"
+                v-model="privillage.location"
+                :label="'Access'"
+                hide-details=""
+                prefix="*"
+                clearable
+                dense
+                item-text="option"
+                item-value="val"
+              ></v-select>
+            </v-col>
+
+            <!-- RECURRING PRIVILAGE -->
+            <v-col cols="12" sm="6" md="6" class="  d-flex align-center">
+              <span>RECURRING</span>
+            </v-col>
+            <v-col cols="12" sm="6" md="6" class="  d-flex align-center">
+              <v-select
+                :items="accessOptions"
+                v-model="privillage.recurring"
+                :label="'Access'"
+                hide-details=""
+                prefix="*"
+                clearable
+                dense
+                item-text="option"
+                item-value="val"
+              ></v-select>
+            </v-col>
+
+            <!-- ACCOUNTS PRIVILAGE -->
+            <v-col cols="12" sm="6" md="6" class="  d-flex align-center">
+              <span>ACCOUNTS</span>
+            </v-col>
+            <v-col cols="12" sm="6" md="6" class="  d-flex align-center">
+              <v-select
+                :items="accessOptions"
+                v-model="privillage.accounts"
                 :label="'Access'"
                 hide-details=""
                 prefix="*"
@@ -1284,7 +1410,7 @@ export default {
       dataTableFullscreen: false,
       formAddmModel: false,
       formDeleteModel: false,
-      privillageModel: false,
+      privillageModel: true,
       viewModel: false,
       dobDatePicker: false,
       superAdmin: false,
@@ -1921,6 +2047,13 @@ export default {
       // 2 - system            ||  2 - add only
       // 3 - task              ||  3 - add & edit
       // 4 - user              ||  4 - full access
+      // 5 - po                ||
+      // 6 - order             ||
+      // 7 - accounts          ||
+      // 8 - holiday           ||
+      // 9 - location          ||
+      // 10 - recurring         ||
+      // 11 - item              ||
       this.privillageModel = false;
       const AccessStore = {
         0: this.privillage.dashboard ? this.privillage.dashboard : 0,
@@ -1928,6 +2061,13 @@ export default {
         2: this.privillage.system ? this.privillage.system : 0,
         3: this.privillage.task ? this.privillage.task : 0,
         4: this.privillage.user ? this.privillage.user : 0,
+        5: this.privillage.po ? this.privillage.po : 0,
+        6: this.privillage.order ? this.privillage.order : 0,
+        7: this.privillage.accounts ? this.privillage.accounts : 0,
+        8: this.privillage.holiday ? this.privillage.holiday : 0,
+        9: this.privillage.location ? this.privillage.location : 0,
+        10: this.privillage.recurring ? this.privillage.recurring : 0,
+        11: this.privillage.item ? this.privillage.item : 0,
       };
       console.log("access submit", AccessStore);
       return AccessStore;
@@ -1996,6 +2136,13 @@ export default {
         this.privillage.system = access[2];
         this.privillage.task = access[3];
         this.privillage.user = access[4];
+        this.privillage.po = access[5];
+        this.privillage.order = access[6];
+        this.privillage.accounts = access[7];
+        this.privillage.holiday = access[8];
+        this.privillage.location = access[9];
+        this.privillage.recurring = access[10];
+        this.privillage.item = access[11];
 
         this.editedIndex = this.Users.indexOf(e);
         this.editedItem = Object.assign({
