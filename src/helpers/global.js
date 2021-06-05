@@ -94,6 +94,13 @@ export default {
         return 0;
       }
     }
+    if (i == "item") {
+      if (access[11] != 0) {
+        return 1;
+      } else {
+        return 0;
+      }
+    }
   },
 
   ///* Safari *//* IE11 *//* Chrome */

@@ -18,7 +18,7 @@
         }"
         loading-text="Fetching Data"
         height="85vh"
-        id="dt_table_recurring"
+        id="dt_table_item"
         class="elevation-0"
         dense
         disable-pagination
@@ -49,11 +49,12 @@
 
               <!-- TABLE TITLE  -->
               <span v-animate-css="'fadeIn'">
-                {{ $t("recurring.title") }}
+                {{ $t("item.title") }}
               </span>
             </v-toolbar-title>
 
             <v-divider class="mx-4" inset vertical></v-divider>
+
             <!-- SELECT OPTION FOR EXPORT TO EXCEL -->
             <v-menu bottom right :close-on-content-click="false">
               <template v-slot:activator="{ on, attrs }">
@@ -87,6 +88,55 @@
                   :loading="exportExecelLoading"
                 >
                   EXPORT EXCEL
+                </v-btn>
+              </v-list>
+            </v-menu>
+
+            <!-- SELECT OPTION FOR EXPORT TO PDF -->
+            <v-menu bottom right :close-on-content-click="false">
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn icon small v-bind="attrs" v-on="on">
+                  <v-icon small>mdi-file-pdf</v-icon>
+                </v-btn>
+              </template>
+
+              <v-list>
+                <v-list-item-content
+                  v-for="(item, i) in pdfTitles"
+                  :key="i"
+                  dense
+                  class="pl-4 pr-4 pt-0 pb-0 ma-0"
+                >
+                  <v-checkbox
+                    class="pa-0 ma-0  "
+                    hide-details=""
+                    v-model="selectedPDFTitle"
+                    :label="item"
+                    :value="item"
+                  ></v-checkbox>
+                </v-list-item-content>
+
+                <v-list dense>
+                  <v-subheader>Choose Layout</v-subheader>
+                  <v-radio-group
+                    v-model="pdfLayout"
+                    mandatory
+                    class="ma-0 ml-1 mr-1"
+                  >
+                    <v-radio label="landscape" value="l"></v-radio>
+                    <v-radio label="portrait" value="p"></v-radio>
+                  </v-radio-group>
+                </v-list>
+
+                <v-btn
+                  small
+                  @click="exportToPdf"
+                  :color="DTbtnColor"
+                  :loading="exportPDFLoading"
+                  dark
+                  class="mb-4 ml-4 mr-4"
+                >
+                  EXPORT PDF
                 </v-btn>
               </v-list>
             </v-menu>
@@ -186,7 +236,7 @@
             >
               <v-icon left dark class=""> mdi-plus </v-icon>
               <span class="v_toolbar_add_button_text">
-                {{ $t("button.addAccounts") }}
+                {{ $t("button.addItem") }}
               </span>
             </v-btn>
           </v-toolbar>
@@ -195,10 +245,10 @@
         <template v-slot:[`item.id`]="{ item, index }">
           <div
             class="d-flex index_id_column"
-            :title="item.recurring_status == '0' ? 'PENDING' : 'ACTIVE'"
+            :title="item.status == '0' ? 'PENDING' : 'ACTIVE'"
           >
             <v-sheet
-              :color="item.recurring_status == '0' ? 'orange' : 'green'"
+              :color="item.status == '0' ? 'orange' : 'green'"
               class="ma-0 pa-0"
               height="30"
               width="3"
@@ -207,6 +257,39 @@
 
             <span class="ma-1">{{ index + 1 }}</span>
           </div>
+        </template>
+        <template v-slot:[`item.name`]="{ item }">
+          <span :title="item.name">
+            {{ item.name.substring(0, 28) + "..." }}
+          </span>
+        </template>
+
+        <template v-slot:[`item.cost`]="{ item }">
+          {{ item.cost }} /-
+        </template>
+
+        <template v-slot:[`item.fixed_price`]="{ item }">
+          {{ item.fixed_price }} /-
+        </template>
+
+        <template v-slot:[`item.price`]="{ item }">
+          {{ item.price }} /-
+        </template>
+
+        <template v-slot:[`item.discount`]="{ item }">
+          {{ item.discount }} %
+        </template>
+
+        <template v-slot:[`item.special_price`]="{ item }">
+          {{ item.special_price }} /-
+        </template>
+
+        <template v-slot:[`item.wholesale_price`]="{ item }">
+          {{ item.wholesale_price }} /-
+        </template>
+
+        <template v-slot:[`item.warranty_days`]="{ item }">
+          {{ item.warranty_days }} DAYS
         </template>
 
         <!-- TABLE ACTIONS -->
@@ -308,38 +391,125 @@
         </v-card-title>
 
         <!-- MODEL BODY -->
-        <v-card-text class="pt-3">
+        <v-card-text class="ma-0 pa-3 ">
           <ValidationObserver ref="form">
             <v-row class=" ">
               <!-- NAME -->
               <v-col md="2" sm="2" cols="12" class="ma-2 pa-0">
-                <!-- <ValidationProvider
-                  rules="required"
-                  name="NAME"
-                  v-slot="{ errors }"
-                >
-                  <v-text-field
-                    v-model="editedItem.recurring_name"
-                    :label="errors[0] ? errors[0] : 'oldNAME'"
-                    :error-messages="errors"
-                    dense
-                    hide-details=""
-                  >
-                  </v-text-field>
-                </ValidationProvider> -->
-
                 <ValidationProvider
                   rules="required"
                   name="NAME"
                   v-slot="{ errors }"
                 >
-                  <v-combobox
-                    v-model="editedItem.recurring_name"
-                    :items="userList"
-                    item-text="name"
-                    :search-input.sync="getUserList"
-                    hide-selected
+                  <v-text-field
+                    v-model="editedItem.name"
                     :label="errors[0] ? errors[0] : 'NAME'"
+                    :error-messages="errors"
+                    dense
+                    hide-details=""
+                  >
+                  </v-text-field>
+                </ValidationProvider>
+              </v-col>
+
+              <!-- BRAND -->
+              <v-col md="2" sm="2" cols="12" class="ma-2 pa-0">
+                <ValidationProvider
+                  rules="required"
+                  name="BRAND"
+                  v-slot="{ errors }"
+                >
+                  <v-combobox
+                    v-model="editedItem.brand"
+                    :items="brandList"
+                    item-text="option"
+                    hide-selected
+                    :label="errors[0] ? errors[0] : 'BRAND'"
+                    dense
+                    hide-details=""
+                    :error-messages="errors"
+                  >
+                  </v-combobox>
+                </ValidationProvider>
+              </v-col>
+
+              <!-- CATEGORY -->
+              <v-col md="2" sm="2" cols="12" class="ma-2 pa-0">
+                <ValidationProvider
+                  rules="required"
+                  name="CATEGORY"
+                  v-slot="{ errors }"
+                >
+                  <v-combobox
+                    v-model="editedItem.category"
+                    :items="categoryList"
+                    item-text="option"
+                    hide-selected
+                    :label="errors[0] ? errors[0] : 'CATEGORY'"
+                    dense
+                    hide-details=""
+                    :error-messages="errors"
+                  >
+                  </v-combobox>
+                </ValidationProvider>
+              </v-col>
+
+              <!-- COLOR -->
+              <v-col md="2" sm="2" cols="12" class="ma-2 pa-0">
+                <ValidationProvider
+                  rules="required"
+                  name="COLOR"
+                  v-slot="{ errors }"
+                >
+                  <v-combobox
+                    v-model="editedItem.color"
+                    :items="colorList"
+                    item-text="option"
+                    hide-selected
+                    :label="errors[0] ? errors[0] : 'COLOR'"
+                    dense
+                    hide-details=""
+                    :error-messages="errors"
+                  >
+                  </v-combobox>
+                </ValidationProvider>
+              </v-col>
+
+              <!-- MEASUREMENT -->
+              <v-col md="2" sm="2" cols="12" class="ma-2 pa-0">
+                <ValidationProvider
+                  rules="required"
+                  name="MEASUREMENT"
+                  v-slot="{ errors }"
+                >
+                  <v-combobox
+                    v-model="editedItem.measurements"
+                    :items="measurementList"
+                    item-text="option"
+                    hide-selected
+                    :label="errors[0] ? errors[0] : 'MEASUREMENT'"
+                    dense
+                    :error-messages="errors"
+                    hide-details=""
+                  >
+                  </v-combobox>
+                </ValidationProvider>
+              </v-col>
+
+              <!-- SIZE -->
+              <v-col md="1" sm="2" cols="12" class="ma-2 pa-0">
+                <ValidationProvider
+                  rules="required"
+                  name="SIZE"
+                  v-slot="{ errors }"
+                >
+                  <v-combobox
+                    v-model="editedItem.size"
+                    :items="sizetList"
+                    item-text="option"
+                    :error-messages="errors"
+                    hide-selected
+                    :label="errors[0] ? errors[0] : 'SIZE'"
                     dense
                     hide-details=""
                   >
@@ -348,311 +518,211 @@
               </v-col>
 
               <!-- TYPE -->
-              <v-col md="2" sm="2" cols="12" class="ma-2 pa-0">
+              <v-col md="" sm="2" cols="12" class="ma-2 pa-0">
                 <ValidationProvider
                   rules="required"
                   name="TYPE"
                   v-slot="{ errors }"
                 >
-                  <v-select
-                    :items="typeOption"
-                    v-model="editedItem.recurring_type"
-                    :label="errors[0] ? errors[0] : 'TYPE'"
-                    :error-messages="errors"
-                    hide-details=""
-                    clearable
-                    dense
+                  <v-combobox
+                    v-model="editedItem.type"
+                    :items="typetList"
                     item-text="option"
                     item-value="index"
-                  ></v-select>
-                </ValidationProvider>
-              </v-col>
-
-              <!-- MOBILE -->
-              <v-col md="2" sm="2" cols="12" class="ma-2 pa-0">
-                <ValidationProvider
-                  rules="required"
-                  name="MOBILE"
-                  v-slot="{ errors }"
-                >
-                  <v-text-field
-                    v-model="editedItem.recurring_user_mobile"
-                    :label="errors[0] ? errors[0] : 'MOBILE'"
-                    :error-messages="errors"
-                    dense
-                    hide-details=""
-                  >
-                  </v-text-field>
-                </ValidationProvider>
-              </v-col>
-
-              <!-- EMAIL -->
-              <v-col md="2" sm="2" cols="12" class="ma-2 pa-0">
-                <ValidationProvider
-                  rules="required"
-                  name="EMAIL"
-                  v-slot="{ errors }"
-                >
-                  <v-text-field
-                    v-model="editedItem.recurring_user_email"
-                    :label="errors[0] ? errors[0] : 'EMAIL'"
-                    :error-messages="errors"
-                    dense
-                    hide-details=""
-                  >
-                  </v-text-field>
-                </ValidationProvider>
-              </v-col>
-
-              <!-- ADDRESS -->
-              <v-col md="3" sm="2" cols="12" class="ma-2 pa-0">
-                <ValidationProvider
-                  rules="required"
-                  name="ADDRESS"
-                  v-slot="{ errors }"
-                >
-                  <v-text-field
-                    v-model="editedItem.recurring_address"
-                    :label="errors[0] ? errors[0] : 'ADDRESS'"
-                    :error-messages="errors"
-                    dense
-                    hide-details=""
-                  >
-                  </v-text-field>
-                </ValidationProvider>
-              </v-col>
-
-              <!-- ZIP CODE -->
-              <v-col md="2" sm="2" cols="12" class="ma-2 pa-0">
-                <ValidationProvider
-                  rules="required"
-                  name="ZIP CODE"
-                  v-slot="{ errors }"
-                >
-                  <v-text-field
-                    v-model="editedItem.recurring_zip_code"
-                    :label="errors[0] ? errors[0] : 'ZIP CODE'"
-                    :error-messages="errors"
-                    dense
-                    hide-details=""
-                  >
-                  </v-text-field>
-                </ValidationProvider>
-              </v-col>
-
-              <!-- PHONE -->
-              <v-col md="2" sm="2" cols="12" class="ma-2 pa-0">
-                <ValidationProvider
-                  rules="required"
-                  name="PHONE"
-                  v-slot="{ errors }"
-                >
-                  <v-text-field
-                    v-model="editedItem.recurring_phone"
-                    :label="errors[0] ? errors[0] : 'PHONE'"
-                    :error-messages="errors"
-                    dense
-                    hide-details=""
-                  >
-                  </v-text-field>
-                </ValidationProvider>
-              </v-col>
-
-              <!-- KEY MONEY -->
-              <v-col md="2" sm="2" cols="12" class="ma-2 pa-0">
-                <ValidationProvider
-                  rules="required"
-                  name="KEY MONEY"
-                  v-slot="{ errors }"
-                >
-                  <v-text-field
-                    v-model="editedItem.recurring_key_money"
-                    :label="errors[0] ? errors[0] : 'KEY MONEY'"
-                    :error-messages="errors"
-                    dense
-                    hide-details=""
-                  >
-                  </v-text-field>
-                </ValidationProvider>
-              </v-col>
-
-              <!-- MONTHLY AMOUNT -->
-              <v-col md="2" sm="2" cols="12" class="ma-2 pa-0">
-                <ValidationProvider
-                  rules="required"
-                  name="MONTHLY AMOUNT"
-                  v-slot="{ errors }"
-                >
-                  <v-text-field
-                    v-model="editedItem.recurring_montly_amount"
-                    :label="errors[0] ? errors[0] : 'MONTHLY AMOUNT'"
-                    :error-messages="errors"
-                    dense
-                    hide-details=""
-                  >
-                  </v-text-field>
-                </ValidationProvider>
-              </v-col>
-
-              <!-- COUNTRY -->
-              <v-col md="3" sm="2" cols="12" class="ma-2 pa-0">
-                <ValidationProvider
-                  rules="required"
-                  name="COUNTRY"
-                  v-slot="{ errors }"
-                >
-                  <v-text-field
-                    v-model="editedItem.recurring_country"
-                    :label="errors[0] ? errors[0] : 'COUNTRY'"
-                    :error-messages="errors"
-                    dense
-                    hide-details=""
-                  >
-                  </v-text-field>
-                </ValidationProvider>
-              </v-col>
-
-              <!-- CITY -->
-              <v-col md="2" sm="2" cols="12" class="ma-2 pa-0">
-                <ValidationProvider
-                  rules="required"
-                  name="CITY"
-                  v-slot="{ errors }"
-                >
-                  <v-autocomplete
-                    v-model="editedItem.recurring_city"
-                    :items="cityList"
-                    :search-input.sync="getCityList"
-                    :label="errors[0] ? errors[0] : 'CITY'"
-                    :error-messages="errors"
-                    item-text="location_city"
-                    item-value="id"
-                    return-object
-                    dense
-                    hide-no-data
-                    hide-details=""
                     hide-selected
-                    single-line
+                    :label="errors[0] ? errors[0] : 'TYPE'"
+                    :error-messages="errors"
+                    dense
+                    hide-details=""
                   >
-                    <template v-slot:selection="data">
-                      {{ data.item.location_city }}
-                    </template>
-                    <template v-slot:item="{ item }">
-                      <!-- {{ item.location_country }}- -->
-                      {{ item.location_city }} - {{ item.location_zip_code }}
-                    </template>
-                  </v-autocomplete>
+                  </v-combobox>
                 </ValidationProvider>
               </v-col>
 
-              <!-- STATE -->
+              <!-- TAX METHOD -->
+              <v-col md="1" sm="2" cols="12" class="ma-2 pa-0">
+                <ValidationProvider
+                  rules="required"
+                  name="TAX METHOD"
+                  v-slot="{ errors }"
+                >
+                  <v-combobox
+                    v-model="editedItem.tax_method"
+                    :items="taxList"
+                    item-text="option"
+                    item-value="index"
+                    hide-selected
+                    :error-messages="errors"
+                    :label="errors[0] ? errors[0] : 'TAX '"
+                    dense
+                    hide-details=""
+                  >
+                  </v-combobox>
+                </ValidationProvider>
+              </v-col>
+
+              <!-- COST -->
+              <v-col md="1" sm="2" cols="12" class="ma-2 pa-0">
+                <ValidationProvider
+                  rules="required"
+                  name="COST"
+                  v-slot="{ errors }"
+                >
+                  <v-text-field
+                    v-model="editedItem.cost"
+                    :label="errors[0] ? errors[0] : 'COST'"
+                    :error-messages="errors"
+                    dense
+                    hide-details=""
+                  >
+                  </v-text-field>
+                </ValidationProvider>
+              </v-col>
+
+              <!-- WEIGHTED AVERAGE COST -->
+              <v-col md="1" sm="2" cols="12" class="ma-2 pa-0">
+                <ValidationProvider
+                  rules="required"
+                  name="WEIGHTED AVERAGE COST"
+                  v-slot="{ errors }"
+                >
+                  <v-text-field
+                    v-model="editedItem.wac"
+                    :label="errors[0] ? errors[0] : 'WAC'"
+                    :error-messages="errors"
+                    dense
+                    hide-details=""
+                  >
+                  </v-text-field>
+                </ValidationProvider>
+              </v-col>
+
+              <!-- PRICE -->
+              <v-col md="1" sm="2" cols="12" class="ma-2 pa-0">
+                <ValidationProvider
+                  rules="required"
+                  name="PRICE"
+                  v-slot="{ errors }"
+                >
+                  <v-text-field
+                    v-model="editedItem.price"
+                    :label="errors[0] ? errors[0] : 'PRICE'"
+                    :error-messages="errors"
+                    dense
+                    hide-details=""
+                  >
+                  </v-text-field>
+                </ValidationProvider>
+              </v-col>
+
+              <!-- WHOLESALE PRICE -->
+              <v-col md="1" sm="2" cols="12" class="ma-2 pa-0">
+                <ValidationProvider
+                  rules="required"
+                  name="WHOLESALE PRICE"
+                  v-slot="{ errors }"
+                >
+                  <v-text-field
+                    v-model="editedItem.wholesale_price"
+                    :label="errors[0] ? errors[0] : 'WS PRICE'"
+                    :error-messages="errors"
+                    dense
+                    hide-details=""
+                  >
+                  </v-text-field>
+                </ValidationProvider>
+              </v-col>
+
+              <!-- SPECIAL PRICE -->
+              <v-col md="1" sm="2" cols="12" class="ma-2 pa-0">
+                <ValidationProvider
+                  rules="required"
+                  name="SPECIAL PRICE"
+                  v-slot="{ errors }"
+                >
+                  <v-text-field
+                    v-model="editedItem.special_price"
+                    :label="errors[0] ? errors[0] : 'SP PRICE'"
+                    :error-messages="errors"
+                    dense
+                    hide-details=""
+                  >
+                  </v-text-field>
+                </ValidationProvider>
+              </v-col>
+
+              <!-- FIXED  PRICE -->
+              <v-col md="1" sm="2" cols="12" class="ma-2 pa-0">
+                <ValidationProvider
+                  rules="required"
+                  name="FIXED PRICE"
+                  v-slot="{ errors }"
+                >
+                  <v-text-field
+                    v-model="editedItem.fixed_price"
+                    :label="errors[0] ? errors[0] : 'FIXED PRICE'"
+                    :error-messages="errors"
+                    dense
+                    hide-details=""
+                  >
+                  </v-text-field>
+                </ValidationProvider>
+              </v-col>
+              <!-- WARRANTY DAYS -->
               <v-col md="2" sm="2" cols="12" class="ma-2 pa-0">
                 <ValidationProvider
                   rules="required"
-                  name="STATE"
+                  name="WARRANTY DAYS"
                   v-slot="{ errors }"
                 >
-                  <v-autocomplete
-                    v-model="editedItem.recurring_state"
-                    :items="stateList"
-                    :search-input.sync="getStateList"
-                    :label="errors[0] ? errors[0] : 'STATE'"
+                  <v-text-field
+                    v-model="editedItem.warranty_days"
+                    :label="errors[0] ? errors[0] : 'WARRANTY DAYS'"
                     :error-messages="errors"
-                    item-text="location_name"
-                    item-value="id"
-                    return-object
                     dense
-                    hide-no-data
                     hide-details=""
-                    hide-selected
-                    single-line
                   >
-                    <template v-slot:selection="data">
-                      {{ data.item.location_city }}
-                    </template>
-                    <template v-slot:item="{ item }">
-                      {{ item.location_name }} - {{ item.location_zip_code }}
-                    </template>
-                  </v-autocomplete>
+                  </v-text-field>
                 </ValidationProvider>
               </v-col>
 
-              <!-- START DATEST DATE -->
-              <v-col md="2" sm="2" cols="12" class="ma-2 pa-0">
-                <v-menu
-                  v-model="startDatePicker"
-                  :close-on-content-click="false"
-                  :nudge-right="40"
-                  transition="scale-transition"
-                  offset-y
-                  min-width="auto"
+              <!-- DISCOUNT -->
+              <v-col md="1" sm="2" cols="12" class="ma-2 pa-0">
+                <ValidationProvider
+                  rules="required"
+                  name="DISCOUNT"
+                  v-slot="{ errors }"
                 >
-                  <template v-slot:activator="{ on, attrs }">
-                    <ValidationProvider
-                      rules="required"
-                      name="START DATE"
-                      v-slot="{ errors }"
-                    >
-                      <v-text-field
-                        v-model="editedItem.recurring_start_date"
-                        :label="errors[0] ? errors[0] : 'START DATE'"
-                        :error-messages="errors"
-                        hide-details=""
-                        dense
-                        readonly
-                        v-bind="attrs"
-                        v-on="on"
-                      ></v-text-field>
-                    </ValidationProvider>
-                  </template>
-                  <v-date-picker
-                    v-model="editedItem.recurring_start_date"
-                    dateFormat="mm-YYYY"
-                    :color="DTbtnColor"
-                    @input="startDatePicker = false"
-                  ></v-date-picker>
-                </v-menu>
+                  <v-text-field
+                    v-model="editedItem.discount"
+                    :label="errors[0] ? errors[0] : 'DISCOUNT'"
+                    :error-messages="errors"
+                    dense
+                    hide-details=""
+                  >
+                  </v-text-field>
+                </ValidationProvider>
               </v-col>
-
-              <!-- END DATE-->
+              <!-- RO LEVEL -->
               <v-col md="2" sm="2" cols="12" class="ma-2 pa-0">
-                <v-menu
-                  v-model="endDatePicker"
-                  :close-on-content-click="false"
-                  :nudge-right="40"
-                  transition="scale-transition"
-                  offset-y
-                  min-width="auto"
+                <ValidationProvider
+                  rules="required"
+                  name="RO LEVEL"
+                  v-slot="{ errors }"
                 >
-                  <template v-slot:activator="{ on, attrs }">
-                    <ValidationProvider
-                      rules="required"
-                      name="END DATE"
-                      v-slot="{ errors }"
-                    >
-                      <v-text-field
-                        v-model="editedItem.recurring_end_date"
-                        :label="errors[0] ? errors[0] : 'END DATE'"
-                        :error-messages="errors"
-                        hide-details=""
-                        dense
-                        readonly
-                        v-bind="attrs"
-                        v-on="on"
-                      ></v-text-field>
-                    </ValidationProvider>
-                  </template>
-                  <v-date-picker
-                    v-model="editedItem.recurring_end_date"
-                    dateFormat="mm-YYYY"
-                    :color="DTbtnColor"
-                    @input="endDatePicker = false"
-                  ></v-date-picker>
-                </v-menu>
+                  <v-text-field
+                    v-model="editedItem.reorder_level"
+                    :label="errors[0] ? errors[0] : 'RO LEVEL'"
+                    :error-messages="errors"
+                    dense
+                    hide-details=""
+                  >
+                  </v-text-field>
+                </ValidationProvider>
               </v-col>
 
               <!-- STATUS -->
-              <v-col md="3" sm="6" cols="12" class="ma-2 pa-0">
+              <v-col md="1" sm="2" cols="12" class="ma-2 pa-0">
                 <ValidationProvider
                   rules="required"
                   name="STATUS"
@@ -660,7 +730,7 @@
                 >
                   <v-select
                     :items="statusOption"
-                    v-model="editedItem.recurring_status"
+                    v-model="editedItem.status"
                     :label="errors[0] ? errors[0] : 'STATUS'"
                     :error-messages="errors"
                     hide-details=""
@@ -670,6 +740,59 @@
                     item-value="index"
                   ></v-select>
                 </ValidationProvider>
+              </v-col>
+
+              <!-- OFFERS -->
+              <v-col md="4" sm="2" cols="12" class="ma-2 pa-0">
+                <ValidationProvider
+                  rules="required"
+                  name="OFFERS"
+                  v-slot="{ errors }"
+                >
+                  <v-text-field
+                    v-model="editedItem.offers"
+                    :label="errors[0] ? errors[0] : 'OFFERS'"
+                    :error-messages="errors"
+                    dense
+                    hide-details=""
+                  >
+                  </v-text-field>
+                </ValidationProvider>
+              </v-col>
+
+              <v-col sm="3" md="3" cols="4" class="ma-2 pa-0 ">
+                <ValidationProvider rules="" name="PICTURE" v-slot="{ errors }">
+                  <v-file-input
+                    v-model="editedItem.itemImage"
+                    accept="image/*"
+                    class="   "
+                    :label="errors[0] ? errors[0] : 'PICTURE'"
+                    hide-details=""
+                    prepend-icon=""
+                    truncate-length="10"
+                    dense
+                    @change="addImage($event)"
+                  ></v-file-input>
+                </ValidationProvider>
+              </v-col>
+
+              <v-col sm="3" md="" cols="4" class="ma-2 pa-0 ">
+                <v-avatar size="40">
+                  <v-img :src="itemImage" width="100" height="100" />
+                </v-avatar>
+              </v-col>
+
+              <v-col sm="3" md="" cols="4" class="ma-2 pa-0 ">
+                <v-avatar size="40">
+                  <v-img
+                    :src="
+                      'http://localhost:8000/storage/Items_attachments/' +
+                        itemImage
+                    "
+                    width="100"
+                    height="100"
+                  />
+                </v-avatar>
               </v-col>
             </v-row>
           </ValidationObserver>
@@ -726,7 +849,7 @@
                 <strong> NAME </strong>
               </div>
               <div class="ml-7">
-                {{ editedItem.recurring_name }}
+                {{ editedItem.name }}
               </div>
             </v-col>
             <!-- COL -->
@@ -741,9 +864,7 @@
                 <strong> TYPE </strong>
               </div>
               <div class="ml-7">
-                {{
-                  editedItem.recurring_type == 0 ? "PERMANENT" : "TEMPRORARY"
-                }}
+                {{ editedItem.brand }}
               </div>
             </v-col>
             <!-- COL -->
@@ -758,7 +879,7 @@
                 <strong> MOBILE </strong>
               </div>
               <div class="ml-7">
-                {{ editedItem.recurring_user_mobile }}
+                {{ editedItem.category }}
               </div>
             </v-col>
             <!-- COL -->
@@ -773,7 +894,7 @@
                 <strong> EMAIL </strong>
               </div>
               <div class="ml-7">
-                {{ editedItem.recurring_user_email }}
+                {{ editedItem.barcode }}
               </div>
             </v-col>
             <!-- COL -->
@@ -788,7 +909,7 @@
                 <strong> ADDRESS </strong>
               </div>
               <div class="ml-7">
-                {{ editedItem.recurring_address }}
+                {{ editedItem.color }}
               </div>
             </v-col>
 
@@ -798,15 +919,12 @@
               sm="3"
               cols="12"
               class="view_col_border d-flex flex-column align-start d-flex flex-column align-start"
-              v-if="editedItem.recurring_state"
             >
               <div>
                 <v-icon small left>mdi-drag</v-icon>
                 <strong> CITY </strong>
               </div>
-              <div class="ml-7">
-                {{ editedItem.recurring_city.location_city }}
-              </div>
+              <div class="ml-7">{{ editedItem.cost }} /-</div>
             </v-col>
 
             <!-- COL -->
@@ -820,9 +938,7 @@
                 <v-icon small left>mdi-drag</v-icon>
                 <strong> ZIP CODE </strong>
               </div>
-              <div class="ml-7">
-                {{ editedItem.recurring_zip_code }}
-              </div>
+              <div class="ml-7">{{ editedItem.discount }} %</div>
             </v-col>
 
             <!-- COL -->
@@ -831,14 +947,13 @@
               sm="3"
               cols="12"
               class="view_col_border d-flex flex-column align-start d-flex flex-column align-start"
-              v-if="editedItem.recurring_state"
             >
               <div>
                 <v-icon small left>mdi-drag</v-icon>
                 <strong> STATE </strong>
               </div>
               <div class="ml-7">
-                {{ editedItem.recurring_state.location_city }}
+                {{ editedItem.fixed_price }}
               </div>
             </v-col>
 
@@ -854,7 +969,7 @@
                 <strong> COUNTRY </strong>
               </div>
               <div class="ml-7">
-                {{ editedItem.recurring_country }}
+                {{ editedItem.measurements }}
               </div>
             </v-col>
 
@@ -870,7 +985,7 @@
                 <strong> PHONE </strong>
               </div>
               <div class="ml-7">
-                {{ editedItem.recurring_phone }}
+                {{ editedItem.number }}
               </div>
             </v-col>
 
@@ -886,7 +1001,7 @@
                 <strong> START DATE </strong>
               </div>
               <div class="ml-7">
-                {{ editedItem.recurring_start_date }}
+                {{ editedItem.price }}
               </div>
             </v-col>
 
@@ -902,7 +1017,7 @@
                 <strong> END DATE </strong>
               </div>
               <div class="ml-7">
-                {{ editedItem.recurring_end_date }}
+                {{ editedItem.reorder_level }}
               </div>
             </v-col>
             <!-- COL -->
@@ -917,7 +1032,7 @@
                 <strong> KEY MONEY </strong>
               </div>
               <div class="ml-7">
-                {{ editedItem.recurring_key_money }}
+                {{ editedItem.size }}
               </div>
             </v-col>
             <!-- COL -->
@@ -932,7 +1047,7 @@
                 <strong> MONTHLY AMOUNT </strong>
               </div>
               <div class="ml-7">
-                {{ editedItem.recurring_montly_amount }}
+                {{ editedItem.special_price }}
               </div>
             </v-col>
             <!-- COL -->
@@ -944,10 +1059,72 @@
             >
               <div>
                 <v-icon small left>mdi-drag</v-icon>
+                <strong> MONTHLY AMOUNT </strong>
+              </div>
+              <div class="ml-7">
+                {{ editedItem.wac }}
+              </div>
+            </v-col>
+            <!-- COL -->
+            <v-col
+              md="3"
+              sm="3"
+              cols="12"
+              class="view_col_border d-flex flex-column align-start d-flex flex-column align-start"
+            >
+              <div>
+                <v-icon small left>mdi-drag</v-icon>
+                <strong> MONTHLY AMOUNT </strong>
+              </div>
+              <div class="ml-7">
+                {{ editedItem.warranty_days }}
+              </div>
+            </v-col>
+            <!-- COL -->
+            <v-col
+              md="3"
+              sm="3"
+              cols="12"
+              class="view_col_border d-flex flex-column align-start d-flex flex-column align-start"
+            >
+              <div>
+                <v-icon small left>mdi-drag</v-icon>
+                <strong> MONTHLY AMOUNT </strong>
+              </div>
+              <div class="ml-7">
+                {{ editedItem.wholesale_price }}
+              </div>
+            </v-col>
+            <!-- COL -->
+            <v-col
+              md="3"
+              sm="3"
+              cols="12"
+              class="view_col_border d-flex flex-column align-start d-flex flex-column align-start"
+              v-if="editedItem.tax_method"
+            >
+              <div>
+                <v-icon small left>mdi-drag</v-icon>
                 <strong> STATUS </strong>
               </div>
               <div class="ml-7">
-                {{ editedItem.recurring_status == 0 ? "PENDING" : "ACTIVE" }}
+                {{ editedItem.tax_method.option }}
+              </div>
+            </v-col>
+            <!-- COL -->
+            <v-col
+              md="3"
+              sm="3"
+              cols="12"
+              class="view_col_border d-flex flex-column align-start d-flex flex-column align-start"
+              v-if="editedItem.type"
+            >
+              <div>
+                <v-icon small left>mdi-drag</v-icon>
+                <strong> STATUS </strong>
+              </div>
+              <div class="ml-7">
+                {{ editedItem.type.option }}
               </div>
             </v-col>
 
@@ -1024,7 +1201,7 @@ export default {
   data() {
     return {
       url: {
-        baseURL: "recurring",
+        baseURL: "items",
       },
 
       dataTableLoading: true,
@@ -1036,27 +1213,18 @@ export default {
       submitLoading: false,
       formAddmModel: false,
       formViewModel: false,
-      startDatePicker: false,
-      endDatePicker: false,
 
       existData: -1,
       appAccess: 0, //ACCESS PERMISSION
       editedIndex: -1,
 
       moment: moment,
-      pageKey: "recurring_pk",
-      activeColumns: "recurring_active_columns",
+      pageKey: "item_pk",
+      activeColumns: "item_active_columns",
       DTbtnColor: "indigo lighten-1 ",
       ModelHeaderColor: "blue-grey lighten-5",
       search: "",
-
-      getCityList: "",
-      getStateList: "",
-      getUserList: "",
-
-      cityList: [],
-      stateList: [],
-      userList: [],
+      itemImage: "null",
 
       itemData: [], // Array for DataTable
       headers: [],
@@ -1067,9 +1235,48 @@ export default {
       selectedExcelTitle: [],
       selectedPDFTitle: [],
 
-      typeOption: [
-        { option: "PERMANENT", index: 0 },
-        { option: "TEMPRORARY", index: 1 },
+      brandList: [
+        { option: "Addidas" },
+        { option: "Nike" },
+        { option: "Sung" },
+        { option: "Linon" },
+        { option: "Super dry" },
+      ],
+      categoryList: [
+        { option: "Men Short Leaves" },
+        { option: "Men Long Leaves" },
+        { option: "Women Frock" },
+        { option: "Women Saree" },
+      ],
+      colorList: [
+        { option: "red" },
+        { option: "yellow" },
+        { option: "blue" },
+        { option: "green" },
+        { option: "orange" },
+        { option: "purple" },
+      ],
+      measurementList: [
+        { option: "PIECE" },
+        { option: "UNIT" },
+        { option: "BUNDLE" },
+      ],
+      sizetList: [
+        { option: "XS" },
+        { option: "S" },
+        { option: "M" },
+        { option: "L" },
+        { option: "XL" },
+        { option: "XXL" },
+        { option: "XXXL" },
+      ],
+      typetList: [
+        { option: "UNIQUE", index: 0 },
+        { option: "COMMON", index: 1 },
+      ],
+      taxList: [
+        { option: "IIT", index: 0 },
+        { option: "VAT", index: 1 },
       ],
       statusOption: [
         { option: "ACTIVE", index: 1 },
@@ -1086,7 +1293,7 @@ export default {
       },
       pagination: {
         current: 1,
-        localCurrentPage: parseInt(localStorage.getItem("recurring_pk")),
+        localCurrentPage: parseInt(localStorage.getItem("item_pk")),
         total: 1,
       },
       dtPagination: {
@@ -1115,105 +1322,112 @@ export default {
           text: "NAME",
           align: "start",
           sortable: true,
-          value: "recurring_name",
+          value: "name",
+          width: "250",
+          divider: true,
+        },
+        {
+          text: "BRAND",
+          align: "start",
+          sortable: true,
+          value: "brand",
           width: "170",
           divider: true,
         },
         {
-          text: "TYPE",
+          text: "CATEGORY",
           align: "start",
           sortable: true,
-          value: "recurring_type",
-          width: "100",
+          value: "category",
+          width: "170",
           divider: true,
         },
         {
-          text: "MOBILE",
+          text: "BARCODE",
           align: "start",
           sortable: true,
-          value: "recurring_user_mobile",
-          width: "100",
+          value: "barcode",
+          width: "140",
           divider: true,
         },
         {
-          text: "PHONE",
-          align: "start",
-          sortable: true,
-          value: "recurring_phone",
-          width: "100",
-          divider: true,
-        },
-        {
-          text: "ST DATE",
-          align: "start",
-          sortable: true,
-          value: "recurring_start_date",
-          width: "105",
-          divider: true,
-        },
-        {
-          text: "END DATE",
-          align: "start",
-          sortable: true,
-          value: "recurring_end_date",
-          width: "105",
-          divider: true,
-        },
-        {
-          text: "KEY MONEY",
+          text: "MEASUREMENT",
           align: "center",
           sortable: true,
-          value: "recurring_key_money",
+          value: "measurements",
+          width: "140",
+          divider: true,
+        },
+        {
+          text: "SIZE",
+          align: "center",
+          sortable: true,
+          value: "size",
+          width: "100",
+          divider: true,
+        },
+        {
+          text: "COST",
+          align: "end",
+          sortable: true,
+          value: "cost",
+          width: "100",
+          divider: true,
+        },
+        {
+          text: "RO LEVEL",
+          align: "center",
+          sortable: true,
+          value: "reorder_level",
+          width: "110",
+          divider: true,
+        },
+        {
+          text: "FIX RPICE",
+          align: "end",
+          sortable: true,
+          value: "fixed_price",
+          width: "110",
+          divider: true,
+        },
+        {
+          text: "PRICE",
+          align: "end",
+          sortable: true,
+          value: "price",
+          width: "100",
+          divider: true,
+        },
+        {
+          text: "DIS %",
+          align: "end",
+          sortable: true,
+          value: "discount",
+          width: "100",
+          divider: true,
+        },
+        {
+          text: "SPC PRICE",
+          align: "end",
+          sortable: true,
+          value: "special_price",
           width: "120",
           divider: true,
         },
         {
-          text: "MONTHLY AMOUNT",
-          align: "center",
+          text: "WS PRICE",
+          align: "end",
           sortable: true,
-          value: "recurring_montly_amount",
-          width: "160",
-          divider: true,
-        },
-        {
-          text: "EMAIL",
-          align: "center",
-          sortable: true,
-          value: "recurring_user_email",
-          divider: true,
-        },
-        {
-          text: "ADDRESS",
-          align: "start",
-          sortable: true,
-          value: "recurring_address",
-          width: "300",
-          divider: true,
-        },
-        {
-          text: "CITY",
-          align: "start",
-          sortable: true,
-          value: "recurring_city",
-
-          divider: true,
-        },
-        {
-          text: "ZIP CODE",
-          align: "center",
-          sortable: true,
-          value: "recurring_zip_code",
+          value: "wholesale_price",
           width: "110",
-          cellClass: " pa-0 ma-0",
           divider: true,
         },
         {
-          text: "COUNTRY",
-          align: "center",
+          text: "WARRENTY",
+          align: "end",
           sortable: true,
-          value: "recurring_country",
-          width: "110",
-          cellClass: " pa-0 ma-0",
+          value: "warranty_days",
+          width: "120",
           divider: true,
         },
 
@@ -1241,55 +1455,9 @@ export default {
     this.onInitializeExportColumns();
   },
 
-  watch: {
-    getCityList(e) {
-      this.$http
-        .get(this.url.baseURL + "/auto_search/zipcode/" + e)
-        .then((response) => {
-          let i = response.data;
-          i.objects.forEach((element) => {
-            this.cityList.push(element);
-          });
-          console.log("onAutoComplete", i);
-        })
-        .catch((err) => {
-          console.log("failed  autocomplete");
-        });
-    },
-    getStateList(e) {
-      this.$http
-        .get(this.url.baseURL + "/auto_search/state/" + e)
-        .then((response) => {
-          let i = response.data;
-          i.objects.forEach((element) => {
-            this.stateList.push(element);
-          });
-          console.log("onAutoComplete", i);
-        })
-        .catch((err) => {
-          console.log("failed  autocomplete");
-        });
-    },
-
-    getUserList(e) {
-      this.$http
-        .get(this.url.baseURL + "/auto_search/user/" + e)
-        .then((response) => {
-          let i = response.data;
-          i.objects.forEach((element) => {
-            this.userList.push(element);
-          });
-          console.log("onAutoComplete", i);
-        })
-        .catch((err) => {
-          console.log("failed  autocomplete");
-        });
-    },
-  },
-
   computed: {
     formTitle() {
-      return this.editedIndex === -1 ? "NEW RECURRING" : "EDIT RECURRING";
+      return this.editedIndex === -1 ? "NEW ITEMS" : "EDIT ITEMS";
     },
     submitBtn() {
       return this.editedIndex === -1 ? "SAVE" : "UPDATE";
@@ -1335,6 +1503,9 @@ export default {
 
     onNewDialog() {
       this.formAddmModel = true;
+      this.$nextTick(() => {
+        this.$refs.form.reset();
+      });
     },
 
     closeForm() {
@@ -1342,12 +1513,28 @@ export default {
         this.formAddmModel = false;
         this.editedIndex = -1;
         this.$refs.form.reset();
-
         this.editedItem = Object.assign({});
+        this.itemImage = "";
+        this.editedItem.itemImage;
       });
     },
 
+    addImage(e) {
+      if (e === null) {
+        this.itemImage = "";
+        return;
+      }
+      let reader = new FileReader();
+      reader.onload = (fileArray) => {
+        // console.log(reader.result);
+        this.itemImage = reader.result;
+        this.editedItem.itemImage = e;
+      };
+      reader.readAsDataURL(e);
+    },
+
     save() {
+      console.log(this.editedItem);
       this.$refs.form.validate().then((success) => {
         if (!success) {
           return;
@@ -1355,37 +1542,33 @@ export default {
 
         this.submitLoading = true;
 
-        let recurring_name = "";
-        let recurring_ID = "";
-        if (typeof this.editedItem.recurring_name === "object") {
-          recurring_name = this.editedItem.recurring_name.name;
-          recurring_ID = this.editedItem.recurring_name.id;
-        } else {
-          recurring_name = this.editedItem.recurring_name;
-        }
-
         const obj = {
           id: this.editedItem.id,
-          recurring_type: this.editedItem.recurring_type,
-          recurring_name: recurring_name,
-          recurring_user_mobile: this.editedItem.recurring_user_mobile,
-          recurring_user_email: this.editedItem.recurring_user_email,
-          recurring_address: this.editedItem.recurring_address,
-          recurring_city: this.editedItem.recurring_city.location_city,
-          recurring_zip_code: this.editedItem.recurring_zip_code,
-          recurring_state: this.editedItem.recurring_state.location_name,
-          recurring_country: this.editedItem.recurring_country,
-          recurring_phone: this.editedItem.recurring_phone,
-          recurring_start_date: this.editedItem.recurring_start_date,
-          recurring_end_date: this.editedItem.recurring_end_date,
-          recurring_key_money: this.editedItem.recurring_key_money,
-          recurring_montly_amount: this.editedItem.recurring_montly_amount,
-          recurring_status: this.editedItem.recurring_status,
-          location_auto_id: this.editedItem.recurring_state.id,
-          recurring_user_id: recurring_ID,
-        };
+          //   barcode: this.editedItem.barcode,
+          brand: this.editedItem.brand.option,
+          category: this.editedItem.category.option,
+          color: this.editedItem.color.option,
+          cost: this.editedItem.cost,
 
-        console.log("store", obj);
+          discount: this.editedItem.discount,
+          fixed_price: this.editedItem.fixed_price,
+          measurements: this.editedItem.measurements.option,
+          name: this.editedItem.name,
+          //   number: this.editedItem.number,
+          offers: this.editedItem.offers,
+          pic: this.itemImage,
+          price: this.editedItem.price,
+          reorder_level: this.editedItem.reorder_level,
+          size: this.editedItem.size.option,
+          special_price: this.editedItem.special_price,
+          status: this.editedItem.status,
+          tax_method: this.editedItem.tax_method.index,
+          type: this.editedItem.type.index,
+          //   uom: this.editedItem.uom,
+          wac: this.editedItem.wac,
+          warranty_days: this.editedItem.warranty_days,
+          wholesale_price: this.editedItem.wholesale_price,
+        };
 
         if (this.editedIndex > -1) {
           // UPDATE
@@ -1427,49 +1610,21 @@ export default {
 
     onEditItem(e, type) {
       this.editedIndex = this.itemData.indexOf(e);
-      this.editedItem = Object.assign({});
-      this.cityList.splice(0);
-      this.stateList.splice(0);
 
       this.$http
         .get(this.url.baseURL + "/getEditItem/" + e.id)
         .then((response) => {
           let i = response.data.objects;
-
-          this.cityList.push({
-            id: i.location_state.id,
-            location_city: i.location_state.location_city,
-          });
-
-          this.stateList.push({
-            id: i.location_state.id,
-            location_city: i.location_state.location_name,
-          });
-
-          this.editedItem = Object.assign({
-            id: i.id,
-            recurring_type: i.recurring_type,
-            recurring_name: i.recurring_name,
-            recurring_user_mobile: i.recurring_user_mobile,
-            recurring_user_email: i.recurring_user_email,
-            recurring_address: i.recurring_address,
-            recurring_city: {
-              id: i.location_state.id,
-              location_city: i.location_state.location_city,
-            },
-            recurring_zip_code: i.recurring_zip_code,
-            recurring_state: {
-              id: i.location_state.id,
-              location_city: i.location_state.location_name,
-            },
-            recurring_country: i.recurring_country,
-            recurring_phone: i.recurring_phone,
-            recurring_start_date: i.recurring_start_date,
-            recurring_end_date: i.recurring_end_date,
-            recurring_key_money: i.recurring_key_money,
-            recurring_montly_amount: i.recurring_montly_amount,
-            recurring_status: i.recurring_status,
-            location_auto_id: i.recurring_state.id,
+          this.itemImage = i.pic;
+          this.editedItem = Object.assign(i, {
+            tax_method:
+              i.tax_method == 0
+                ? { option: "IIT", index: 0 }
+                : { option: "VAT", index: 1 },
+            type:
+              i.type == 0
+                ? { option: "UNIQUE", index: 0 }
+                : { option: "COMMON", index: 1 },
           });
         });
 
@@ -1526,14 +1681,185 @@ export default {
       this.onInitialize();
     },
 
+    exportToExcel() {
+      this.exportExecelLoading = true;
+      let objects = [];
+      this.itemData.forEach((element) => {
+        objects.push({
+          NAME: element.name,
+          BRAND: element.brand,
+          CATEGORY: element.category,
+          BARCODE: element.barcode,
+          MEASUREMENT: element.measurements,
+          SIZE: element.size,
+          PRICE: element.price,
+          DISCOUNT: element.discount,
+          "SPECIAL PRICE": element.special_price,
+          "WHOLESALE PRICE": element.wholesale_price,
+          "WARRENTY DAYS": element.warranty_days,
+          COST: element.cost,
+          "RE ORDER LEVEL": element.reorder_level,
+          "FIXED PRICE": element.fixed_price,
+        });
+      });
+
+      let jsonObject = objects;
+      let selectedArray = this.selectedExcelTitle;
+      let filteredJsonObject = jsonObject.map(function(entry) {
+        return selectedArray.reduce(function(res, key) {
+          res[key] = entry[key];
+          return res;
+        }, {});
+      });
+
+      let data = filteredJsonObject;
+      let fileName = this.moment().unix() + "_file";
+      try {
+        json2excel({
+          data,
+          name: fileName,
+          formateDate: "yyyy/mm/dd",
+        });
+        this.notification(
+          fileName + " has been exported successfully",
+          "green"
+        );
+
+        setTimeout(() => {
+          this.exportExecelLoading = false;
+        }, 4000);
+      } catch (e) {
+        console.error("export error");
+        this.exportExecelLoading = false;
+        this.notification(fileName + " Export Failed. Please try again", "red");
+      }
+    },
+    exportToPdf() {
+      this.exportPDFLoading = true;
+      let fileName = this.moment().unix() + "_file";
+
+      try {
+        let user = JSON.parse(localStorage.getItem("user"));
+        let header = [];
+        let data = [];
+        let jsonObject = data;
+        let selectedArray = this.selectedPDFTitle;
+
+        const pdf = new jsPDF({
+          orientation: this.pdfLayout,
+          unit: "mm",
+          format: "a4",
+          putOnlyUsedFonts: true,
+          compress: true,
+          //   encryption: {
+          //     userPassword: user.phone,
+          //     ownerPassword: "admin",
+          //     userPermissions: ["print", "modify", "copy", "annot-forms"],
+          //   },
+        });
+
+        this.selectedPDFTitle.forEach((element, key) => {
+          header.push(element);
+        });
+        this.itemData.forEach((element) => {
+          data.push({
+            NAME: element.name,
+            BRAND: element.brand,
+            CATEGORY: element.category,
+            BARCODE: element.barcode == null ? '': element.barcode,
+            MEASUREMENT: element.measurements,
+            SIZE: element.size,
+            PRICE: element.price.toString(),
+            DISCOUNT: element.discount.toString(),
+            "SPECIAL PRICE": element.special_price.toString(),
+            "WHOLESALE PRICE": element.wholesale_price.toString(),
+            "WARRENTY DAYS": element.warranty_days.toString(),
+            COST: element.cost.toString(),
+            "RE ORDER LEVEL": element.reorder_level,
+            "FIXED PRICE": element.fixed_price.toString(),
+          });
+        });
+
+        let filteredData = jsonObject.map(function(entry) {
+          return selectedArray.reduce(function(res, key) {
+            res[key] = entry[key];
+            return res;
+          }, {});
+        });
+
+        let headerConfig = header.map((key) => ({
+          name: key,
+          prompt: key,
+          width: this.pdfLayout == "l" ? 27 : 19,
+          align: "center",
+          padding: 0,
+        }));
+
+        let ColumnConfig = {
+          headerBackgroundColor: "#c5cae9",
+          fontSize: 10,
+          autoSize: false,
+        };
+
+        pdf.table(5, 5, filteredData, headerConfig, ColumnConfig);
+        // pdf.autoPrint({ variant: "non-conform" });
+   
+        pdf.save(fileName + ".pdf");
+
+        this.notification(
+          fileName + " has been exported successfully",
+          "green"
+        );
+
+        setTimeout(() => {
+          this.exportPDFLoading = false;
+        }, 4000);
+      } catch (e) {
+        console.error("export error", e);
+        this.exportPDFLoading = false;
+        this.notification(fileName + " Export Failed. Please try again", "red");
+      }
+    },
+
     onInitializeExportColumns() {
       // DEFINE COLUMNS FOR EXPORT OPTIONS
-      this.excelTitles = ["COLUMN 1", "COLUMN 2"];
 
-      this.pdfTitles = ["COLUMN 1", "COLUMN 2"];
+      this.excelTitles = [
+        "NAME",
+        "BRAND",
+        "CATEGORY",
+        "BARCODE",
+        "MEASUREMENT",
+        "SIZE",
+        "PRICE",
+        "DISCOUNT",
+        "SPECIAL PRICE",
+        "WHOLESALE PRICE",
+        "WARRENTY DAYS",
+        "COST",
+        "RE ORDER LEVEL",
+        "FIXED PRICE",
+      ];
+
+      this.pdfTitles = [
+        "NAME",
+        "BRAND",
+        "CATEGORY",
+        "BARCODE",
+        "MEASUREMENT",
+        "SIZE",
+        "PRICE",
+        "DISCOUNT",
+        "SPECIAL PRICE",
+        "WHOLESALE PRICE",
+        "WARRENTY DAYS",
+        "COST",
+        "RE ORDER LEVEL",
+        "FIXED PRICE",
+      ];
 
       this.selectedExcelTitle = this.excelTitles;
-      this.selectedPDFTitle = this.excelTitles;
+      this.selectedPDFTitle = this.pdfTitles;
     },
     onChangeColumn(e) {
       this.headers.splice(0);
@@ -1604,7 +1930,7 @@ export default {
 
     onExpandTable(e) {
       if (e == "e") {
-        let x = this.$gl.onFullscreenDataTable("dt_table_recurring");
+        let x = this.$gl.onFullscreenDataTable("dt_table_item");
         if (x) this.dataTableFullscreen = true;
       } else {
         let x = this.$gl.onExitFullScreenDataTable();
