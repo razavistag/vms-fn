@@ -9,9 +9,8 @@
         :items="Users"
         :fixed-header="true"
         :loading="dataTableLoading"
-        :items-per-page="5"
+        :items-per-page="-1"
         :footer-props="{
-          'items-per-page-options': [pagination.total],
           prevIcon: '',
           nextIcon: '',
         }"
@@ -20,7 +19,6 @@
         id="dt_table_users"
         class="elevation-0"
         dense
-        disable-pagination
       >
         <!-- TABLE TOP -->
         <template v-slot:top>
@@ -334,7 +332,7 @@
             </v-col> -->
 
             <p class="pt-5 ml-4">
-              Projects: {{ dtPagination.from }} - {{ dtPagination.total }}
+              Items: {{ dtPagination.from }} - {{ dtPagination.total }}
             </p>
 
             <v-pagination

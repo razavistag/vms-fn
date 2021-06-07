@@ -7,9 +7,9 @@
         :headers="headers"
         :items="projects"
         :fixed-header="true"
+        :items-per-page="-1"
         :loading="dataTableLoading"
         :footer-props="{
-          'items-per-page-options': [pagination.total],
           prevIcon: '',
           nextIcon: '',
         }"
@@ -18,7 +18,6 @@
         class="elevation-0"
         dense
         loading-text="Fetching Data"
-        disable-pagination
         style="z-index:1000;"
       >
         <!-- DataTable Header -->
@@ -965,10 +964,10 @@
         <!-- Footer Page Text -->
         <template v-slot:[`footer.page-text`]>
           <div class="d-flex align-center dt_footer  ">
-            <p class="pt-5">Projects Per Page: {{ dtPagination.per_page }}</p>
+          
 
             <p class="pt-5 ml-4">
-              Projects: {{ dtPagination.from }} - {{ dtPagination.total }}
+              Items: {{ dtPagination.from }} - {{ dtPagination.total }}
             </p>
 
             <v-pagination
@@ -980,6 +979,8 @@
             ></v-pagination>
           </div>
         </template>
+
+      
 
         <!-- no data -->
         <template v-slot:no-data>
@@ -1653,7 +1654,7 @@ export default {
       let fileName = this.moment().unix() + "_projetcs_file";
 
       try {
-         let user_DecKey = this.$gl.DecKey(localStorage.getItem("user"));
+        let user_DecKey = this.$gl.DecKey(localStorage.getItem("user"));
         let user = JSON.parse(user_DecKey);
         let header = [];
         let data = [];
