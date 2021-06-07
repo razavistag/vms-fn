@@ -7,9 +7,9 @@
         :headers="headers"
         :items="projects"
         :fixed-header="true"
+        :items-per-page="-1"
         :loading="dataTableLoading"
         :footer-props="{
-          'items-per-page-options': [pagination.total],
           prevIcon: '',
           nextIcon: '',
         }"
@@ -18,7 +18,6 @@
         class="elevation-0"
         dense
         loading-text="Fetching Data"
-        disable-pagination
         style="z-index:1000;"
       >
         <!-- DataTable Header -->
@@ -861,7 +860,7 @@
           <v-icon
             id="dt-trash-action-button"
             small
-             title="Delete "
+            title="Delete "
             dark
             class="red darken-1 pa-1"
             @click="deleteItem(item)"
@@ -965,10 +964,10 @@
         <!-- Footer Page Text -->
         <template v-slot:[`footer.page-text`]>
           <div class="d-flex align-center dt_footer  ">
-            <p class="pt-5">Projects Per Page: {{ dtPagination.per_page }}</p>
+          
 
             <p class="pt-5 ml-4">
-              Projects: {{ dtPagination.from }} - {{ dtPagination.total }}
+              Items: {{ dtPagination.from }} - {{ dtPagination.total }}
             </p>
 
             <v-pagination
@@ -980,6 +979,8 @@
             ></v-pagination>
           </div>
         </template>
+
+      
 
         <!-- no data -->
         <template v-slot:no-data>
@@ -1653,7 +1654,8 @@ export default {
       let fileName = this.moment().unix() + "_projetcs_file";
 
       try {
-        let user = JSON.parse(localStorage.getItem("user"));
+        let user_DecKey = this.$gl.DecKey(localStorage.getItem("user"));
+        let user = JSON.parse(user_DecKey);
         let header = [];
         let data = [];
         let jsonObject = data;
@@ -2260,7 +2262,10 @@ export default {
       console.log(this.profileLogo);
     },
     onAccessPermission() {
-      let access = JSON.parse(localStorage.getItem("token_access"));
+      let DecKey = this.$gl.DecKey(localStorage.getItem("token_access"));
+      let user_DecKey = this.$gl.DecKey(localStorage.getItem("user"));
+      let access = JSON.parse(DecKey);
+      let currentUser = JSON.parse(user_DecKey);
       this.appAccess = access[1];
     },
     notification(m, c) {

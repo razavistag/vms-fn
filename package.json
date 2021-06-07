@@ -11,6 +11,7 @@
   "dependencies": {
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
+    "crypto-js": "^4.0.0",
     "flush-promises": "^1.0.2",
     "html2canvas": "^1.0.0-rc.7",
     "jest-html-reporter": "^3.3.0",

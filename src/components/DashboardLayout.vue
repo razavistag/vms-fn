@@ -207,10 +207,13 @@ export default {
 
   methods: {
     userInfomration() {
-      let i = JSON.parse(localStorage.getItem("user"));
-      this.user = Object.assign(i);
-
-      // console.log(this.user);
+      try {
+        let DecKey = this.$gl.DecKey(localStorage.getItem("user"));
+        let i = JSON.parse(DecKey);
+        this.user = Object.assign(i);
+      } catch (e) {
+        console.log(0);
+      }
     },
     checkingRoutes() {
       // modules   are indexed
@@ -224,115 +227,121 @@ export default {
       // 7 - accounts
       // 8 - holiday
       // 9 - location
-      let token_access = JSON.parse(localStorage.getItem("token_access"));
-      if (token_access[0] != 0) {
-        // console.log("dashboard");
-        this.items.push({
-          id: 0,
-          title: this.$t("menu.dashboard"),
-          icon: "mdi-home",
-          to: "/dashboard",
-        });
-      }
-      if (token_access[1] != 0) {
-        // console.log("project");
-        this.items.push({
-          id: 1,
-          title: this.$t("menu.projects"),
-          icon: "mdi-image-filter-center-focus-strong",
-          to: "/projects",
-        });
-      }
-      if (token_access[2] != 0) {
-        // console.log("system");
-        this.items.push({
-          id: 2,
-          title: this.$t("menu.systems"),
-          icon: "mdi-server",
-          to: "systems",
-        });
-      }
-      if (token_access[3] != 0) {
-        // console.log("task");
-        this.items.push({
-          id: 3,
-          title: this.$t("menu.tasks"),
-          icon: "mdi-clipboard-list",
-          to: "tasks",
-        });
-      }
-      if (token_access[4] != 0) {
-        // console.log("user");
-        this.items.push({
-          id: 4,
-          title: this.$t("menu.users"),
-          icon: "mdi-account-cog",
-          to: "users",
-        });
-      }
-      if (token_access[5] != 0) {
-        // console.log("po");
-        this.items.push({
-          id: 5,
-          title: this.$t("menu.po"),
-          icon: "mdi-alpha-p-circle",
-          to: "/po",
-        });
-      }
-      if (token_access[6] != 0) {
-        this.items.push({
-          id: 6,
-          title: this.$t("menu.order"),
-          icon: "mdi-checkbox-multiple-blank-circle-outline",
-          to: "/order",
-        });
-      }
-      if (token_access[7] != 0) {
-        this.items.push({
-          id: 7,
-          title: this.$t("menu.account"),
-          icon: "mdi-table-account",
-          to: "/account",
-        });
-      }
-      if (token_access[8] != 0) {
-        this.items.push({
-          id: 8,
-          title: this.$t("menu.holiday"),
-          icon: "mdi-calendar-check-outline",
-          to: "/holiday",
-        });
-      }
-      if (token_access[9] != 0) {
-        this.items.push({
-          id: 9,
-          title: this.$t("menu.location"),
-          icon: "mdi-map-marker",
-          to: "/location",
-        });
-      }
-      if (token_access[10] != 0) {
-        this.items.push({
-          id: 10,
-          title: this.$t("menu.recurring"),
-          icon: "mdi-repeat",
-          to: "/recurring",
-        });
-      }
-      if (token_access[11] != 0) {
-        this.items.push({
-          id: 11,
-          title: this.$t("menu.item"),
-          icon: "mdi-form-select",
-          to: "/item",
-        });
-      }
+      try {
+        let DecKey = this.$gl.DecKey(localStorage.getItem("token_access"));
+        let token_access = JSON.parse(DecKey);
+        // console.log("dashboard layout ->", token_access);
+        if (token_access[0] != 0) {
+          // console.log("dashboard");
+          this.items.push({
+            id: 0,
+            title: this.$t("menu.dashboard"),
+            icon: "mdi-home",
+            to: "/dashboard",
+          });
+        }
+        if (token_access[1] != 0) {
+          // console.log("project");
+          this.items.push({
+            id: 1,
+            title: this.$t("menu.projects"),
+            icon: "mdi-image-filter-center-focus-strong",
+            to: "/projects",
+          });
+        }
+        if (token_access[2] != 0) {
+          // console.log("system");
+          this.items.push({
+            id: 2,
+            title: this.$t("menu.systems"),
+            icon: "mdi-server",
+            to: "systems",
+          });
+        }
+        if (token_access[3] != 0) {
+          // console.log("task");
+          this.items.push({
+            id: 3,
+            title: this.$t("menu.tasks"),
+            icon: "mdi-clipboard-list",
+            to: "tasks",
+          });
+        }
+        if (token_access[4] != 0) {
+          // console.log("user");
+          this.items.push({
+            id: 4,
+            title: this.$t("menu.users"),
+            icon: "mdi-account-cog",
+            to: "users",
+          });
+        }
+        if (token_access[5] != 0) {
+          // console.log("po");
+          this.items.push({
+            id: 5,
+            title: this.$t("menu.po"),
+            icon: "mdi-alpha-p-circle",
+            to: "/po",
+          });
+        }
+        if (token_access[6] != 0) {
+          this.items.push({
+            id: 6,
+            title: this.$t("menu.order"),
+            icon: "mdi-checkbox-multiple-blank-circle-outline",
+            to: "/order",
+          });
+        }
+        if (token_access[7] != 0) {
+          this.items.push({
+            id: 7,
+            title: this.$t("menu.account"),
+            icon: "mdi-table-account",
+            to: "/account",
+          });
+        }
+        if (token_access[8] != 0) {
+          this.items.push({
+            id: 8,
+            title: this.$t("menu.holiday"),
+            icon: "mdi-calendar-check-outline",
+            to: "/holiday",
+          });
+        }
+        if (token_access[9] != 0) {
+          this.items.push({
+            id: 9,
+            title: this.$t("menu.location"),
+            icon: "mdi-map-marker",
+            to: "/location",
+          });
+        }
+        if (token_access[10] != 0) {
+          this.items.push({
+            id: 10,
+            title: this.$t("menu.recurring"),
+            icon: "mdi-repeat",
+            to: "/recurring",
+          });
+        }
+        if (token_access[11] != 0) {
+          this.items.push({
+            id: 11,
+            title: this.$t("menu.item"),
+            icon: "mdi-form-select",
+            to: "/item",
+          });
+        }
 
-      // ordering menu
-      let order = [0, 5, 6, 11, 1, 2, 3, 8, 9, 10, 7, 4];
-      this.items.sort(function(x, y) {
-        return order.indexOf(x.id) - order.indexOf(y.id);
-      });
+        // ordering menu
+        let order = [0, 5, 6, 11, 1, 2, 3, 8, 9, 10, 7, 4];
+        this.items.sort(function(x, y) {
+          return order.indexOf(x.id) - order.indexOf(y.id);
+        });
+      } catch (e) {
+        // console.log(0);
+      }
     },
 
     languageChange(e) {
@@ -362,6 +371,7 @@ export default {
       localStorage.removeItem("holiday_active_columns");
       localStorage.removeItem("accounts_pk");
       localStorage.removeItem("accounts_active_columns");
+      localStorage.clear();
     },
     logout() {
       console.log("loggedout");

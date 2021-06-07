@@ -9,9 +9,8 @@
         :items="Users"
         :fixed-header="true"
         :loading="dataTableLoading"
-        :items-per-page="5"
+        :items-per-page="-1"
         :footer-props="{
-          'items-per-page-options': [pagination.total],
           prevIcon: '',
           nextIcon: '',
         }"
@@ -20,7 +19,6 @@
         id="dt_table_users"
         class="elevation-0"
         dense
-        disable-pagination
       >
         <!-- TABLE TOP -->
         <template v-slot:top>
@@ -334,7 +332,7 @@
             </v-col> -->
 
             <p class="pt-5 ml-4">
-              Projects: {{ dtPagination.from }} - {{ dtPagination.total }}
+              Items: {{ dtPagination.from }} - {{ dtPagination.total }}
             </p>
 
             <v-pagination
@@ -1759,7 +1757,8 @@ export default {
       let fileName = this.moment().unix() + "_file";
 
       try {
-        let user = JSON.parse(localStorage.getItem("user"));
+        let user_DecKey = this.$gl.DecKey(localStorage.getItem("user"));
+        let user = JSON.parse(user_DecKey);
         let header = [];
         let data = [];
         let jsonObject = data;
@@ -2266,11 +2265,14 @@ export default {
       }
     },
     onAccessPermission() {
-      let access = JSON.parse(localStorage.getItem("token_access"));
-      let user = JSON.parse(localStorage.getItem("user"));
+      let DecKey = this.$gl.DecKey(localStorage.getItem("token_access"));
+      let user_DecKey = this.$gl.DecKey(localStorage.getItem("user"));
+      let access = JSON.parse(DecKey);
+      let currentUser = JSON.parse(user_DecKey);
+
       this.appAccess = access[4];
 
-      this.user = Object.assign(user);
+      this.user = Object.assign(currentUser);
     },
     notification(m, c) {
       this.snackbar = {

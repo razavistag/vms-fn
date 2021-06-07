@@ -10,9 +10,8 @@
         :items="itemData"
         :fixed-header="true"
         :loading="dataTableLoading"
-        :items-per-page="5"
+        :items-per-page="-1"
         :footer-props="{
-          'items-per-page-options': [pagination.total],
           prevIcon: '',
           nextIcon: '',
         }"
@@ -21,7 +20,6 @@
         id="dt_table_recurring"
         class="elevation-0"
         dense
-        disable-pagination
       >
         <!-- TABLE TOP -->
         <template v-slot:top>
@@ -54,8 +52,9 @@
             </v-toolbar-title>
 
             <v-divider class="mx-4" inset vertical></v-divider>
+
             <!-- SELECT OPTION FOR EXPORT TO EXCEL -->
-            <v-menu bottom right :close-on-content-click="false">
+            <!-- <v-menu bottom right :close-on-content-click="false">
               <template v-slot:activator="{ on, attrs }">
                 <v-btn icon small v-bind="attrs" v-on="on">
                   <v-icon small>mdi-file-export</v-icon>
@@ -89,7 +88,7 @@
                   EXPORT EXCEL
                 </v-btn>
               </v-list>
-            </v-menu>
+            </v-menu> -->
 
             <!-- COPY TO Clipboard -->
             <v-btn icon small @click="onClipboard">
@@ -250,21 +249,8 @@
         <!-- FOOTER PAGE TEXT -->
         <template v-slot:[`footer.page-text`]>
           <div class="d-flex align-center justify-end dt_footer  ">
-            <p class="pt-5">Projects Per Page: {{ dtPagination.per_page }}</p>
-
-            <!-- <v-col cols="12" sm="2">
-              <v-select
-                v-model="selectedPageCount"
-                :items="pageCount"
-                dense
-                hide-details=""
-                hide-selected
-                @change="onPaginateChange"
-              ></v-select>
-            </v-col> -->
-
             <p class="pt-5 ml-4">
-              Projects: {{ dtPagination.from }} - {{ dtPagination.total }}
+              Items: {{ dtPagination.from }} - {{ dtPagination.total }}
             </p>
 
             <v-pagination
@@ -1591,9 +1577,11 @@ export default {
     },
 
     onAccessPermission() {
-      let access = JSON.parse(localStorage.getItem("token_access"));
-      let currentUser = JSON.parse(localStorage.getItem("user"));
-      this.appAccess = access[7];
+      let DecKey = this.$gl.DecKey(localStorage.getItem("token_access"));
+      let user_DecKey = this.$gl.DecKey(localStorage.getItem("user"));
+      let access = JSON.parse(DecKey);
+      let currentUser = JSON.parse(user_DecKey);
+      this.appAccess = access[10];
 
       this.currentUser = Object.assign(currentUser);
     },

@@ -8,20 +8,18 @@
       <v-data-table
         :headers="headers"
         :items="itemData"
-        :fixed-header="true"
+        dense
+        fixed-header
         :loading="dataTableLoading"
-        :items-per-page="5"
+        :items-per-page="-1"
         :footer-props="{
-          'items-per-page-options': [pagination.total],
           prevIcon: '',
           nextIcon: '',
         }"
         loading-text="Fetching Data"
         height="85vh"
-        id="dt_table_holiday"
         class="elevation-0"
-        dense
-        disable-pagination
+        id="dt_table_holiday"
       >
         <!-- TABLE TOP -->
         <template v-slot:top>
@@ -305,21 +303,8 @@
         <!-- FOOTER PAGE TEXT -->
         <template v-slot:[`footer.page-text`]>
           <div class="d-flex align-center justify-end dt_footer  ">
-            <p class="pt-5">Projects Per Page: {{ dtPagination.per_page }}</p>
-
-            <!-- <v-col cols="12" sm="2">
-              <v-select
-                v-model="selectedPageCount"
-                :items="pageCount"
-                dense
-                hide-details=""
-                hide-selected
-                @change="onPaginateChange"
-              ></v-select>
-            </v-col> -->
-
             <p class="pt-5 ml-4">
-              Projects: {{ dtPagination.from }} - {{ dtPagination.total }}
+              Items: {{ dtPagination.from }} - {{ dtPagination.total }}
             </p>
 
             <v-pagination
@@ -1115,7 +1100,8 @@ export default {
       let fileName = this.moment().unix() + "_file";
 
       try {
-        let user = JSON.parse(localStorage.getItem("user"));
+        let user_DecKey = this.$gl.DecKey(localStorage.getItem("user"));
+        let user = JSON.parse(user_DecKey);
         let header = [];
         let data = [];
         let jsonObject = data;
@@ -1251,8 +1237,10 @@ export default {
     },
 
     onAccessPermission() {
-      let access = JSON.parse(localStorage.getItem("token_access"));
-      let currentUser = JSON.parse(localStorage.getItem("user"));
+      let DecKey = this.$gl.DecKey(localStorage.getItem("token_access"));
+      let user_DecKey = this.$gl.DecKey(localStorage.getItem("user"));
+      let access = JSON.parse(DecKey);
+      let currentUser = JSON.parse(user_DecKey);
       this.appAccess = access[8];
 
       this.currentUser = Object.assign(currentUser);
