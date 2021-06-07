@@ -8,20 +8,18 @@
       <v-data-table
         :headers="headers"
         :items="itemData"
-        :fixed-header="true"
+        dense
+        fixed-header
         :loading="dataTableLoading"
-        :items-per-page="5"
+        :items-per-page="-1"
         :footer-props="{
-          'items-per-page-options': [pagination.total],
           prevIcon: '',
           nextIcon: '',
         }"
         loading-text="Fetching Data"
         height="85vh"
-        id="dt_table_holiday"
         class="elevation-0"
-        dense
-        disable-pagination
+        id="dt_table_holiday"
       >
         <!-- TABLE TOP -->
         <template v-slot:top>
@@ -305,21 +303,8 @@
         <!-- FOOTER PAGE TEXT -->
         <template v-slot:[`footer.page-text`]>
           <div class="d-flex align-center justify-end dt_footer  ">
-            <p class="pt-5">Projects Per Page: {{ dtPagination.per_page }}</p>
-
-            <!-- <v-col cols="12" sm="2">
-              <v-select
-                v-model="selectedPageCount"
-                :items="pageCount"
-                dense
-                hide-details=""
-                hide-selected
-                @change="onPaginateChange"
-              ></v-select>
-            </v-col> -->
-
             <p class="pt-5 ml-4">
-              Projects: {{ dtPagination.from }} - {{ dtPagination.total }}
+              Items: {{ dtPagination.from }} - {{ dtPagination.total }}
             </p>
 
             <v-pagination
