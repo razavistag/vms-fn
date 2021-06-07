@@ -35,6 +35,7 @@
           </v-list-item>
         </v-list>
       </v-menu>
+
       <v-btn
         small
         icon
@@ -105,7 +106,7 @@
           {{ user.name }}
         </v-list-item-title>
 
-        <v-btn icon @click.stop="mini = !mini">
+        <v-btn icon @click="profileEdit">
           <v-icon small>mdi-pencil</v-icon>
         </v-btn>
       </v-list-item>
@@ -162,18 +163,43 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
+
+    <!-- PROFILR INFO MODEL -->
+    <v-dialog
+      v-model="profileInfoModel"
+      max-width="1400px"
+      persistent
+      content-class="form-dialog"
+      scrollable
+    >
+      <v-card tile flat>
+        <DialogCardLoading />
+        <v-card-title :class="ModelHeaderColor">
+          <span class="headline blue-grey--text text--darken-3 d-flex">
+            <v-icon left color="">mdi-timeline-text</v-icon> PROFILE
+          </span>
+          <v-spacer></v-spacer>
+          <v-icon @click="profileInfoModel = false">mdi-close</v-icon>
+        </v-card-title>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
 <script>
 import html2canvas from "html2canvas";
-
+import DialogCardLoading from "./DialogCardLoading.vue";
 export default {
   name: "DashboardLayout",
+  components: {
+    DialogCardLoading,
+  },
   data() {
     return {
       headerColor: "blue-grey darken-1",
       sideBar: "blue-grey darken-3",
+      DTbtnColor: "indigo lighten-1 ",
+      ModelHeaderColor: "blue-grey lighten-5",
 
       expand_on_hover: true,
       mobileDrawer: false,
@@ -185,6 +211,7 @@ export default {
       interval: null,
       time: null,
       date: null,
+      profileInfoModel: false,
     };
   },
   beforeMount() {
@@ -349,28 +376,10 @@ export default {
       localStorage.setItem("Lang", e);
       window.location.reload();
     },
+    profileEdit() {
+      this.profileInfoModel = true;
+    },
     removeStorage() {
-      localStorage.removeItem("token");
-      localStorage.removeItem("token_access");
-      localStorage.removeItem("paginateKey");
-      localStorage.removeItem("user_pk");
-      localStorage.removeItem("fullScreen");
-      localStorage.removeItem("user");
-      localStorage.removeItem("user_active_columns");
-      localStorage.removeItem("location_pk");
-      localStorage.removeItem("location_active_columns");
-      localStorage.removeItem("po_pk");
-      localStorage.removeItem("po_active_columns");
-      localStorage.removeItem("order_pk");
-      localStorage.removeItem("order_active_columns");
-      localStorage.removeItem("project_active_columns");
-      localStorage.removeItem("project_pk");
-      localStorage.removeItem("task_pk");
-      localStorage.removeItem("task_active_columns");
-      localStorage.removeItem("orderholiday_pk_pk");
-      localStorage.removeItem("holiday_active_columns");
-      localStorage.removeItem("accounts_pk");
-      localStorage.removeItem("accounts_active_columns");
       localStorage.clear();
     },
     logout() {
