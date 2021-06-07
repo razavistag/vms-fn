@@ -319,7 +319,6 @@
           >
             mdi-attachment mdi-rotate-90 mdi-dark
           </v-icon>
-          
 
           <v-icon
             class="pa-2  ml-1 blue darken-1"
@@ -349,7 +348,7 @@
             x-small
             dark
             class="pa-2 ml-1 red darken-1"
-             title="Delete "
+            title="Delete "
             @click="onDeleteItem(item)"
             v-show="appAccess >= 4"
           >
@@ -2261,7 +2260,8 @@ export default {
       let fileName = this.moment().unix() + "_file";
 
       try {
-        let user = JSON.parse(localStorage.getItem("user"));
+        let user_DecKey = this.$gl.DecKey(localStorage.getItem("user"));
+        let user = JSON.parse(user_DecKey);
         let header = [];
         let data = [];
         let jsonObject = data;
@@ -2431,8 +2431,10 @@ export default {
       this.$refs.searchbar_ref.$refs.input.focus();
     },
     onAccessPermission() {
-      let access = JSON.parse(localStorage.getItem("token_access"));
-      let currentUser = JSON.parse(localStorage.getItem("user"));
+      let DecKey = this.$gl.DecKey(localStorage.getItem("token_access"));
+      let user_DecKey = this.$gl.DecKey(localStorage.getItem("user"));
+      let access = JSON.parse(DecKey);
+      let currentUser = JSON.parse(user_DecKey);
       this.appAccess = access[5];
 
       this.currentUser = Object.assign(currentUser);

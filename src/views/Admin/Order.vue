@@ -202,7 +202,7 @@
             x-small
             dark
             class="pa-2 ml-1 red darken-1"
-             title="Delete "
+            title="Delete "
             @click="onDeleteItem(item)"
             v-show="appAccess >= 4"
           >
@@ -1636,33 +1636,35 @@ export default {
     onSearch(e) {
       this.dataTableLoading = true;
       if (this.search.length > 0) {
-        this.$http.get(this.url.order + "/getOrderList/" + e).then((response) => {
-          // console.log(response.data);
-          let i = response.data.objects;
-          this.orders.splice(0);
-          i.forEach((e) => {
-            this.orders.push({
-             id: e.id,
-              order_date: moment(e.order_date * 1000)
-                .add(1, "d")
-                .toISOString()
-                .substr(0, 10),
-              cancel_date: moment(e.cancel_date * 1000)
-                .add(1, "d")
-                .toISOString()
-                .substr(0, 10),
-              order_type: e.order_type,
-              customer: e.customer,
-              po_number: e.po_number,
-              control_number: e.control_number,
-              receiver: e.receiver,
-              completed_by: e.completed_by,
-              approved_by: e.approved_by,
-              attachments: e.attachment,
-            });
-          }, 4000);
-          this.dataTableLoading = false;
-        });
+        this.$http
+          .get(this.url.order + "/getOrderList/" + e)
+          .then((response) => {
+            // console.log(response.data);
+            let i = response.data.objects;
+            this.orders.splice(0);
+            i.forEach((e) => {
+              this.orders.push({
+                id: e.id,
+                order_date: moment(e.order_date * 1000)
+                  .add(1, "d")
+                  .toISOString()
+                  .substr(0, 10),
+                cancel_date: moment(e.cancel_date * 1000)
+                  .add(1, "d")
+                  .toISOString()
+                  .substr(0, 10),
+                order_type: e.order_type,
+                customer: e.customer,
+                po_number: e.po_number,
+                control_number: e.control_number,
+                receiver: e.receiver,
+                completed_by: e.completed_by,
+                approved_by: e.approved_by,
+                attachments: e.attachment,
+              });
+            }, 4000);
+            this.dataTableLoading = false;
+          });
       } else {
         this.orders.splice(0);
         this.onInitialize(localStorage.getItem("order_pk"));
@@ -2050,8 +2052,10 @@ export default {
       this.$refs.searchbar_ref.$refs.input.focus();
     },
     onAccessPermission() {
-      let access = JSON.parse(localStorage.getItem("token_access"));
-      let currentUser = JSON.parse(localStorage.getItem("user"));
+      let DecKey = this.$gl.DecKey(localStorage.getItem("token_access"));
+      let user_DecKey = this.$gl.DecKey(localStorage.getItem("user"));
+      let access = JSON.parse(DecKey);
+      let currentUser = JSON.parse(user_DecKey);
       this.appAccess = access[5];
 
       this.currentUser = Object.assign(currentUser);

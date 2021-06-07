@@ -1759,7 +1759,8 @@ export default {
       let fileName = this.moment().unix() + "_file";
 
       try {
-        let user = JSON.parse(localStorage.getItem("user"));
+        let user_DecKey = this.$gl.DecKey(localStorage.getItem("user"));
+        let user = JSON.parse(user_DecKey);
         let header = [];
         let data = [];
         let jsonObject = data;
@@ -2266,11 +2267,14 @@ export default {
       }
     },
     onAccessPermission() {
-      let access = JSON.parse(localStorage.getItem("token_access"));
-      let user = JSON.parse(localStorage.getItem("user"));
+      let DecKey = this.$gl.DecKey(localStorage.getItem("token_access"));
+      let user_DecKey = this.$gl.DecKey(localStorage.getItem("user"));
+      let access = JSON.parse(DecKey);
+      let currentUser = JSON.parse(user_DecKey);
+
       this.appAccess = access[4];
 
-      this.user = Object.assign(user);
+      this.user = Object.assign(currentUser);
     },
     notification(m, c) {
       this.snackbar = {

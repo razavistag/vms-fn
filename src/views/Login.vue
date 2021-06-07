@@ -213,12 +213,15 @@ export default {
               this.email = "";
               this.password = "";
 
-              localStorage.setItem("token", response.data.access_token);
-              localStorage.setItem("token_access", response.data.user_access);
-              localStorage.setItem(
-                "user",
+              let token_access_EncKey = this.$gl.EncKey(
+                response.data.user_access
+              );
+              let user_EncKey = this.$gl.EncKey(
                 JSON.stringify(response.data.user_information)
               );
+              localStorage.setItem("token", response.data.access_token);
+              localStorage.setItem("token_access", token_access_EncKey);
+              localStorage.setItem("user", user_EncKey);
 
               this.$router
                 .push({

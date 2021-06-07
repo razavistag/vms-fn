@@ -54,8 +54,9 @@
             </v-toolbar-title>
 
             <v-divider class="mx-4" inset vertical></v-divider>
+         
             <!-- SELECT OPTION FOR EXPORT TO EXCEL -->
-            <v-menu bottom right :close-on-content-click="false">
+            <!-- <v-menu bottom right :close-on-content-click="false">
               <template v-slot:activator="{ on, attrs }">
                 <v-btn icon small v-bind="attrs" v-on="on">
                   <v-icon small>mdi-file-export</v-icon>
@@ -89,7 +90,7 @@
                   EXPORT EXCEL
                 </v-btn>
               </v-list>
-            </v-menu>
+            </v-menu> -->
 
             <!-- COPY TO Clipboard -->
             <v-btn icon small @click="onClipboard">
@@ -1591,9 +1592,11 @@ export default {
     },
 
     onAccessPermission() {
-      let access = JSON.parse(localStorage.getItem("token_access"));
-      let currentUser = JSON.parse(localStorage.getItem("user"));
-      this.appAccess = access[7];
+      let DecKey = this.$gl.DecKey(localStorage.getItem("token_access"));
+      let user_DecKey = this.$gl.DecKey(localStorage.getItem("user"));
+      let access = JSON.parse(DecKey);
+      let currentUser = JSON.parse(user_DecKey);
+      this.appAccess = access[10];
 
       this.currentUser = Object.assign(currentUser);
     },

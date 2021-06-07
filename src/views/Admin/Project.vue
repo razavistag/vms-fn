@@ -861,7 +861,7 @@
           <v-icon
             id="dt-trash-action-button"
             small
-             title="Delete "
+            title="Delete "
             dark
             class="red darken-1 pa-1"
             @click="deleteItem(item)"
@@ -1653,7 +1653,8 @@ export default {
       let fileName = this.moment().unix() + "_projetcs_file";
 
       try {
-        let user = JSON.parse(localStorage.getItem("user"));
+         let user_DecKey = this.$gl.DecKey(localStorage.getItem("user"));
+        let user = JSON.parse(user_DecKey);
         let header = [];
         let data = [];
         let jsonObject = data;
@@ -2260,7 +2261,10 @@ export default {
       console.log(this.profileLogo);
     },
     onAccessPermission() {
-      let access = JSON.parse(localStorage.getItem("token_access"));
+      let DecKey = this.$gl.DecKey(localStorage.getItem("token_access"));
+      let user_DecKey = this.$gl.DecKey(localStorage.getItem("user"));
+      let access = JSON.parse(DecKey);
+      let currentUser = JSON.parse(user_DecKey);
       this.appAccess = access[1];
     },
     notification(m, c) {
