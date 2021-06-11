@@ -35,6 +35,7 @@
           </v-list-item>
         </v-list>
       </v-menu>
+
       <v-btn
         small
         icon
@@ -70,11 +71,17 @@
       </v-btn>
 
       <v-avatar size="22" color="white" class="pa-1 ma-1">
-        <img
-          :src="'http://localhost:8000/storage/' + user.profile"
-          v-if="user.profile"
-        />
-        <v-img src="../assets/default_logo.jpeg" v-else></v-img>
+        <div v-if="showOnProfile == false">
+          <v-img
+            :src="'http://localhost:8000/storage/' + user.profile"
+            v-if="user.profile"
+          ></v-img>
+
+          <v-img src="../assets/default_logo.jpeg" v-else></v-img>
+        </div>
+        <div v-else>
+          <v-img :src="croppa.generateDataUrl()" width="30" height="30"></v-img>
+        </div>
       </v-avatar>
     </v-app-bar>
 
@@ -86,26 +93,35 @@
       permanent
       mini-variant-width="40"
       class="navigation_drawer_desktop"
-      expand-on-hover
+      :expand-on-hover="expandonhover"
       dark
     >
       <!-- User Information -->
 
       <v-list-item class="px-2">
         <v-list-item-avatar size="30">
-          <v-img
-            :src="'http://localhost:8000/storage/' + user.profile"
-            v-if="user.profile"
-          ></v-img>
+          <div v-if="showOnProfile == false">
+            <v-img
+              :src="'http://localhost:8000/storage/' + user.profile"
+              v-if="user.profile"
+            ></v-img>
 
-          <v-img src="../assets/default_logo.jpeg" v-else></v-img>
+            <v-img src="../assets/default_logo.jpeg" v-else></v-img>
+          </div>
+          <div v-else>
+            <v-img
+              :src="croppa.generateDataUrl()"
+              width="30"
+              height="30"
+            ></v-img>
+          </div>
         </v-list-item-avatar>
 
         <v-list-item-title>
           {{ user.name }}
         </v-list-item-title>
 
-        <v-btn icon @click.stop="mini = !mini">
+        <v-btn icon @click="profileEdit">
           <v-icon small>mdi-pencil</v-icon>
         </v-btn>
       </v-list-item>
@@ -162,29 +178,390 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
+
+    <!-- PROFILR INFO MODEL -->
+    <v-dialog
+      v-model="profileInfoModel"
+      max-width="1450px"
+      content-class="form-dialog"
+      scrollable
+    >
+      <v-card tile flat>
+        <DialogCardLoading />
+        <v-card-title :class="ModelHeaderColor">
+          <span class="headline blue-grey--text text--darken-3 d-flex">
+            <v-icon left color="">mdi-timeline-text</v-icon> PROFILE
+          </span>
+          <v-spacer></v-spacer>
+          <v-icon @click="profileInfoModel = false">mdi-close</v-icon>
+        </v-card-title>
+
+        <v-card-text class="ma-0">
+          <v-row class="ma-0   rowStyle ">
+            <!-- PROFILE PIC -->
+
+            <v-col md="3" sm="3" cols="12" class="   ">
+              <div v-if="editedItem.profilePic" class="upload_container">
+                <v-img
+                  :src="
+                    'http://localhost:8000/storage/' + editedItem.profilePic
+                  "
+                  width="100%"
+                  height="100%"
+                />
+
+                <v-icon
+                  class="upload_default_icon"
+                  size="60"
+                  @click="editedItem.profilePic = null"
+                >
+                  mdi-pencil
+                </v-icon>
+              </div>
+              <div v-else class=" ">
+                <image-cropper
+                  v-model="croppa"
+                  :width="250"
+                  :height="250"
+                  placeholder="UPLOAD PROFILE"
+                  :show-remove-button="true"
+                  class="croppa"
+                  @change="FileUpload($event)"
+                />
+              </div>
+            </v-col>
+
+            <v-col md="8" sm="12" cols="8" class=" pa-4 mt-4   formStyle">
+              <ValidationObserver ref="form">
+                <div class=" rowStyle ">
+                  <!-- NAME   -->
+                  <v-col md="3" sm="3" cols="3" class=" ma-0 pa-0 ">
+                    <ValidationProvider
+                      rules="required|min:5"
+                      name="User Name"
+                      v-slot="{ errors }"
+                    >
+                      <v-text-field
+                        v-model="editedItem.name"
+                        :label="errors[0] ? errors[0] : 'User Name'"
+                        :error-messages="errors"
+                        prefix="*"
+                        clearable
+                        dense
+                        counter="12"
+                        hide-details=""
+                      >
+                      </v-text-field>
+                    </ValidationProvider>
+                  </v-col>
+
+                  <!--EMAIL -->
+                  <v-col cols="12" sm="6" md="3" class=" ma-0 pa-0 inputStyle ">
+                    <ValidationProvider
+                      rules="required|email"
+                      name="Email"
+                      v-slot="{ errors }"
+                    >
+                      <v-text-field
+                        v-model="editedItem.email"
+                        :label="errors[0] ? errors[0] : 'Email'"
+                        :error-messages="errors"
+                        prefix="*"
+                        clearable
+                        dense
+                        counter="12"
+                        hide-details=""
+                      >
+                      </v-text-field>
+                    </ValidationProvider>
+                  </v-col>
+
+                  <!--PHONE -->
+                  <v-col cols="12" sm="6" md="3" class=" ma-0 pa-0 inputStyle ">
+                    <ValidationProvider
+                      rules="required|numeric|min:9|max:15"
+                      name="Phone"
+                      v-slot="{ errors }"
+                    >
+                      <v-text-field
+                        v-model="editedItem.phone"
+                        :label="errors[0] ? errors[0] : 'Phone'"
+                        :error-messages="errors"
+                        prefix="*"
+                        clearable
+                        dense
+                        hide-details=""
+                      >
+                      </v-text-field>
+                    </ValidationProvider>
+                  </v-col>
+
+                  <!-- ACCOUNT NUMBER -->
+                  <v-col cols="12" sm="6" md="3" class=" ma-0 pa-0 inputStyle ">
+                    <ValidationProvider
+                      rules="required"
+                      name="Account Number"
+                      v-slot="{ errors }"
+                    >
+                      <v-text-field
+                        v-model="editedItem.account_number"
+                        :label="errors[0] ? errors[0] : 'Account Number'"
+                        :error-messages="errors"
+                        prefix="*"
+                        clearable
+                        dense
+                        hide-details=""
+                      >
+                      </v-text-field>
+                    </ValidationProvider>
+                  </v-col>
+                </div>
+
+                <div class=" rowStyle mt-5 ">
+                  <!--ADDRESS -->
+                  <v-col cols="12" sm="6" md="3" class=" ma-0 pa-0 ">
+                    <ValidationProvider
+                      rules="required|max:100"
+                      name="Address"
+                      v-slot="{ errors }"
+                    >
+                      <v-text-field
+                        v-model="editedItem.address"
+                        :label="errors[0] ? errors[0] : 'Address'"
+                        :error-messages="errors"
+                        prefix="*"
+                        clearable
+                        dense
+                        hide-details=""
+                      >
+                      </v-text-field>
+                    </ValidationProvider>
+                  </v-col>
+
+                  <!--NIC -->
+                  <v-col cols="12" sm="6" md="3" class=" ma-0 pa-0 inputStyle">
+                    <ValidationProvider
+                      rules="required|max:20|min:8"
+                      name="NIC"
+                      v-slot="{ errors }"
+                    >
+                      <v-text-field
+                        v-model="editedItem.nic"
+                        :label="errors[0] ? errors[0] : 'NIC'"
+                        :error-messages="errors"
+                        prefix="*"
+                        clearable
+                        dense
+                        hide-details=""
+                      >
+                      </v-text-field>
+                    </ValidationProvider>
+                  </v-col>
+
+                  <!-- GENDER -->
+                  <v-col cols="12" sm="6" md="3" class=" ma-0 pa-0 inputStyle">
+                    <ValidationProvider
+                      rules="required"
+                      name="Gender"
+                      v-slot="{ errors }"
+                    >
+                      <v-select
+                        :items="genderOptions"
+                        v-model="editedItem.gender"
+                        :label="errors[0] ? errors[0] : 'Gender'"
+                        :error-messages="errors"
+                        hide-details=""
+                        prefix="*"
+                        clearable
+                        dense
+                      ></v-select>
+                    </ValidationProvider>
+                  </v-col>
+
+                  <!-- DOB -->
+                  <v-col cols="12" sm="6" md="3" class=" ma-0 pa-0 inputStyle">
+                    <ValidationProvider
+                      rules="required"
+                      name="Date of birth"
+                      v-slot="{ errors }"
+                    >
+                      <v-menu
+                        v-model="dobDatePicker"
+                        :close-on-content-click="false"
+                        :nudge-right="40"
+                        transition="scale-transition"
+                        offset-y
+                        min-width="auto"
+                      >
+                        <template v-slot:activator="{ on, attrs }">
+                          <ValidationProvider
+                            rules="required"
+                            name="Date of birth"
+                            v-slot="{ errors }"
+                          >
+                            <v-text-field
+                              v-model="editedItem.dob"
+                              :label="errors[0] ? errors[0] : 'Date of birth'"
+                              :error-messages="errors"
+                              hide-details=""
+                              clearable
+                              prefix="*"
+                              dense
+                              readonly
+                              v-bind="attrs"
+                              v-on="on"
+                            ></v-text-field>
+                          </ValidationProvider>
+                        </template>
+                        <v-date-picker
+                          v-model="editedItem.dob"
+                          dateFormat="mm-YYYY"
+                          @input="dobDatePicker = false"
+                        ></v-date-picker>
+                      </v-menu>
+                    </ValidationProvider>
+                  </v-col>
+                </div>
+
+                <div class=" rowStyle mt-5 ">
+                  <!-- ZIP CODE -->
+                  <v-col cols="12" sm="6" md="3" class=" ma-0 pa-0  ">
+                    <ValidationProvider
+                      rules="required|min:3"
+                      name="Zip Code"
+                      v-slot="{ errors }"
+                    >
+                      <v-text-field
+                        v-model="editedItem.zip"
+                        :label="errors[0] ? errors[0] : 'Zip Code'"
+                        :error-messages="errors"
+                        prefix="*"
+                        clearable
+                        dense
+                        hide-details=""
+                      >
+                      </v-text-field>
+                    </ValidationProvider>
+                  </v-col>
+
+                  <!-- LOCATIONS -->
+                  <v-col cols="12" sm="6" md="3" class=" ma-0 pa-0 inputStyle ">
+                    <ValidationProvider
+                      rules="required"
+                      name="Location"
+                      v-slot="{ errors }"
+                    >
+                      <v-select
+                        :items="locationOptions"
+                        v-model="editedItem.location"
+                        :label="errors[0] ? errors[0] : 'Location'"
+                        :error-messages="errors"
+                        hide-details=""
+                        prefix="*"
+                        clearable
+                        dense
+                        item-text="option"
+                        item-value="index"
+                      ></v-select>
+                    </ValidationProvider>
+                  </v-col>
+
+                  <!-- LANGUAGE-->
+                  <v-col cols="12" sm="6" md="3" class=" ma-0 pa-0 inputStyle ">
+                    <ValidationProvider
+                      rules="required"
+                      name="Language"
+                      v-slot="{ errors }"
+                    >
+                      <v-select
+                        :items="languageOptions"
+                        v-model="editedItem.language"
+                        :label="errors[0] ? errors[0] : 'Language'"
+                        :error-messages="errors"
+                        hide-details=""
+                        prefix="*"
+                        clearable
+                        dense
+                        item-text="option"
+                        item-value="index"
+                      ></v-select>
+                    </ValidationProvider>
+                  </v-col>
+                </div>
+              </ValidationObserver>
+            </v-col>
+          </v-row>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn :color="DTbtnColor" text @click="profileInfoModel = false">
+            CANCEL
+          </v-btn>
+          <v-btn :color="DTbtnColor" text @click="update">
+            UPDATE
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
 <script>
 import html2canvas from "html2canvas";
+import DialogCardLoading from "./DialogCardLoading.vue";
+import { ValidationObserver, ValidationProvider } from "vee-validate";
+import moment from "moment";
 
 export default {
   name: "DashboardLayout",
+  components: {
+    DialogCardLoading,
+    ValidationObserver,
+    ValidationProvider,
+  },
   data() {
     return {
+      url: {
+        user: "users",
+      },
       headerColor: "blue-grey darken-1",
       sideBar: "blue-grey darken-3",
+      DTbtnColor: "indigo lighten-1 ",
+      ModelHeaderColor: "blue-grey lighten-5",
 
-      expand_on_hover: true,
+      expandonhover: true,
       mobileDrawer: false,
       access_permission: false,
+      dobDatePicker: false,
+
+      showOnProfile: false,
+
+      moment: moment,
+      dataUrl: "",
+      croppa: {},
+
       Languages: [{ lan: "English" }, { lan: "spanish" }],
+      genderOptions: ["MALE", "FEMALE", "OTHERS"],
+      locationOptions: [
+        { option: "AKURANA", index: 1 },
+        { option: "ALAWATHUGODA", index: 2 },
+        { option: "BULUGIHATENNA", index: 3 },
+        { option: "MADAWALA", index: 4 },
+      ],
+      languageOptions: [
+        { option: "ENGLISH", index: 1 },
+        { option: "SPANISH", index: 2 },
+      ],
+
       user: {},
+      editedItem: {},
+
       items: [],
       fullscreen: false,
       interval: null,
       time: null,
       date: null,
+      profileInfoModel: false,
     };
   },
   beforeMount() {
@@ -211,6 +588,7 @@ export default {
         let DecKey = this.$gl.DecKey(localStorage.getItem("user"));
         let i = JSON.parse(DecKey);
         this.user = Object.assign(i);
+        console.log(i);
       } catch (e) {
         console.log(0);
       }
@@ -227,6 +605,8 @@ export default {
       // 7 - accounts
       // 8 - holiday
       // 9 - location
+      // 10 - recurring
+      // 11 - item
       try {
         let DecKey = this.$gl.DecKey(localStorage.getItem("token_access"));
         let token_access = JSON.parse(DecKey);
@@ -349,28 +729,101 @@ export default {
       localStorage.setItem("Lang", e);
       window.location.reload();
     },
+    update() {
+      console.log("  croppa.generateDataUrl() ", this.croppa.generateDataUrl());
+      this.showOnProfile = true;
+      this.$refs.form.validate().then((success) => {
+        if (!success) {
+          return;
+        }
+
+        console.log(this.editedItem);
+
+        const obj = {
+          id: this.editedItem.id,
+          name: this.editedItem.name,
+          email: this.editedItem.email,
+
+          address: this.editedItem.address,
+          phone: this.editedItem.phone,
+          nic: this.editedItem.nic,
+          gender: this.editedItem.gender,
+          profilePic: this.croppa.generateDataUrl(),
+          dob: moment(this.editedItem.dob).format("X"),
+          location: this.editedItem.location,
+          zip: this.editedItem.zip,
+          account_number: this.editedItem.accountNumber,
+          language: this.editedItem.language,
+        };
+
+        this.$http
+          .put(this.url.user + "/profileUpdate/" + obj.id, obj)
+          .then((result) => {
+            console.log("update console", result);
+            this.profileInfoModel = false;
+
+            let user_EncKey = this.$gl.EncKey(
+              JSON.stringify({
+                id: obj.id,
+                name: obj.name,
+                phone: obj.phone,
+              })
+            );
+
+            localStorage.removeItem("user");
+            localStorage.setItem("user", user_EncKey);
+            this.userInfomration();
+
+            // this.notification("User has been updated successfully", "green");
+          })
+          .catch((err) => {
+            // this.notification(
+            //   "Something went wrong on update... please try again",
+            //   "red"
+            // );
+
+            this.$gl.Unauthorized(err.response.status);
+          });
+      });
+    },
+    FileUpload(e) {
+      console.log("triggered");
+      console.log(e);
+      let reader = new FileReader();
+      reader.onload = (fileArray) => {
+        console.log(reader.result);
+        // this.profileLogo.push(reader.result);
+      };
+      reader.readAsDataURL(e);
+
+      // console.log(this.profileLogo);
+    },
+    getImageUrl() {
+      // croppa.generateDataUrl()
+      console.log("  croppa.generateDataUrl() ", this.croppa.generateDataUrl());
+    },
+    profileEdit() {
+      let DecKey = this.$gl.DecKey(localStorage.getItem("user"));
+      let i = JSON.parse(DecKey);
+      console.log(i);
+      this.$http
+        .get(this.url.user + "/" + i.id)
+        .then((response) => {
+          let i = response.data.selected_user;
+          this.editedItem = Object.assign(i, {
+            dob: moment(i.dob * 1000)
+              .add(1, "d")
+              .toISOString()
+              .substr(0, 10),
+          });
+          this.profileInfoModel = true;
+          console.log("this.editedItem ", this.editedItem);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
     removeStorage() {
-      localStorage.removeItem("token");
-      localStorage.removeItem("token_access");
-      localStorage.removeItem("paginateKey");
-      localStorage.removeItem("user_pk");
-      localStorage.removeItem("fullScreen");
-      localStorage.removeItem("user");
-      localStorage.removeItem("user_active_columns");
-      localStorage.removeItem("location_pk");
-      localStorage.removeItem("location_active_columns");
-      localStorage.removeItem("po_pk");
-      localStorage.removeItem("po_active_columns");
-      localStorage.removeItem("order_pk");
-      localStorage.removeItem("order_active_columns");
-      localStorage.removeItem("project_active_columns");
-      localStorage.removeItem("project_pk");
-      localStorage.removeItem("task_pk");
-      localStorage.removeItem("task_active_columns");
-      localStorage.removeItem("orderholiday_pk_pk");
-      localStorage.removeItem("holiday_active_columns");
-      localStorage.removeItem("accounts_pk");
-      localStorage.removeItem("accounts_active_columns");
       localStorage.clear();
     },
     logout() {
@@ -445,3 +898,49 @@ export default {
   },
 };
 </script>
+<style scoped>
+.formStyle {
+  /* background-color: blueviolet !important; */
+  min-width: 770px !important;
+}
+
+.inputStyle {
+  margin-left: 8px !important;
+}
+.rowStyle {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  flex-basis: auto;
+  flex-shrink: 1;
+}
+.upload_container {
+  position: relative;
+  /* flex-direction: row; */
+  /* justify-items: center;
+  display: flex;
+  align-content: center; */
+}
+.upload_container .defalt_img {
+  position: block;
+}
+.upload_container .upload_default_icon {
+  position: absolute;
+  top: 30%;
+  left: 35%;
+  background-color: #fff;
+  color: gray;
+  border-radius: 50px;
+  padding: 10px;
+  opacity: 0.4;
+}
+.upload_default_icon:hover {
+  background-color: gray;
+  color: white;
+  opacity: 0.9;
+  cursor: pointer;
+}
+.croppa {
+  padding: 0px !important;
+  border: 1px blue dotted;
+}
+</style>
