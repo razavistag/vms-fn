@@ -422,6 +422,8 @@
                 </ValidationProvider>
               </v-col>
 
+              <v-col md="2" sm="6" cols="12" class=""> </v-col>
+
               <!-- ACCOUNT TYPE -->
               <v-col md="2" sm="6" cols="12" class="">
                 <ValidationProvider
