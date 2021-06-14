@@ -946,7 +946,7 @@ export default {
       access_permission: false,
       dobDatePicker: false,
       companyIcon: false,
-      companySettingsModel: true,
+      companySettingsModel: false,
       showOnProfile: false,
       fullscreen: false,
       interval: null,
