@@ -18,8 +18,16 @@
 
       <v-spacer></v-spacer>
 
-      <v-btn small icon color="white" dark title="Choose Theme">
-        <v-icon small>mdi-select-color</v-icon>
+      <v-btn
+        small
+        icon
+        color="white"
+        dark
+        title="COMPANY SETTINGS "
+        v-if="companyIcon"
+        @click="companySettings"
+      >
+        <v-icon small>mdi-office-building-outline</v-icon>
       </v-btn>
 
       <v-menu top close-on-click>
@@ -74,10 +82,17 @@
         <div v-if="showOnProfile == false">
           <v-img
             :src="'http://localhost:8000/storage/' + user.profile"
+            width="30"
+            height="30"
             v-if="user.profile"
           ></v-img>
 
-          <v-img src="../assets/default_logo.jpeg" v-else></v-img>
+          <v-img
+            src="../assets/default_logo.jpeg"
+            width="30"
+            height="30"
+            v-else
+          ></v-img>
         </div>
         <div v-else>
           <v-img :src="croppa.generateDataUrl()" width="30" height="30"></v-img>
@@ -101,12 +116,21 @@
       <v-list-item class="px-2">
         <v-list-item-avatar size="30">
           <div v-if="showOnProfile == false">
-            <v-img
-              :src="'http://localhost:8000/storage/' + user.profile"
-              v-if="user.profile"
-            ></v-img>
+            <v-avatar size="22" color="white" class="">
+              <v-img
+                :src="'http://localhost:8000/storage/' + user.profile"
+                width="30"
+                height="30"
+                v-if="user.profile"
+              ></v-img>
 
-            <v-img src="../assets/default_logo.jpeg" v-else></v-img>
+              <v-img
+                src="../assets/default_logo.jpeg"
+                width="30"
+                height="30"
+                v-else
+              ></v-img>
+            </v-avatar>
           </div>
           <div v-else>
             <v-img
@@ -503,6 +527,394 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <!-- COMPANY MODEL -->
+    <v-dialog
+      v-model="companySettingsModel"
+      max-width="1200px"
+      content-class="form-dialog"
+      scrollable
+    >
+      <v-card tile flat>
+        <DialogCardLoading />
+        <v-card-title :class="ModelHeaderColor">
+          <span class="headline blue-grey--text text--darken-3 d-flex">
+            <v-icon left color="">mdi-timeline-text</v-icon> COMPANY SETTINGS
+          </span>
+          <v-spacer></v-spacer>
+          <v-icon @click="companySettingsModel = false">mdi-close</v-icon>
+        </v-card-title>
+
+        <v-card-text class="ma-0">
+          <ValidationObserver ref="companySettingsForm">
+            <v-row class="ma-0 mt-4  ">
+              <!-- COPMANY NAME   -->
+              <v-col md="3" sm="12" cols="12" class="   ">
+                <ValidationProvider
+                  rules="required"
+                  name="COPMANY NAME"
+                  v-slot="{ errors }"
+                >
+                  <v-text-field
+                    v-model="editedCompany.copmany_name"
+                    :label="errors[0] ? errors[0] : 'COPMANY NAME'"
+                    :error-messages="errors"
+                    prefix="*"
+                    clearable
+                    dense
+                    counter="12"
+                    hide-details=""
+                  >
+                  </v-text-field>
+                </ValidationProvider>
+              </v-col>
+
+              <!-- COPMANY EMAIL   -->
+              <v-col md="3" sm="12" cols="12" class=" ">
+                <ValidationProvider
+                  rules="required"
+                  name="COPMANY EMAIL"
+                  v-slot="{ errors }"
+                >
+                  <v-text-field
+                    v-model="editedCompany.email"
+                    :label="errors[0] ? errors[0] : 'COPMANY EMAIL'"
+                    :error-messages="errors"
+                    prefix="*"
+                    clearable
+                    dense
+                    counter="12"
+                    hide-details=""
+                  >
+                  </v-text-field>
+                </ValidationProvider>
+              </v-col>
+
+              <!-- COPMANY PHONE   -->
+              <v-col md="3" sm="12" cols="12" class="  ">
+                <ValidationProvider
+                  rules="required"
+                  name="COPMANY PHONE"
+                  v-slot="{ errors }"
+                >
+                  <v-text-field
+                    v-model="editedCompany.phone"
+                    :label="errors[0] ? errors[0] : 'COPMANY PHONE'"
+                    :error-messages="errors"
+                    prefix="*"
+                    clearable
+                    dense
+                    counter="12"
+                    hide-details=""
+                  >
+                  </v-text-field>
+                </ValidationProvider>
+              </v-col>
+
+              <!-- WEBSITE LINK   -->
+              <v-col md="3" sm="12" cols="12" class="  ">
+                <ValidationProvider
+                  rules=""
+                  name="WEBSITE LINK"
+                  v-slot="{ errors }"
+                >
+                  <v-text-field
+                    v-model="editedCompany.web_link"
+                    :label="errors[0] ? errors[0] : 'WEBSITE LINK'"
+                    :error-messages="errors"
+                    prefix="*"
+                    clearable
+                    dense
+                    counter="12"
+                    hide-details=""
+                  >
+                  </v-text-field>
+                </ValidationProvider>
+              </v-col>
+
+              <!-- FABENOOK LINK   -->
+              <v-col md="3" sm="12" cols="12" class="  ">
+                <ValidationProvider
+                  rules=""
+                  name="FABENOOK LINK"
+                  v-slot="{ errors }"
+                >
+                  <v-text-field
+                    v-model="editedCompany.fb_link"
+                    :label="errors[0] ? errors[0] : 'FABENOOK LINK'"
+                    :error-messages="errors"
+                    prefix="*"
+                    clearable
+                    dense
+                    counter="12"
+                    hide-details=""
+                  >
+                  </v-text-field>
+                </ValidationProvider>
+              </v-col>
+
+              <!-- TWITTER LINK   -->
+              <v-col md="3" sm="12" cols="12" class="  ">
+                <ValidationProvider
+                  rules=""
+                  name="TWITTER LINK"
+                  v-slot="{ errors }"
+                >
+                  <v-text-field
+                    v-model="editedCompany.twitter_link"
+                    :label="errors[0] ? errors[0] : 'TWITTER LINK'"
+                    :error-messages="errors"
+                    prefix="*"
+                    clearable
+                    dense
+                    counter="12"
+                    hide-details=""
+                  >
+                  </v-text-field>
+                </ValidationProvider>
+              </v-col>
+
+              <!-- INSTAGRAM LINK   -->
+              <v-col md="3" sm="12" cols="12" class="  ">
+                <ValidationProvider
+                  rules=""
+                  name="INSTAGRAM LINK"
+                  v-slot="{ errors }"
+                >
+                  <v-text-field
+                    v-model="editedCompany.insta_link"
+                    :label="errors[0] ? errors[0] : 'INSTAGRAM LINK'"
+                    :error-messages="errors"
+                    prefix="*"
+                    clearable
+                    dense
+                    counter="12"
+                    hide-details=""
+                  >
+                  </v-text-field>
+                </ValidationProvider>
+              </v-col>
+
+              <!-- IS DELIVERY -->
+              <v-col md="2" sm="12" cols="12" class="  ">
+                <ValidationProvider
+                  rules=""
+                  name="DELIVERY"
+                  v-slot="{ errors }"
+                >
+                  <v-select
+                    :items="isDelivery"
+                    v-model="editedCompany.is_delivery"
+                    :label="errors[0] ? errors[0] : 'DELIVERY'"
+                    :error-messages="errors"
+                    hide-details=""
+                    prefix="*"
+                    clearable
+                    dense
+                    item-text="option"
+                    item-value="index"
+                  ></v-select>
+                </ValidationProvider>
+              </v-col>
+
+              <!-- IS REGISTERED -->
+              <v-col md="2" sm="12" cols="12" class="  ">
+                <ValidationProvider
+                  rules=""
+                  name="REGISTERED"
+                  v-slot="{ errors }"
+                >
+                  <v-select
+                    :items="isRegister"
+                    v-model="editedCompany.is_registered"
+                    :label="errors[0] ? errors[0] : 'REGISTERED'"
+                    :error-messages="errors"
+                    hide-details=""
+                    prefix="*"
+                    clearable
+                    dense
+                    item-text="option"
+                    item-value="index"
+                  ></v-select>
+                </ValidationProvider>
+              </v-col>
+
+              <!-- WORKING DAY -->
+              <v-col md="3" sm="12" cols="12" class=" d-flex ">
+                <ValidationProvider rules="" name="DAYS" v-slot="{ errors }">
+                  <v-select
+                    :items="daysList"
+                    v-model="editedCompany.dayFrom"
+                    :label="errors[0] ? errors[0] : 'WORKING  FROM'"
+                    :error-messages="errors"
+                    hide-details=""
+                    prefix="*"
+                    dense
+                    item-text="option"
+                    item-value="option"
+                  ></v-select>
+                </ValidationProvider>
+                <ValidationProvider rules="" name="DAYS" v-slot="{ errors }">
+                  <v-select
+                    :items="daysList"
+                    v-model="editedCompany.dayTo"
+                    :label="errors[0] ? errors[0] : 'WORKING TO'"
+                    :error-messages="errors"
+                    hide-details=""
+                    prefix="*"
+                    dense
+                    item-text="option"
+                    item-value="option"
+                  ></v-select>
+                </ValidationProvider>
+              </v-col>
+
+              <!-- WORKING TIME -->
+              <v-col md="3" sm="12" cols="12" class=" d-flex ">
+                <ValidationProvider
+                  rules=""
+                  name="WORKING TIME FROM"
+                  v-slot="{ errors }"
+                >
+                  <v-menu
+                    ref="timeFrom"
+                    v-model="timeFromPicker"
+                    :close-on-content-click="false"
+                    :nudge-right="40"
+                    :return-value.sync="time"
+                    transition="scale-transition"
+                    offset-y
+                    max-width="290px"
+                    min-width="290px"
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field
+                        v-model="editedCompany.timeFrom"
+                        :label="errors[0] ? errors[0] : 'TIME FROM'"
+                        :error-messages="errors"
+                        readonly
+                        hide-details=""
+                        prefix="*"
+                        dense
+                        v-bind="attrs"
+                        v-on="on"
+                      ></v-text-field>
+                    </template>
+                    <v-time-picker
+                      v-if="timeFromPicker"
+                      v-model="editedCompany.timeFrom"
+                      full-width
+                      @click:minute="$refs.timeFrom.save(time)"
+                    ></v-time-picker>
+                  </v-menu>
+                </ValidationProvider>
+
+                <ValidationProvider
+                  rules=""
+                  name="WORKING TIME TO"
+                  v-slot="{ errors }"
+                >
+                  <v-menu
+                    ref="timeTo"
+                    v-model="timeToPicker"
+                    :close-on-content-click="false"
+                    :nudge-right="40"
+                    :return-value.sync="time"
+                    transition="scale-transition"
+                    offset-y
+                    max-width="290px"
+                    min-width="290px"
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field
+                        v-model="editedCompany.timeTo"
+                        :label="errors[0] ? errors[0] : 'TIME TO'"
+                        :error-messages="errors"
+                        readonly
+                        hide-details=""
+                        prefix="*"
+                        dense
+                        v-bind="attrs"
+                        v-on="on"
+                      ></v-text-field>
+                    </template>
+                    <v-time-picker
+                      v-if="timeToPicker"
+                      v-model="editedCompany.timeTo"
+                      full-width
+                      @click:minute="$refs.timeTo.save(time)"
+                    ></v-time-picker>
+                  </v-menu>
+                </ValidationProvider>
+              </v-col>
+
+              <!-- CURRENCY SYMBOL -->
+              <v-col md="3" sm="12" cols="12" class="  ">
+                <ValidationProvider
+                  rules=""
+                  name="CURRENCY SYMBOL"
+                  v-slot="{ errors }"
+                >
+                  <v-select
+                    :items="currencySymbols"
+                    v-model="editedCompany.currency_symbol"
+                    :label="errors[0] ? errors[0] : 'CS'"
+                    :error-messages="errors"
+                    hide-details=""
+                    prefix="*"
+                    clearable
+                    dense
+                    item-text="option"
+                    item-value="index"
+                  ></v-select>
+                </ValidationProvider>
+              </v-col>
+
+              <!-- CURRENCY DECIMAL PLACE   -->
+              <v-col md="1" sm="12" cols="12" class="  ">
+                <ValidationProvider rules="" name="CDP" v-slot="{ errors }">
+                  <v-text-field
+                    v-model="editedCompany.currency_decimal_place"
+                    :label="errors[0] ? errors[0] : 'CDP'"
+                    :error-messages="errors"
+                    clearable
+                    dense
+                    counter="12"
+                    hide-details=""
+                  >
+                  </v-text-field>
+                </ValidationProvider>
+              </v-col>
+              
+              <!-- MESSAGE-->
+              <v-col md="3" sm="12" cols="12" class="  ">
+                <ValidationProvider rules="" name="MESSAGE" v-slot="{ errors }">
+                  <v-textarea
+                    v-model="editedCompany.message"
+                    :label="errors[0] ? errors[0] : 'MESSAGE'"
+                    :error-messages="errors"
+                    prefix="*"
+                    clearable
+                    dense
+                    counter="12"
+                    hide-details=""
+                  ></v-textarea>
+                </ValidationProvider>
+              </v-col>
+            </v-row>
+          </ValidationObserver>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn :color="DTbtnColor" text @click="profileInfoModel = false">
+            CANCEL
+          </v-btn>
+          <v-btn :color="DTbtnColor" text @click="update">
+            SAVE
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -533,8 +945,16 @@ export default {
       mobileDrawer: false,
       access_permission: false,
       dobDatePicker: false,
-
+      companyIcon: false,
+      companySettingsModel: true,
       showOnProfile: false,
+      fullscreen: false,
+      interval: null,
+      time: null,
+      date: null,
+      profileInfoModel: false,
+      timeFromPicker: false,
+      timeToPicker: false,
 
       moment: moment,
       dataUrl: "",
@@ -552,16 +972,36 @@ export default {
         { option: "ENGLISH", index: 1 },
         { option: "SPANISH", index: 2 },
       ],
+      isDelivery: [
+        { option: "NO", index: 0 },
+        { option: "YES", index: 1 },
+      ],
+      isRegister: [
+        { option: "NO", index: 0 },
+        { option: "YES", index: 1 },
+      ],
+      currencySymbols: [
+        { option: "EUR", index: 1 },
+        { option: "GBP", index: 2 },
+        { option: "USD", index: 3 },
+        { option: "JPY", index: 4 },
+        { option: "HUF", index: 5 },
+      ],
+      daysList: [
+        { option: "MON" },
+        { option: "TUE" },
+        { option: "WED" },
+        { option: "THU" },
+        { option: "FRI" },
+        { option: "SAT" },
+        { option: "SUN" },
+      ],
 
       user: {},
       editedItem: {},
+      editedCompany: {},
 
       items: [],
-      fullscreen: false,
-      interval: null,
-      time: null,
-      date: null,
-      profileInfoModel: false,
     };
   },
   beforeMount() {
@@ -593,6 +1033,9 @@ export default {
         console.log(0);
       }
     },
+    companySettings() {
+      this.companySettingsModel = true;
+    },
     checkingRoutes() {
       // modules   are indexed
       // 0 - dashboard
@@ -607,6 +1050,7 @@ export default {
       // 9 - location
       // 10 - recurring
       // 11 - item
+      // 12 - company
       try {
         let DecKey = this.$gl.DecKey(localStorage.getItem("token_access"));
         let token_access = JSON.parse(DecKey);
@@ -712,6 +1156,9 @@ export default {
             icon: "mdi-form-select",
             to: "/item",
           });
+        }
+        if (token_access[12] != 0) {
+          this.companyIcon = true;
         }
 
         // ordering menu

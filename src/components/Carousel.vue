@@ -10,7 +10,8 @@
           pause-on-hover="pause-on-hover"
           pause-on-dots-hover="pause-on-dots-hover"
           autoplay="autoplay"
-          ><img
+        >
+          <img
             class="slide"
             src="https://webthemez.com/demo/myhome-real-estate-website-template/img/slides/1.jpg"
           />
