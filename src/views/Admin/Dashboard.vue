@@ -2,31 +2,48 @@
   <div id="Dashboard">
     <!-- Layout -->
     <DashboardLayout />
+    <v-row class="pt-10">
+      <!-- Dashboard Title -->
+      <v-col md="12" sm="12" cols="12" class="text-uppercase text-center">
+        <h2>WELCOME TO VISTA GLOBAL CONSULT</h2>
+        <p>
+          THIS DASHBOARD SHOWS VISTA GLOBAL CONSULT'S OPEN STATEMENT UP TO
+          MONDAY 14TH OF JUNE 2021 06:53:45 PM STATEMENT
+        </p>
+      </v-col>
+    </v-row>
 
+    <!-- CARDS -->
     <v-row>
-      <v-col md="12" sm="12" cols="12" class="">
-        <!-- <div class="d-flex">
-          <v-card
-            color="pink lighten-1"
-            dark
-            max-width="150"
-            class="ma-3 "
-            v-for="(item, index) in cardList"
-            :key="index"
-          >
-            <v-card-title class="pa-3 pink lighten-1">
-              <v-icon left>
-                {{ item.icon }}
-              </v-icon>
-              <v-spacer></v-spacer>
-              <span class="font-weight-light"> {{ item.count }} +</span>
-            </v-card-title>
-
-            <v-card-text class="pink lighten-2 pa-0 text-center ">
-              {{ item.title }}
-            </v-card-text>
-          </v-card>
-        </div> -->
+      <v-col md="12" sm="12" cols="12" class="orderCardContainer">
+        <div class="cardWrapper" v-for="(item, index) in cardList" :key="index">
+          <div class="wrapper">
+            <div class="title">{{ item.title }}</div>
+            <div class="icon">
+              <v-icon size="45" :color="item.color">{{ item.icon }}</v-icon>
+            </div>
+            <div class="mainCount">
+              <span :class="item.color + '--text'">{{
+                parseInt(item.release) + parseInt(item.bulk)
+              }}</span>
+            </div>
+          </div>
+          <div class="subCount">
+            <div class="el_1">
+              Release <br />
+              {{ item.release }}
+            </div>
+            <div class="el_1">
+              Bulk <br />
+              {{ item.bulk }}
+            </div>
+            <div class="el_1">
+              Disribution <br />
+              {{ item.distribution }}
+              <v-icon size="10" color="#62cb31">mdi-escalator-up</v-icon>
+            </div>
+          </div>
+        </div>
       </v-col>
     </v-row>
   </div>
@@ -36,152 +53,117 @@
 import DashboardLayout from "../../components/DashboardLayout";
 
 export default {
-  name: "Dashboard",
+  name: "Dashboard", //ORDER DASHBOARD
   components: {
     DashboardLayout,
   },
   data() {
     return {
       cardList: [
-        // {
-        //   title: this.$t("menu.projects"),
-        //   icon: "mdi-image-filter-center-focus-strong",
-        //   count: "50",
-        // },
-        // {
-        //   title: this.$t("menu.systems"),
-        //   icon: "mdi-server",
-        //   count: "50",
-        // },
-        // {
-        //   title: this.$t("menu.tasks"),
-        //   icon: "mdi-clipboard-list",
-        //   count: "50",
-        // },
-        // {
-        //   title: this.$t("menu.users"),
-        //   icon: "mdi-account-cog",
-        //   count: "50",
-        // },
-        // {
-        //   title: this.$t("menu.po"),
-        //   icon: "mdi-alpha-p-circle",
-        //   count: "50",
-        // },
-        // {
-        //   title: this.$t("menu.order"),
-        //   icon: "mdi-checkbox-multiple-blank-circle-outline",
-        //   count: "50",
-        // },
-        // {
-        //   title: this.$t("menu.account"),
-        //   icon: "mdi-table-account",
-        //   count: "50",
-        // },
-        // {
-        //   title: this.$t("menu.holiday"),
-        //   icon: "mdi-calendar-check-outline",
-        //   count: "50",
-        // },
-        // {
-        //   title: this.$t("menu.location"),
-        //   icon: "mdi-map-marker",
-        //   count: "50",
-        // },
+        {
+          title: "RECEIVED",
+          icon: "mdi-script-text-outline",
+          color: "green",
+          release: "40",
+          bulk: "7",
+          distribution: "0",
+        },
+        {
+          title: "WORKING",
+          icon: "mdi-database",
+          color: "orange",
+          release: "7",
+          bulk: "3",
+          distribution: "0",
+        },
+        {
+          title: "COMPLETED",
+          icon: "mdi-cash-multiple",
+          color: "blue",
+          release: "21",
+          bulk: "7",
+          distribution: "0",
+        },
+        {
+          title: "RE-OPEND",
+          icon: "mdi-alert-octagon-outline",
+          color: "orange",
+          release: "0",
+          bulk: "0",
+          distribution: "0",
+        },
+        {
+          title: "PENDING",
+          icon: "mdi-alert-outline",
+          color: "red",
+          release: "6",
+          bulk: "45",
+          distribution: "0",
+        },
+        {
+          title: "NEED REVISED",
+          icon: "mdi-bookmark-minus-outline",
+          color: "green",
+          release: "0",
+          bulk: "0",
+          distribution: "0",
+        },
       ],
     };
   },
-  beforeMount() {
-    this.displayCard();
-  },
-  methods: {
-    displayCard() {
-      try {
-        let DecKey = this.$gl.DecKey(localStorage.getItem("token_access"));
-        let token_access = JSON.parse(DecKey);
-
-        if (token_access[0] != 0) {
-          // console.log("dashboard");
-          this.cardList.push({
-            title: this.$t("menu.dashboard"),
-            icon: "mdi-home",
-            count: "50",
-          });
-        }
-        if (token_access[1] != 0) {
-          // console.log("project");
-          this.cardList.push({
-            title: this.$t("menu.projects"),
-            icon: "mdi-image-filter-center-focus-strong",
-            count: "50",
-          });
-        }
-        if (token_access[2] != 0) {
-          // console.log("system");
-          this.cardList.push({
-            title: this.$t("menu.systems"),
-            icon: "mdi-server",
-            count: "50",
-          });
-        }
-        if (token_access[3] != 0) {
-          // console.log("task");
-          this.cardList.push({
-            title: this.$t("menu.tasks"),
-            icon: "mdi-clipboard-list",
-            count: "50",
-          });
-        }
-        if (token_access[4] != 0) {
-          // console.log("user");
-          this.cardList.push({
-            title: this.$t("menu.users"),
-            icon: "mdi-account-cog",
-            count: "50",
-          });
-        }
-        if (token_access[5] != 0) {
-          // console.log("po");
-          this.cardList.push({
-            title: this.$t("menu.po"),
-            icon: "mdi-alpha-p-circle",
-            count: "50",
-          });
-        }
-        if (token_access[6] != 0) {
-          this.cardList.push({
-            title: this.$t("menu.order"),
-            icon: "mdi-checkbox-multiple-blank-circle-outline",
-            count: "50",
-          });
-        }
-        if (token_access[7] != 0) {
-          this.cardList.push({
-            title: this.$t("menu.account"),
-            icon: "mdi-table-account",
-            count: "50",
-          });
-        }
-        if (token_access[8] != 0) {
-          this.cardList.push({
-            title: this.$t("menu.holiday"),
-            icon: "mdi-calendar-check-outline",
-            count: "50",
-          });
-        }
-        if (token_access[9] != 0) {
-          this.cardList.push({
-            title: this.$t("menu.location"),
-            icon: "mdi-map-marker",
-            count: "50",
-          });
-        }
-      } catch (e) {
-        // console.log(0);
-      }
-    },
-  },
+  beforeMount() {},
+  methods: {},
 };
 </script>
 
-<style></style>
+<style lang="scss">
+#Dashboard{
+  background: #f1f3f6;
+  height: 100%;
+}
+.orderCardContainer {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+.cardWrapper {
+  margin: 10px;
+  border: 1px solid #eaeaea;
+  background: #fff;
+  padding: 10px;
+  // margin-left: 40px;
+  min-width: 210px;
+  min-height: 120px;
+}
+.cardWrapper .wrapper {
+  display: flex;
+  justify-content: space-between;
+}
+.cardWrapper .wrapper .title {
+  font-size: 12px;
+  position: relative;
+}
+.cardWrapper .wrapper .icon {
+  position: relative;
+  margin-top: 5px;
+  margin-right: 5px;
+}
+.cardWrapper .wrapper .mainCount {
+  position: absolute;
+  margin-top: 27px;
+  // color: #62cb31;
+  font-size: 25px;
+}
+
+.cardWrapper .subCount {
+  // background: red;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+.cardWrapper .subCount .el_1 {
+  font-size: 10px;
+}
+</style>
