@@ -14,6 +14,8 @@ import global from "./helpers/global";
 import vueShortkey from "vue-shortkey";
 import VAnimateCss from "v-animate-css";
 import i18n from "./i18n";
+import VueApexCharts from "vue-apexcharts";
+
 // Import  CSS
 import "./styles/main.scss"; //  component styling
 import "./styles/custom.scss"; // overing styles
@@ -30,6 +32,8 @@ Vue.use(moment);
 Vue.use(require("vue-shortkey"));
 Vue.use(Croppa, { componentName: "image-cropper" });
 Vue.use(VAnimateCss);
+Vue.use(VueApexCharts);
+Vue.component("apexchart", VueApexCharts);
 
 localStorage.setItem("fullScreen", 0);
 const base = axios.create({

@@ -145,4 +145,28 @@
     opacity: 0;
     z-index: -2;
   }
+
+   // ORDERS
+    .orderCardContainer {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: space-between !important;
+      align-items: center;
+    }
+
+   .cardWrapper {
+      margin: 10px;
+      border: 1px solid #eaeaea;
+      padding: 5px;
+      // margin-left: 20px;
+      min-width: 400px;
+      min-height: 120px;
+   }
+   .eventCalanderWrapper {
+     min-width: 100px;
+   }
+   .eventSheet {
+     margin-left: 0px;
+   }
 }

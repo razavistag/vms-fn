@@ -12,9 +12,9 @@
       <!-- Dashboard -->
       <!-- {{ $t("dashboard.title") }} --  -->
 
-      <v-icon small left class="ml-4">mdi-calendar-month</v-icon>
+      <!-- <v-icon small left class="ml-4">mdi-calendar-month</v-icon> -->
 
-      {{ date }}
+      <!-- {{ date }} -->
 
       <v-spacer></v-spacer>
 
