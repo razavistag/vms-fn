@@ -148,6 +148,24 @@
             </v-btn>
           </v-toolbar>
         </template>
+
+        <template v-slot:[`item.id`]="{ item, index }">
+          <div
+            class="d-flex index_id_column"
+            :title="item.status == '0' ? 'PENDING' : 'ACTIVE'"
+          >
+            <v-sheet
+              :color="item.status == '0' ? 'orange' : 'green'"
+              class="ma-0 pa-0"
+              height="30"
+              width="3"
+            >
+            </v-sheet>
+
+            <span class="ma-1">{{ index + 1 }}</span>
+          </div>
+        </template>
+
         <!-- TABLE ACTIONS -->
         <template v-slot:[`item.actions`]="{ item }">
           <v-icon
@@ -573,6 +591,49 @@
                 >
                   <v-icon>mdi-plus</v-icon>
                 </v-btn>
+              </v-col>
+
+              <!-- CANCEL DATE -->
+              <v-col sm="3" md="1" cols="6">
+                <ValidationProvider
+                  rules="required"
+                  name="St Date"
+                  v-slot="{ errors }"
+                >
+                  <v-menu
+                    v-model="i.etaDatePicker"
+                    :close-on-content-click="false"
+                    :nudge-right="40"
+                    transition="scale-transition"
+                    offset-y
+                    min-width="auto"
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <ValidationProvider
+                        rules="required"
+                        name="ETA"
+                        v-slot="{ errors }"
+                      >
+                        <v-text-field
+                          v-model="i.eta"
+                          :label="errors[0] ? errors[0] : 'ETA'"
+                          :error-messages="errors"
+                          hide-details=""
+                          dense
+                          readonly
+                          v-bind="attrs"
+                          v-on="on"
+                        ></v-text-field>
+                      </ValidationProvider>
+                    </template>
+                    <v-date-picker
+                      v-model="i.eta"
+                      dateFormat="mm-YYYY"
+                      :color="DTbtnColor"
+                      @input="i.etaDatePicker = false"
+                    ></v-date-picker>
+                  </v-menu>
+                </ValidationProvider>
               </v-col>
 
               <!--  NOP -->
@@ -1306,9 +1367,11 @@ export default {
           AxiosSuccessResponse: null,
           orderDatePicker: false,
           cancelDatePicker: false,
+          etaDatePicker: false,
 
           orderDate: "",
           cancelDate: "",
+          eta: "",
           type: "",
           edi: "",
           upc: "",
@@ -1365,88 +1428,82 @@ export default {
       },
       headersMap: [
         {
-          text: "#",
-          align: "center",
+          text: "",
           sortable: true,
           value: "id",
           align: "start",
+          width: "40",
         },
         {
           text: "ORDER DATE",
-          align: "center",
           sortable: true,
           value: "order_date",
           align: "start",
+          width: "122",
         },
         {
           text: "CANCEL DATE",
-          align: "center",
           sortable: true,
           value: "cancel_date",
           align: "start",
+          width: "128",
         },
         {
           text: "TYPE",
-          align: "center",
           sortable: true,
           value: "order_type",
+          align: "center",
+          width: "80",
+        },
+        {
+          text: "ETA",
+          sortable: true,
+          value: "eta",
           align: "start",
+          width: "115",
         },
         {
           text: "CUSTOMER",
-          align: "center",
           sortable: true,
           value: "customer",
           align: "start",
+          width: "190",
         },
         {
           text: "PO NUM",
-          align: "center",
           sortable: true,
           value: "po_number",
           align: "start",
+          width: "100",
         },
         {
           text: "CO NUM",
-          align: "center",
           sortable: true,
           value: "control_number",
           align: "start",
+          width: "100",
         },
-        // {
-        //   text: "OR STYLE",
-        //   align: "center",
-        //   sortable: true,
-        //   value: "priority",
-        //   align: "start",
-        // },
-        // {
-        //   text: "RE STYLE",
-        //   align: "center",
-        //   sortable: true,
-        //   value: "priority",
-        //   align: "start",
-        // },
+
         {
           text: "RECEIVED BY",
-          align: "center",
           sortable: true,
           value: "receiver",
           align: "start",
+          width: "190",
         },
         {
           text: "COMPLETED BY",
-          align: "center",
           sortable: true,
           value: "completed_by",
           align: "start",
+          width: "190",
         },
         {
           text: "APPROVED BY",
-          align: "center",
           sortable: true,
           value: "approved_by",
           align: "start",
+          width: "190",
         },
         {
           text: "Actions",
@@ -1541,7 +1598,7 @@ export default {
         .then((response) => {
           this.orders.splice(0);
           let i = response.data;
-          // console.log(i.objects);
+          console.log(i.objects);
 
           this.dataTableLoading = false;
           this.dtPagination = {
@@ -1580,6 +1637,8 @@ export default {
               completed_by: e.completed_by,
               approved_by: e.approved_by,
               attachments: e.attachment,
+              eta: e.eta,
+              status: e.status,
             });
           });
         })
@@ -1602,6 +1661,7 @@ export default {
 
         orderDate: "",
         cancelDate: "",
+        eta: "",
         type: "",
         edi: "",
         upc: "",
@@ -1646,6 +1706,7 @@ export default {
                 completed_by: e.completed_by,
                 approved_by: e.approved_by,
                 attachments: e.attachment,
+                eta: e.eta,
               });
             }, 4000);
             this.dataTableLoading = false;
@@ -1714,6 +1775,7 @@ export default {
           upc: i.upc_status,
           nop: i.id,
           pt: i.price_ticket,
+          eta: i.eta,
           po_number: i.po_number,
           control_number: i.control_number,
           customer: {
@@ -1785,15 +1847,16 @@ export default {
       fd.append("or_style", element.re_style);
       fd.append("re_style", element.or_style);
       fd.append("total_value", element.nop);
+      fd.append("eta", element.eta);
       fd.append("status", 0);
 
       if (!element.attachments.length < 1) {
         element.attachments.forEach((element) => {
           if (element instanceof File) {
-            console.log("true true");
+            console.log("NEW FILE");
             fd.append("attachment[]", element, element.name);
           } else {
-            console.log("false false");
+            console.log("EXSISTING FILE");
 
             fd.append("attachment[]", element.name);
           }
@@ -1801,35 +1864,41 @@ export default {
       }
 
       if (m == "store") {
-        this.$http
-          .post(this.url.order, fd, config)
-          .then((res) => {
-            if (i < arr.length - 1) {
-              this.axiosMultiPost(arr, ++i, "store");
-            } else {
-              this.onInitialize();
-              // this.closeForm();
+        this.$refs.form.validate().then((success) => {
+          if (!success) {
+            return;
+          }
+          this.$http
+            .post(this.url.order, fd, config)
+            .then((res) => {
+              if (i < arr.length - 1) {
+                this.axiosMultiPost(arr, ++i, "store");
+              } else {
+                this.onInitialize();
+                // this.closeForm();
+                this.overlay = false;
+                this.notification("Order are successfully added", "green");
+              }
+              if (res.data.status == 200) {
+                element.AxiosSuccess = true;
+                element.AxiosProgressCount = 0;
+                element.AxiosSuccessMessage = res.data.message;
+                element.AxiosSuccessResponse = res.data.status;
+              }
+            })
+            .catch((err) => {
               this.overlay = false;
-              this.notification("Order are successfully added", "green");
-            }
-            if (res.data.status == 200) {
               element.AxiosSuccess = true;
               element.AxiosProgressCount = 0;
-              element.AxiosSuccessMessage = res.data.message;
-              element.AxiosSuccessResponse = res.data.status;
-            }
-          })
-          .catch((err) => {
-            this.overlay = false;
-            element.AxiosSuccess = true;
-            element.AxiosProgressCount = 0;
-            element.AxiosSuccessResponse = 500;
-            element.AxiosSuccessMessage = "Please try again";
-          });
+              element.AxiosSuccessResponse = 500;
+              element.AxiosSuccessMessage = "Please try again";
+            });
+        });
       } else {
         fd.append("_method", "put");
 
         console.log("update", element);
+
         this.$http
           .post(this.url.order + "/" + element.id, fd, config)
           .then((res) => {
@@ -1954,7 +2023,7 @@ export default {
     viewEditAttachment(i) {
       console.log(i);
       window.open(
-        "http://localhost:8000/storage/Task_attachments/" + i,
+        "http://localhost:8000/storage/Order_attachments/" + i,
         "_blank"
       );
     },
