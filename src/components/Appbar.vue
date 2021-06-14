@@ -39,12 +39,10 @@
 export default {
   name: "Appbar",
 
-  components: {
-  },
+  components: {},
 
   data: () => ({
     headerColor: "blue-grey darken-3",
-
   }),
   beforeMount() {},
   mounted() {

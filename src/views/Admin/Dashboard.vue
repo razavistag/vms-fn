@@ -4,29 +4,29 @@
     <DashboardLayout />
 
     <v-row>
-      <v-col md="12" sm="12" cols="12" class="d-flex justify-center">
-        <!-- <v-container class="d-flex"> -->
-        <v-card
-          color="pink lighten-1"
-          dark
-          max-width="150"
-          class="ma-3 "
-          v-for="(item, index) in cardList"
-          :key="index"
-        >
-          <v-card-title class="pa-3 pink lighten-1">
-            <v-icon left>
-              {{ item.icon }}
-            </v-icon>
-            <v-spacer></v-spacer>
-            <span class="font-weight-light"> {{ item.count }} +</span>
-          </v-card-title>
+      <v-col md="12" sm="12" cols="12" class="">
+        <!-- <div class="d-flex">
+          <v-card
+            color="pink lighten-1"
+            dark
+            max-width="150"
+            class="ma-3 "
+            v-for="(item, index) in cardList"
+            :key="index"
+          >
+            <v-card-title class="pa-3 pink lighten-1">
+              <v-icon left>
+                {{ item.icon }}
+              </v-icon>
+              <v-spacer></v-spacer>
+              <span class="font-weight-light"> {{ item.count }} +</span>
+            </v-card-title>
 
-          <v-card-text class="pink lighten-2 pa-0 text-center ">
-            {{ item.title }}
-          </v-card-text>
-        </v-card>
-        <!-- </v-container> -->
+            <v-card-text class="pink lighten-2 pa-0 text-center ">
+              {{ item.title }}
+            </v-card-text>
+          </v-card>
+        </div> -->
       </v-col>
     </v-row>
   </div>
