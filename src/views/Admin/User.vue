@@ -607,7 +607,7 @@
       v-model="formAddmModel"
       max-width="1200px"
       persistent
-      content-class="user-form-dialog"
+      content-class="form-dialog"
       scrollable
     >
       <v-card tile flat>
@@ -841,18 +841,28 @@
                     name="City"
                     v-slot="{ errors }"
                   >
-                    <v-select
-                      :items="cityOptions"
+                    <v-autocomplete
                       v-model="editedItem.city"
+                      :items="cityList"
+                      :search-input.sync="get_form_city"
                       :label="errors[0] ? errors[0] : 'City'"
                       :error-messages="errors"
-                      hide-details=""
-                      prefix="*"
-                      clearable
+                      item-text="location_city"
+                      item-value="id"
+                      return-object
                       dense
-                      item-text="option"
-                      item-value="index"
-                    ></v-select>
+                      hide-no-data
+                      hide-details=""
+                      hide-selected
+                      single-line
+                    >
+                      <template v-slot:selection="data">
+                        {{ data.item.location_city }}
+                      </template>
+                      <template v-slot:item="{ item }">
+                        {{ item.location_city }}
+                      </template>
+                    </v-autocomplete>
                   </ValidationProvider>
                 </v-col>
 
@@ -1237,10 +1247,151 @@
               </v-row>
             </ValidationObserver>
           </v-container>
+
+          <!-- ADDITIONAL INFORMATION TITLE-->
+          <v-sheet :color="ModelHeaderColor">
+            <div class="d-flex justify-end">
+              <v-btn
+                color="blue darken-1"
+                tile
+                small
+                v-if="withInfoBtn"
+                @click="withAdditionalInfo"
+              >
+                <v-icon color="white" small left>mdi-plus</v-icon>
+                <span class="white--text"> WITH MORE INFO</span>
+              </v-btn>
+
+              <v-btn
+                color="red darken-1"
+                tile
+                small
+                v-else
+                @click="removeAdditionalInfo"
+              >
+                <v-icon color="white" small left>mdi-eye</v-icon>
+                <span class="white--text"> HIDE MORE INFO</span>
+              </v-btn>
+            </div>
+          </v-sheet>
+
+          <!-- ADDITIONAL INFORMATION FORM-->
+          <v-sheet class="mt-5" v-if="!withInfoBtn">
+            <v-row>
+              <v-col md="2" sm="6" cols="12">
+                <v-text-field
+                  v-model="additionalItems.address"
+                  label="Address"
+                  clearable
+                  dense
+                  hide-details=""
+                >
+                </v-text-field>
+              </v-col>
+              <v-col md="2" sm="6" cols="12">
+                <v-text-field
+                  v-model="additionalItems.name"
+                  label="Name"
+                  clearable
+                  dense
+                  hide-details=""
+                >
+                </v-text-field>
+              </v-col>
+              <v-col md="2" sm="6" cols="12">
+                <v-text-field
+                  v-model="additionalItems.contact_person"
+                  label="Contact Person"
+                  clearable
+                  dense
+                  hide-details=""
+                >
+                </v-text-field>
+              </v-col>
+              <v-col md="2" sm="6" cols="12">
+                <v-text-field
+                  v-model="additionalItems.contact_number"
+                  label="Contact Number"
+                  clearable
+                  dense
+                  hide-details=""
+                >
+                </v-text-field>
+              </v-col>
+              <v-col md="2" sm="6" cols="12">
+                <v-text-field
+                  v-model="additionalItems.email"
+                  label="Email"
+                  clearable
+                  dense
+                  hide-details=""
+                >
+                </v-text-field>
+              </v-col>
+
+              <v-col md="2" sm="6" cols="12">
+                <v-text-field
+                  v-model="additionalItems.zip_code"
+                  label="Zip code"
+                  clearable
+                  dense
+                  hide-details=""
+                >
+                </v-text-field>
+              </v-col>
+              <v-col md="2" sm="6" cols="12">
+                <v-autocomplete
+                  v-model="additionalItems.city"
+                  :items="cityList"
+                  :search-input.sync="get_ac_city_additional"
+                  label="City"
+                  item-text="location_city"
+                  item-value="id"
+                  return-object
+                  dense
+                  hide-no-data
+                  hide-details=""
+                  hide-selected
+                  single-line
+                >
+                  <template v-slot:selection="data">
+                    {{ data.item.location_city }}
+                  </template>
+                  <template v-slot:item="{ item }">
+                    {{ item.location_city }}
+                  </template>
+                </v-autocomplete>
+              </v-col>
+              <v-col md="2" sm="6" cols="12">
+                <v-autocomplete
+                  v-model="additionalItems.country"
+                  label="Country"
+                  :items="countryList"
+                  :search-input.sync="get_ac_country_additional"
+                  item-text="location_name"
+                  item-value="id"
+                  return-object
+                  dense
+                  hide-no-data
+                  hide-details=""
+                  hide-selected
+                  single-line
+                >
+                  <template v-slot:selection="data">
+                    {{ data.item.location_name }}
+                  </template>
+                  <template v-slot:item="{ item }">
+                    {{ item.location_name }}
+                  </template>
+                </v-autocomplete>
+              </v-col>
+            </v-row>
+          </v-sheet>
         </v-card-text>
 
         <v-card-actions class="fixed-bottom">
           <v-spacer></v-spacer>
+
           <v-btn color="blue darken-1" text @click="closeForm">
             Cancel
           </v-btn>
@@ -1414,6 +1565,7 @@ export default {
       superAdmin: false,
       pdfLayout: null,
       cancelAxios: true,
+      withInfoBtn: true,
 
       DTbtnColor: "indigo lighten-1 ",
       ModelHeaderColor: "blue-grey lighten-5",
@@ -1426,6 +1578,9 @@ export default {
       search: "",
       moment: moment,
       profileImg: "",
+      get_form_city: "",
+      get_ac_city_additional: "",
+      get_ac_country_additional: "",
 
       defaultItem: {},
       user: {},
@@ -1439,6 +1594,8 @@ export default {
       selectedPDFTitle: [],
       excelTitles: [],
       pdfTitles: [],
+      cityList: [],
+      countryList: [],
 
       snackbar: {
         show: false,
@@ -1446,6 +1603,7 @@ export default {
         message: "",
         color: "",
       },
+      additionalItems: {},
       editedItem: {
         id: "",
         name: "",
@@ -1462,6 +1620,7 @@ export default {
         status: "",
         profilePic: [],
         profileImg: [],
+        additionalInformation: [],
         dob: "",
         city: "",
         location: "",
@@ -1631,7 +1790,59 @@ export default {
     this.dataTableLoadingIndicator();
   },
 
+  watch: {
+    get_form_city(e) {
+      console.log(e);
+      this.$http
+        .get(this.url.users + "get_city_autocomplete/" + e)
+        .then((res) => {
+          console.log(res.data);
+          res.data.objects.forEach((element) => {
+            this.cityList.push(element);
+          });
+        })
+        .catch((err) => {
+          console.log("autocomplete failed ");
+        });
+    },
+    get_ac_city_additional(e) {
+      console.log(e);
+      this.$http
+        .get(this.url.users + "get_city_autocomplete/" + e)
+        .then((res) => {
+          console.log(res.data);
+          res.data.objects.forEach((element) => {
+            this.cityList.push(element);
+          });
+        })
+        .catch((err) => {
+          console.log("autocomplete failed ");
+        });
+    },
+    get_ac_country_additional(e) {
+      console.log(e);
+      this.$http
+        .get(this.url.users + "get_ac_country_additional/" + e)
+        .then((res) => {
+          console.log(res.data);
+          res.data.objects.forEach((element) => {
+            this.countryList.push(element);
+          });
+        })
+        .catch((err) => {
+          console.log("autocomplete failed ");
+        });
+    },
+  },
+
   methods: {
+    withAdditionalInfo() {
+      this.withInfoBtn = false;
+    },
+    removeAdditionalInfo() {
+      this.withInfoBtn = true;
+      // this.additionalItems = Object.assign({});
+    },
     onClipboard() {
       let jsonObject = JSON.stringify(this.Users);
       navigator.clipboard.writeText(jsonObject);
@@ -1870,6 +2081,40 @@ export default {
         this.submitLoading = true;
         let access = this.privillageSubmit();
 
+        let _name = this.additionalItems.name ? this.additionalItems.name : "";
+        let _contact_person = this.additionalItems.contact_person
+          ? this.additionalItems.contact_person
+          : "";
+        let _contact_number = this.additionalItems.contact_number
+          ? this.additionalItems.contact_number
+          : "";
+        let _email = this.additionalItems.email
+          ? this.additionalItems.email
+          : "";
+        let _address = this.additionalItems.address
+          ? this.additionalItems.address
+          : "";
+        let _city = this.additionalItems.city
+          ? this.additionalItems.city
+          : { id: "" };
+        let _zip_code = this.additionalItems.zip_code
+          ? this.additionalItems.zip_code
+          : "";
+        let _country = this.additionalItems.country
+          ? this.additionalItems.country
+          : { id: "" };
+
+        const addtionalInformation = {
+          name: _name,
+          contact_person: _contact_person,
+          contact_number: _contact_number,
+          email: _email,
+          address: _address,
+          city: _city,
+          zip_code: _zip_code,
+          country: _country,
+        };
+
         const obj = {
           id: this.editedItem.id,
           name: this.editedItem.name,
@@ -1887,7 +2132,7 @@ export default {
           profilePic: this.profileImg,
           access: this.privillageSubmit(),
           dob: moment(this.editedItem.dob).format("X"),
-          city: this.editedItem.city,
+          city: this.editedItem.city.id,
           location: this.editedItem.location,
           zip: this.editedItem.zipCode,
           account_number: this.editedItem.accountNumber,
@@ -1901,6 +2146,7 @@ export default {
           language: this.editedItem.language,
           payment_terms: 0,
           sales_rep_id: 0,
+          withInfo: this.withInfoBtn != true ? addtionalInformation : 0,
         };
         if (this.editedIndex > -1) {
           // UPDATE USER
@@ -1928,7 +2174,7 @@ export default {
             .then((result) => {
               console.log(result);
               this.onInitialize();
-              this.closeForm();
+              // this.closeForm();
               this.submitLoading = false;
 
               this.notification("User has been added successfully", "green");
@@ -2121,14 +2367,16 @@ export default {
     },
     onEditItem(e) {
       console.log("edited item ->", e);
-
       this.$http.get(this.url.show + e.id).then((response) => {
-        console.log(response.data.selected_user);
+        console.log(response.data);
 
         let i = response.data.selected_user;
         let access = JSON.parse(i.access);
-        console.log(i.access);
-
+        console.log("--------->", i);
+        this.cityList.push({
+          id: i.city[0].id,
+          location_city: i.city[0].location_city,
+        });
         this.accessClearIndex = 1;
         this.privillage.dashboard = access[0];
         this.privillage.project = access[1];
@@ -2165,7 +2413,10 @@ export default {
             .toISOString()
             .substr(0, 10),
 
-          city: i.city,
+          city: {
+            id: i.city[0].id,
+            location_city: i.city[0].location_city,
+          },
           location: i.location,
           zipCode: i.zip,
           accountNumber: i.account_number,
@@ -2178,6 +2429,41 @@ export default {
           mothlyTargetAmount: i.monthly_target,
           mothlyTargetPercentage: i.target_percentage,
         });
+
+        i.additional_information.forEach((element) => {
+          element > 1 ? null : (this.withInfoBtn = false);
+
+          console.log("check-------->", element);
+
+          if (element.city != null) {
+            this.cityList.push({
+              id: element.city.id,
+              location_city: element.city.location_city,
+            });
+          }
+          if (element.country != null) {
+            this.countryList.push({
+              id: element.country.id,
+              location_name: element.country.location_name,
+            });
+          }
+
+          this.additionalItems = Object.assign(element, {
+            status: element > 1 ? null : true,
+
+            city: {
+              id: element.city != null ? element.city.id : null,
+              location_city:
+                element.city != null ? element.city.location_city : null,
+            },
+            country: {
+              id: element.country != null ? element.country.id : null,
+              location_name:
+                element.country != null ? element.country.location_name : null,
+            },
+          });
+        });
+
         this.formAddmModel = true;
         this.editedItem.profileEditShow = true;
         this.editedItem.profileViewerShow = false;
@@ -2188,10 +2474,12 @@ export default {
       this.privillageCancel();
       this.$nextTick(() => {
         this.formAddmModel = false;
+        this.withInfoBtn = true;
         this.editedIndex = -1;
         this.$refs.form.reset();
         this.editedItem = Object.assign({});
         this.privillage = Object.assign({});
+        this.additionalItems = Object.assign({});
       });
     },
 
