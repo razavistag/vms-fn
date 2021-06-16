@@ -28,7 +28,7 @@
               <v-icon
                 small
                 left
-                @click="expandTable"
+            
                 v-if="!dataTableFullscreen"
                 title="Expand Data Table"
               >
@@ -170,19 +170,27 @@
             </v-btn>
             <v-spacer></v-spacer>
 
-            <!-- SEARCH -->
+            <!-- SEARCH TEXT -->
             <div v-shortkey="['alt', 's']" @shortkey="focusSearchKey">
               <v-text-field
                 v-model="search"
                 append-icon="mdi-magnify"
-                @input="onSearch"
-                label="Search"
+                label="Search ..."
                 ref="searchbar_ref"
                 type="input"
                 hide-details
                 dense
                 class="shrink mx-4 my-4  v_toolbar_search_text_field"
               >
+                <template v-slot:append>
+                  <v-icon
+                    :class="DTbtnColor + 'pa-1 rounded-top pointer'"
+                    color="white"
+                    @click="onSearch(search)"
+                  >
+                    mdi-magnify
+                  </v-icon>
+                </template>
               </v-text-field>
             </div>
 
@@ -964,8 +972,6 @@
         <!-- Footer Page Text -->
         <template v-slot:[`footer.page-text`]>
           <div class="d-flex align-center dt_footer  ">
-          
-
             <p class="pt-5 ml-4">
               Items: {{ dtPagination.from }} - {{ dtPagination.total }}
             </p>
@@ -979,8 +985,6 @@
             ></v-pagination>
           </div>
         </template>
-
-      
 
         <!-- no data -->
         <template v-slot:no-data>

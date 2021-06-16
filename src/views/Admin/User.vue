@@ -28,7 +28,6 @@
               <v-icon
                 small
                 left
-                @click="onExpandTable"
                 v-if="!dataTableFullscreen"
                 title="Expand Data Table"
               >
@@ -150,14 +149,22 @@
               <v-text-field
                 v-model="search"
                 append-icon="mdi-magnify"
-                @input="onSearch"
-                label="Search"
+                label="Search ..."
                 ref="searchbar_ref"
                 type="input"
                 hide-details
                 dense
                 class="shrink mx-4 my-4  v_toolbar_search_text_field"
               >
+                <template v-slot:append>
+                  <v-icon
+                    :class="DTbtnColor + 'pa-1 rounded-top pointer'"
+                    color="white"
+                    @click="onSearch(search)"
+                  >
+                    mdi-magnify
+                  </v-icon>
+                </template>
               </v-text-field>
             </div>
 
