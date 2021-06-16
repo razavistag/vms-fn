@@ -29,7 +29,6 @@
               <v-icon
                 small
                 left
-                @click="onExpandTable('e')"
                 v-if="!dataTableFullscreen"
                 title="Expand Data Table"
               >
@@ -101,7 +100,6 @@
               <v-text-field
                 v-model="search"
                 append-icon="mdi-magnify"
-                @input="onSearch"
                 label="Search ..."
                 ref="searchbar_ref"
                 type="input"
@@ -109,6 +107,15 @@
                 dense
                 class="shrink mx-4 my-4  v_toolbar_search_text_field"
               >
+                <template v-slot:append>
+                  <v-icon
+                    :class="DTbtnColor + 'pa-1 rounded-top pointer'"
+                    color="white"
+                    @click="onSearch(search)"
+                  >
+                    mdi-magnify
+                  </v-icon>
+                </template>
               </v-text-field>
             </div>
 
@@ -1095,7 +1102,6 @@ export default {
           sortable: true,
           value: "id",
           width: "50",
-          divider: true,
         },
         {
           text: "NAME",
@@ -1103,7 +1109,6 @@ export default {
           sortable: true,
           value: "recurring_name",
           width: "170",
-          divider: true,
         },
         {
           text: "TYPE",
@@ -1111,7 +1116,6 @@ export default {
           sortable: true,
           value: "recurring_type",
           width: "100",
-          divider: true,
         },
         {
           text: "MOBILE",
@@ -1119,7 +1123,6 @@ export default {
           sortable: true,
           value: "recurring_user_mobile",
           width: "100",
-          divider: true,
         },
         {
           text: "PHONE",
@@ -1127,7 +1130,6 @@ export default {
           sortable: true,
           value: "recurring_phone",
           width: "100",
-          divider: true,
         },
         {
           text: "ST DATE",
@@ -1135,15 +1137,13 @@ export default {
           sortable: true,
           value: "recurring_start_date",
           width: "105",
-          divider: true,
         },
         {
           text: "END DATE",
           align: "start",
           sortable: true,
           value: "recurring_end_date",
-          width: "105",
-          divider: true,
+          width: "109",
         },
         {
           text: "KEY MONEY",
@@ -1151,7 +1151,6 @@ export default {
           sortable: true,
           value: "recurring_key_money",
           width: "120",
-          divider: true,
         },
         {
           text: "MONTHLY AMOUNT",
@@ -1159,14 +1158,12 @@ export default {
           sortable: true,
           value: "recurring_montly_amount",
           width: "160",
-          divider: true,
         },
         {
           text: "EMAIL",
           align: "center",
           sortable: true,
           value: "recurring_user_email",
-          divider: true,
         },
         {
           text: "ADDRESS",
@@ -1174,15 +1171,12 @@ export default {
           sortable: true,
           value: "recurring_address",
           width: "300",
-          divider: true,
         },
         {
           text: "CITY",
           align: "start",
           sortable: true,
           value: "recurring_city",
-
-          divider: true,
         },
         {
           text: "ZIP CODE",
@@ -1191,7 +1185,6 @@ export default {
           value: "recurring_zip_code",
           width: "110",
           cellClass: " pa-0 ma-0",
-          divider: true,
         },
         {
           text: "COUNTRY",
@@ -1200,7 +1193,6 @@ export default {
           value: "recurring_country",
           width: "110",
           cellClass: " pa-0 ma-0",
-          divider: true,
         },
 
         {
